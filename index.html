@@ -223,6 +223,22 @@ html, body {
 
 .message.flora {
   justify-content: flex-start;
+  gap: 8px;
+}
+
+.flora-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.flora-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .message.user {
@@ -561,7 +577,7 @@ html, body {
     </div>
     <div class="input-bar">
       <input type="file" id="photoInput" accept="image/*" style="display:none">
-      <input type="file" id="plantIdInput" accept="image/*" style="display:none">
+      <input type="file" id="plantIdInput" accept="image/*" capture="environment" style="display:none">
       <button class="photo-btn" id="photoBtn" title="Send a photo">📷</button>
       <textarea id="userInput" rows="1" placeholder="Type your message..."></textarea>
       <button class="send-btn" id="sendBtn" title="Send">➤</button>
@@ -1128,6 +1144,13 @@ async function callFlora(isOpener = false) {
 function addBubble(text, who, isHtml = false) {
   const msgDiv = document.createElement('div');
   msgDiv.className = `message ${who}`;
+
+  if (who === 'flora') {
+    const avatar = document.createElement('div');
+    avatar.className = 'flora-avatar';
+    avatar.innerHTML = '<img src="flora.png" alt="Flora">';
+    msgDiv.appendChild(avatar);
+  }
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
