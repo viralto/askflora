@@ -135,10 +135,10 @@ html, body {
   overflow: hidden;
 }
 
-.welcome-avatar::after {
-  content: '🌸';
-  font-size: 52px;
-  line-height: 1;
+.welcome-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .welcome h2 {
@@ -543,7 +543,7 @@ html, body {
 
   <!-- Welcome Screen -->
   <div class="welcome" id="welcome">
-    <div class="welcome-avatar"></div>
+    <div class="welcome-avatar"><img src="flora.png" alt="Flora"></div>
     <h2>Hi, I'm Flora!</h2>
     <p>Your gardening friend. I'll get to know your garden and help you grow things you'll love.</p>
     <button class="start-btn" id="startBtn">Start chatting</button>
