@@ -266,6 +266,33 @@ html, body {
   border-bottom-right-radius: 6px;
 }
 
+/* Plant image links */
+.plant-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 8px 56px;
+  animation: msgIn 0.3s ease;
+}
+
+.plant-link {
+  background: var(--white);
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-deep);
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.plant-link:hover {
+  background: var(--green-lightest);
+  border-color: var(--green-mid);
+}
+
 /* Quick reply buttons */
 .quick-replies {
   display: flex;
@@ -690,13 +717,16 @@ RESPONSE FORMAT:
 You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
 {
   "message": "Your conversational response here",
-  "quickReplies": ["Option 1", "Option 2"]
+  "quickReplies": ["Option 1", "Option 2"],
+  "plants": ["Plant Name 1", "Plant Name 2"]
 }
 
 quickReplies: 2-4 short tappable answers relevant to what you just asked. Under 6 words each.
 ONLY include quick replies if your message ends with a direct question that has clear short answers. If your message is advice, a comment, or an open-ended question, use an empty array [].
 Use quick replies for simple either/or questions (sunny vs shady, back garden vs allotment, yes vs no).
-Use an EMPTY array [] when: giving advice, making a comment, asking about what they want to grow, what's already in the garden, anything personal, or any question where a richer typed answer would help you give better advice.`;
+Use an EMPTY array [] when: giving advice, making a comment, asking about what they want to grow, what's already in the garden, anything personal, or any question where a richer typed answer would help you give better advice.
+
+plants: When you recommend or mention specific plants, flowers, trees, shrubs or varieties by name, include them in this array. The user will see tappable links to view photos. Use common names the user would recognise. Use an empty array [] when you're not mentioning specific plants.`;
 }
 
 // After each exchange, try to extract profile info from the conversation
@@ -1092,20 +1122,21 @@ async function callFlora(isOpener = false) {
     // Parse JSON response
     let floraMsg = reply;
     let qrOptions = [];
+    let plantLinks = [];
     try {
       const cleaned = reply.replace(/```json|```/g, '').trim();
-      // Try direct parse first
       const parsed = JSON.parse(cleaned);
       floraMsg = parsed.message || reply;
       qrOptions = parsed.quickReplies || [];
+      plantLinks = parsed.plants || [];
     } catch (e) {
-      // Try to extract JSON from within the response
       try {
         const jsonMatch = reply.match(/\{[\s\S]*"message"\s*:[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
           floraMsg = parsed.message || reply;
           qrOptions = parsed.quickReplies || [];
+          plantLinks = parsed.plants || [];
         } else {
           floraMsg = reply;
         }
@@ -1125,6 +1156,11 @@ async function callFlora(isOpener = false) {
 
     typingEl.remove();
     addBubble(floraMsg, 'flora');
+
+    // Show plant image links
+    if (plantLinks.length > 0) {
+      showPlantLinks(plantLinks);
+    }
 
     // Show contextual quick replies from Flora
     if (qrOptions.length > 0) {
@@ -1162,6 +1198,22 @@ function addBubble(text, who, isHtml = false) {
 
   msgDiv.appendChild(bubble);
   messagesEl.appendChild(msgDiv);
+  scrollToBottom();
+}
+
+function showPlantLinks(plants) {
+  const container = document.createElement('div');
+  container.className = 'plant-links';
+  plants.forEach(name => {
+    const link = document.createElement('a');
+    link.className = 'plant-link';
+    link.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name + ' plant')}`;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = '🌱 ' + name;
+    container.appendChild(link);
+  });
+  messagesEl.appendChild(container);
   scrollToBottom();
 }
 
