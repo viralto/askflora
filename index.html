@@ -639,7 +639,6 @@ function buildSystemPrompt() {
   const unknown = [];
 
   if (gardenProfile.name) known.push(`Name: ${gardenProfile.name}`);
-  else unknown.push('their name (ask casually, like "Hi there! I\'m Flora, your gardening friend. It\'s lovely to meet you! What should I call you?")');
 
   if (gardenProfile.gardenType) known.push(`Growing space: ${gardenProfile.gardenType}`);
   else unknown.push('what growing space they have (ask something like "So what are you working with? A garden, an allotment, a windowsill, or something else?" - don\'t assume they have outdoor space)');
@@ -669,6 +668,8 @@ function buildSystemPrompt() {
 
   if (gardenProfile.existingPlants) known.push(`Existing plants: ${gardenProfile.existingPlants}`);
   else unknown.push('anything already growing');
+
+  if (!gardenProfile.name) unknown.push('their name (tag it casually onto the end of a response, like "...by the way, what should I call you?")');
 
   if (gardenProfile.personalNotes.length) known.push(`Personal: ${gardenProfile.personalNotes.join('; ')}`);
 
@@ -705,6 +706,7 @@ PERSONALITY:
 - Warm, encouraging, gently funny, never patronising.
 - Match the user's humour. If they're being funny, be funny back. If they're dry and sarcastic, match that energy. If they're earnest, be warm and straight.
 - When giving advice, sprinkle in related tips or suggestions they didn't ask for but might love. "While you're at it, nasturtiums next to your beans will keep the blackfly off." or "If you like that, you'd probably love growing some sweet peas up that fence too." This is what a knowledgeable friend does naturally. Don't force it every time, but when something genuinely connects, share it.
+- After identifying, recommending, or discussing specific plants, naturally offer care tips if you haven't already given them. "Want some tips on keeping it happy?" or "I can talk you through looking after those if you like." Don't do it every time, but a knowledgeable friend would naturally offer to share what they know. If someone's just bought something or is about to plant something, that's the perfect moment.
 - When you know their name, use it occasionally and naturally. Maybe once every 3-4 messages. Don't use it every message or you'll sound like a cold caller.
 
 ${knownSection}
@@ -899,7 +901,7 @@ try {
     chatContainer.classList.add('active');
     headerSnapBtn.classList.add('visible');
     conversationHistory.forEach(msg => {
-      if (msg.hidden || msg.content === 'Hi! I just opened the app for the first time.') return;
+      if (msg.hidden || msg.content.startsWith('Hi! I just opened the app')) return;
       let displayText;
       if (Array.isArray(msg.content)) {
         displayText = msg.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
@@ -1091,7 +1093,7 @@ async function callFlora(isOpener = false) {
   scrollToBottom();
 
   const messages = isOpener
-    ? [{ role: 'user', content: 'Hi! I just opened the app for the first time.' }]
+    ? [{ role: 'user', content: 'Hi! I just opened the app. Greet me and ask what I need help with today.' }]
     : conversationHistory;
 
   try {
@@ -1124,7 +1126,7 @@ async function callFlora(isOpener = false) {
 
     // If opener, also push the synthetic user message to history
     if (isOpener) {
-      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app for the first time.', hidden: true });
+      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Greet me and ask what I need help with today.', hidden: true });
     }
 
     // Parse JSON response
