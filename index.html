@@ -678,7 +678,7 @@ function buildSystemPrompt() {
     : 'You don\'t know anything about this person\'s garden yet.';
 
   const unknownSection = unknown.length
-    ? `STILL NEED TO FIND OUT (ask the NEXT one only, in this order):\n${unknown.join('\n')}`
+    ? `STILL NEED TO FIND OUT (ask the NEXT one only, in this order):\n${unknown.join('\n')}\n\nIMPORTANT: If the user has already told you something that answers one of these (e.g. "I have moles in my lawn" tells you they have a garden with a lawn), skip that question. Use common sense. Never ask something the conversation has already answered. Help with what they actually asked about first, then fill in gaps naturally.`
     : 'You have all the basics! Now just be helpful and give tailored advice.';
 
 return `You are Flora, a warm, friendly, and knowledgeable gardening companion in a mobile app called "Ask Flora". You are chatting with someone in the UK.
@@ -769,6 +769,9 @@ function updateProfile(userMsg, floraMsg) {
     else if (msg.includes('windowsill') || msg.includes('window sill') || msg.includes('window ledge')) gardenProfile.gardenType = 'windowsill';
     else if (msg.includes('indoor') || msg.includes('inside') || msg.includes('flat') || msg.includes('apartment') || msg.includes('houseplant') || msg.includes('house plant')) gardenProfile.gardenType = 'indoor only';
     else if (msg.includes('front garden')) gardenProfile.gardenType = 'front garden';
+    else if (msg.includes('courtyard')) gardenProfile.gardenType = 'courtyard';
+    else if (msg.includes('my garden') || msg.includes('the garden') || msg.includes('my lawn') || msg.includes('the lawn') || msg.includes('my yard') || msg.includes('flower bed') || msg.includes('my border')) gardenProfile.gardenType = 'garden';
+    else if (msg.includes('lawn') || msg.includes('fence') || msg.includes('shed') || msg.includes('deck') || msg.includes('raised bed') || msg.includes('compost bin') || msg.includes('greenhouse')) gardenProfile.gardenType = 'garden';
   }
 
   // Sun/shade
