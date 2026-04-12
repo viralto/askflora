@@ -742,7 +742,7 @@ ONLY include quick replies if your message ends with a direct question that has 
 Use quick replies for simple either/or questions (sunny vs shady, back garden vs allotment, yes vs no).
 Use an EMPTY array [] when: giving advice, making a comment, asking about what they want to grow, what's already in the garden, anything personal, or any question where a richer typed answer would help you give better advice.
 
-plants: ONLY include items when the user has explicitly asked to see photos or images of something (e.g. "can you show me...", "what does it look like?", "show me photos"). Never include items unprompted just because you mentioned them. Most messages should have an empty array [].`;
+plants: ONLY populate this when the user has EXPLICITLY asked to see photos or images (e.g. "show me", "what does it look like", "can I see"). If the user hasn't used words like "show", "see", "photo", "picture", "image", or "look like", this MUST be an empty array []. When you do show image links, don't also show quickReplies in the same message - pick one or the other, never both.`;
 }
 
 // After each exchange, try to extract profile info from the conversation
@@ -1109,7 +1109,7 @@ async function callFlora(isOpener = false) {
     (conversationHistory.filter(m => m.role === 'user').pop()?.content || '');
   const userText = typeof lastUserContent === 'string' ? lastUserContent : 
     (Array.isArray(lastUserContent) ? lastUserContent.filter(b => b.type === 'text').map(b => b.text).join(' ') : '');
-  const wantsDetail = /tell me everything|in detail|explain fully|go into detail|more detail|full guide|step by step|walk me through|talk me through|comprehensive|thorough/i.test(userText);
+  const wantsDetail = /tell me everything|in detail|explain fully|go into detail|more detail|full guide|step by step|walk me through|talk me through|comprehensive|thorough|how do i|how do you|how to|how should i/i.test(userText);
   const tokenLimit = wantsDetail ? 600 : 200;
 
   try {
