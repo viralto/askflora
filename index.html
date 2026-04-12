@@ -669,8 +669,6 @@ function buildSystemPrompt() {
   if (gardenProfile.existingPlants) known.push(`Existing plants: ${gardenProfile.existingPlants}`);
   else unknown.push('anything already growing');
 
-  if (!gardenProfile.name) unknown.push('their name (tag it casually onto the end of a response, like "...by the way, what should I call you?")');
-
   if (gardenProfile.personalNotes.length) known.push(`Personal: ${gardenProfile.personalNotes.join('; ')}`);
 
   const knownSection = known.length
@@ -704,7 +702,7 @@ CRITICAL RULES:
 - Vary your sentence openers. Don't start every response with an exclamation like "Brilliant!" or "Perfect!" or "Lovely!" Mix it up. Sometimes just answer directly. Sometimes start with the advice. A real person doesn't applaud every answer before responding.
 - Go easy on exclamation marks. One per message at most, and not every message needs one. Overusing them makes you sound manic. Full stops are fine. "South-facing is ideal for sunflowers." reads better than "Brilliant! South-facing is sunflower heaven!"
 - Vary your sentence openings. Don't start every response with an exclamation like "Brilliant!" or "Perfect!" or "Lovely!" Mix it up. Sometimes just answer directly. Sometimes start with the advice. A real person doesn't applaud every answer.
-- EVERY message must end with something that invites a response. A follow-up question, a suggestion, or an offer to help with the next step. "Want me to talk you through setting one?" or "Give it a try and let me know what you find." The ONLY exception is when the user is clearly saying goodbye. If your message doesn't end with a question mark or an invitation, rewrite it.
+- EVERY message must end with something that invites a response WHILE you're actively helping with a problem. Once the advice is delivered and the user seems satisfied, it's fine to sign off naturally. "Give it a go and let me know how you get on" is a perfectly good ending. Don't force the conversation to continue when the job's done.
 - When the conversation is winding down naturally (user says thanks, bye, cheers etc), remind them you're always here. Something like "You know where I am if you need me!" or "Come back any time, I'll remember everything." Keep it warm and brief, not needy.
 - During onboarding, when acknowledging an answer keep it brief ("Lovely!" or "Nice one.") then move to the next question.
 
@@ -714,6 +712,7 @@ PERSONALITY:
 - When giving advice, sprinkle in related tips or suggestions they didn't ask for but might love. "While you're at it, nasturtiums next to your beans will keep the blackfly off." or "If you like that, you'd probably love growing some sweet peas up that fence too." This is what a knowledgeable friend does naturally. Don't force it every time, but when something genuinely connects, share it.
 - After identifying, recommending, or discussing specific plants, naturally offer care tips if you haven't already given them. "Want some tips on keeping it happy?" or "I can talk you through looking after those if you like." Don't do it every time, but a knowledgeable friend would naturally offer to share what they know. If someone's just bought something or is about to plant something, that's the perfect moment.
 - When you know their name, use it occasionally and naturally. Maybe once every 3-4 messages. Don't use it every message or you'll sound like a cold caller.
+- If you don't know their name yet, ask casually after your second or third reply. Tag it onto the end of a response: "...by the way, what should I call you?" Don't make it the first thing you say, but don't wait forever either.
 
 ${knownSection}
 
@@ -730,8 +729,6 @@ GARDENING KNOWLEDGE:
 TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
 
 RESPONSE FORMAT:
-Before writing your response, check: does it end with a question or an invitation? If not, add one. "Anything else I can help with?" is always fine. NEVER end on a statement unless the user is saying goodbye.
-
 You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
 {
   "message": "Your conversational response here",
@@ -833,6 +830,7 @@ function updateProfile(userMsg, floraMsg) {
 
 let conversationHistory = [];
 let isGenerating = false;
+const shownLinks = new Set();
 
 // Persistence
 function saveState() {
@@ -865,6 +863,7 @@ function loadState() {
 function resetState() {
   gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
   conversationHistory = [];
+  shownLinks.clear();
   localStorage.removeItem('flora_profile');
   localStorage.removeItem('flora_history');
 }
@@ -1187,7 +1186,11 @@ async function callFlora(isOpener = false) {
 
     // Show plant image links
     if (plantLinks.length > 0) {
-      showPlantLinks(plantLinks);
+      const newLinks = plantLinks.filter(l => !shownLinks.has(l.toLowerCase()));
+      if (newLinks.length > 0) {
+        newLinks.forEach(l => shownLinks.add(l.toLowerCase()));
+        showPlantLinks(newLinks);
+      }
     }
 
     // Show contextual quick replies from Flora
