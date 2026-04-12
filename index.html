@@ -1093,7 +1093,7 @@ async function callFlora(isOpener = false) {
   scrollToBottom();
 
   const messages = isOpener
-    ? [{ role: 'user', content: 'Hi! I just opened the app. Greet me and ask what I need help with today.' }]
+    ? [{ role: 'user', content: 'Hi! I just opened the app. Greet me briefly and ask what I need help with. Mention you can help with gardens, houseplants, pests, lawn care, garden design, plant ID, wildlife - anything outdoors or green.' }]
     : conversationHistory;
 
   try {
@@ -1126,7 +1126,7 @@ async function callFlora(isOpener = false) {
 
     // If opener, also push the synthetic user message to history
     if (isOpener) {
-      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Greet me and ask what I need help with today.', hidden: true });
+      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Greet me briefly and ask what I need help with. Mention you can help with gardens, houseplants, pests, lawn care, garden design, plant ID, wildlife - anything outdoors or green.', hidden: true });
     }
 
     // Parse JSON response
