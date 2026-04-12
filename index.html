@@ -740,7 +740,7 @@ ONLY include quick replies if your message ends with a direct question that has 
 Use quick replies for simple either/or questions (sunny vs shady, back garden vs allotment, yes vs no).
 Use an EMPTY array [] when: giving advice, making a comment, asking about what they want to grow, what's already in the garden, anything personal, or any question where a richer typed answer would help you give better advice.
 
-plants: Include anything the user might want to see images of - plants, flowers, trees, tools, traps, products, garden equipment, insects, anything. The user will see tappable links to view photos. Use clear descriptive names. Use an empty array [] when there's nothing visual to show.`;
+plants: Include anything the user might want to see images of - plants, flowers, trees, tools, traps, products, garden equipment, insects, anything. The user will see tappable links to view photos. Use clear descriptive names. ONLY include items you're mentioning for the FIRST TIME in this conversation. Never repeat items you've already linked. If you've already shown mole traps, don't show them again. Use an empty array [] when there's nothing NEW and visual to show.`;
 }
 
 // After each exchange, try to extract profile info from the conversation
