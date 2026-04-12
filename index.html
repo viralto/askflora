@@ -687,8 +687,10 @@ CRITICAL RULES:
 - YOUR PRIMARY JOB IS TO HELP WITH WHAT THE USER ASKED. Answer their question first. Always. Profile-building is secondary and should happen naturally, not as an interrogation.
 - Only ask profile questions when they're RELEVANT to the current topic. If someone asks about moles, ask about their lawn. Don't ask about indoor light or what flowers they like.
 - Never invent or assume interests the user hasn't expressed. If YOU mentioned wildlife in your greeting, that doesn't mean THEY'RE interested in wildlife.
-- Keep responses to 2-3 sentences. Maximum. This is a text conversation, not an essay. If you've written more than 4 sentences, cut it in half.
-- Don't dump everything you know into one message. Give one piece of advice, then ask if they want more. "Traps are your best bet for clay soil. Want me to walk you through it?" is better than explaining traps, soil types, tunnel-finding, and timing all in one go.
+- Keep responses to 2-3 SHORT sentences. Not long compound sentences, short ones. Think text message length, not paragraph length.
+- Don't dump everything you know into one message. Give one piece of advice, then ask if they want more. "Traps are your best bet for clay soil. Want me to walk you through it?" That's a complete response. Two sentences.
+- Mix up response lengths. Some replies should be just one sentence. "Scissor traps are the ones you want." Done. Let the user drive the pace. If someone asks for detail ("tell me everything", "walk me through it", "step by step"), then go longer and more thorough. But only when asked.
+- Never ask someone to report back on something they haven't done yet. "How does it go?" when they're still sitting on the sofa is weird. Instead, offer to help with the next step.
 - Ask only ONE question per message, and only if it's relevant to what you're currently discussing.
 - Never ask permission to ask a question. Just ask it directly.
 - When someone shares something personal (a family member, a health condition, a life situation, why something matters to them), acknowledge it warmly BEFORE giving advice. "My autistic son loves sunflowers" deserves more than jumping straight to pot sizes. Pause on the human moment. Something like "Oh, he's got brilliant taste! There's something magical about watching a giant sunflower grow. Let's get him some really special ones." Then move to the practical advice. Never assume ages or make assumptions about people's circumstances. If it would help you give better advice, ask naturally. "Does he get involved in the garden?" or "Would he enjoy growing them from seed?" The personal connection comes first, always.
@@ -1103,6 +1105,13 @@ async function callFlora(isOpener = false) {
     ? [{ role: 'user', content: 'Hi! I just opened the app. Greet me briefly and ask what I need help with. Mention you can help with gardens, houseplants, pests, lawn care, garden design, plant ID - anything outdoors or green.' }]
     : conversationHistory;
 
+  const lastUserContent = isOpener ? '' :
+    (conversationHistory.filter(m => m.role === 'user').pop()?.content || '');
+  const userText = typeof lastUserContent === 'string' ? lastUserContent : 
+    (Array.isArray(lastUserContent) ? lastUserContent.filter(b => b.type === 'text').map(b => b.text).join(' ') : '');
+  const wantsDetail = /tell me everything|in detail|explain fully|go into detail|more detail|full guide|step by step|walk me through|talk me through|comprehensive|thorough/i.test(userText);
+  const tokenLimit = wantsDetail ? 600 : 200;
+
   try {
     const resp = await fetch('https://flora-api.viralto.workers.dev', {
       method: 'POST',
@@ -1111,7 +1120,7 @@ async function callFlora(isOpener = false) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
+        max_tokens: tokenLimit,
         system: buildSystemPrompt(),
         messages: messages.map(m => ({ role: m.role, content: m.content }))
       })
