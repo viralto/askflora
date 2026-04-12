@@ -303,12 +303,12 @@ html, body {
 
 .quick-reply-btn {
   background: var(--white);
-  border: 2px solid var(--green-pale);
+  border: 1.5px solid var(--green-pale);
   color: var(--green-deep);
-  padding: 10px 18px;
-  border-radius: 20px;
+  padding: 8px 14px;
+  border-radius: 16px;
   font-family: 'Nunito', sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
@@ -735,7 +735,7 @@ You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
   "plants": ["Plant Name 1", "Plant Name 2"]
 }
 
-quickReplies: 2-4 short tappable answers relevant to what you just asked. Under 6 words each.
+quickReplies: 2-3 short tappable ANSWERS to what you just asked. Under 6 words each. These must be things the USER would say in response to YOUR question. Never include questions as quick replies - those are for Flora to ask, not the user to tap.
 ONLY include quick replies if your message ends with a direct question that has clear short answers. If your message is advice, a comment, or an open-ended question, use an empty array [].
 Use quick replies for simple either/or questions (sunny vs shady, back garden vs allotment, yes vs no).
 Use an EMPTY array [] when: giving advice, making a comment, asking about what they want to grow, what's already in the garden, anything personal, or any question where a richer typed answer would help you give better advice.
