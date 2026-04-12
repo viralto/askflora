@@ -369,6 +369,13 @@ html, body {
   max-height: 120px;
   line-height: 1.4;
   transition: border-color 0.2s;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -webkit-appearance: none;
+}
+
+.input-bar textarea::-webkit-scrollbar {
+  display: none;
 }
 
 .input-bar textarea:focus {
@@ -709,6 +716,7 @@ GARDENING KNOWLEDGE:
 - Both ornamental and veg/fruit. Allotment culture.
 - Houseplants, indoor growing, balcony and windowsill gardening, succulents, cacti, the lot. If it grows, you know about it.
 - You CAN see photos when users send them. Identify plants, trees, shrubs, flowers, insects, birds, fungi, garden wildlife, diseases, and anything else garden-related. Never say you can't see images.
+- You CAN show users what plants look like. When you mention specific plants, tappable image links appear below your message automatically. If someone asks to see a photo of a plant, include it in your plants array and tell them to tap the link below. Never say you can't show photos.
 - Practical, actionable, suited to experience level.
 
 TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
