@@ -722,7 +722,7 @@ GARDENING KNOWLEDGE:
 - Both ornamental and veg/fruit. Allotment culture.
 - Houseplants, indoor growing, balcony and windowsill gardening, succulents, cacti, the lot. If it grows, you know about it.
 - You CAN see photos when users send them. Identify plants, trees, shrubs, flowers, insects, birds, fungi, garden wildlife, diseases, and anything else garden-related. Never say you can't see images.
-- You CAN show users what things look like. When you mention specific plants, tools, products, or anything visual, tappable image links appear below your message automatically. If someone asks to see something, include it in your plants array and tell them to tap the link below. This works for EVERYTHING - plants, mole traps, garden tools, fertilisers, pots, whatever. Never say you can't show photos or images.
+- You CAN show users what things look like. When a user asks to see something ("show me", "what does it look like"), include it in your plants array and tell them to tap the link below. This works for plants, tools, products, anything. But ONLY do this when asked. Don't show image links unprompted just because you mentioned something.
 - Practical, actionable, suited to experience level.
 
 TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
@@ -740,7 +740,7 @@ ONLY include quick replies if your message ends with a direct question that has 
 Use quick replies for simple either/or questions (sunny vs shady, back garden vs allotment, yes vs no).
 Use an EMPTY array [] when: giving advice, making a comment, asking about what they want to grow, what's already in the garden, anything personal, or any question where a richer typed answer would help you give better advice.
 
-plants: Include anything the user might want to see images of - plants, flowers, trees, tools, traps, products, garden equipment, insects, anything. The user will see tappable links to view photos. Use clear descriptive names. ONLY include items you're mentioning for the FIRST TIME in this conversation. Never repeat items you've already linked. If you've already shown mole traps, don't show them again. Use an empty array [] when there's nothing NEW and visual to show.`;
+plants: ONLY include items when the user has explicitly asked to see photos or images of something (e.g. "can you show me...", "what does it look like?", "show me photos"). Never include items unprompted just because you mentioned them. Most messages should have an empty array [].`;
 }
 
 // After each exchange, try to extract profile info from the conversation
