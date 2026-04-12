@@ -1224,10 +1224,10 @@ function showPlantLinks(plants) {
   plants.forEach(name => {
     const link = document.createElement('a');
     link.className = 'plant-link';
-    link.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name + ' plant')}`;
+    link.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name)}`;
     link.target = '_blank';
     link.rel = 'noopener';
-    link.textContent = '🌱 ' + name;
+    link.textContent = '🔎 ' + name;
     container.appendChild(link);
   });
   messagesEl.appendChild(container);
