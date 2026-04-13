@@ -1113,7 +1113,8 @@ async function callFlora(isOpener = false) {
   const userText = typeof lastUserContent === 'string' ? lastUserContent : 
     (Array.isArray(lastUserContent) ? lastUserContent.filter(b => b.type === 'text').map(b => b.text).join(' ') : '');
   const wantsDetail = /tell me everything|in detail|explain fully|go into detail|more detail|full guide|step by step|walk me through|talk me through|comprehensive|thorough|how do i|how do you|how to|how should i/i.test(userText);
-  const tokenLimit = wantsDetail ? 600 : 200;
+  const hasImage = Array.isArray(lastUserContent) && lastUserContent.some(b => b.type === 'image');
+  const tokenLimit = wantsDetail ? 600 : hasImage ? 400 : 200;
 
   try {
     const resp = await fetch('https://flora-api.viralto.workers.dev', {
@@ -1148,30 +1149,44 @@ async function callFlora(isOpener = false) {
       conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Greet me briefly and ask what I need help with. Mention you can help with gardens, houseplants, pests, lawn care, garden design, plant ID - anything outdoors or green.', hidden: true });
     }
 
-    // Parse JSON response
+    // Parse JSON response - handle model sometimes outputting text before JSON
     let floraMsg = reply;
     let qrOptions = [];
     let plantLinks = [];
-    try {
-      const cleaned = reply.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(cleaned);
-      floraMsg = parsed.message || reply;
+    
+    function tryParseFlora(str) {
+      try {
+        const p = JSON.parse(str);
+        if (p.message) return p;
+      } catch (e) {}
+      return null;
+    }
+    
+    // Try 1: direct parse
+    let parsed = tryParseFlora(reply.replace(/```json|```/g, '').trim());
+    
+    // Try 2: find last { that starts a JSON block with "message"
+    if (!parsed) {
+      let lastIdx = reply.lastIndexOf('{"message"');
+      if (lastIdx === -1) lastIdx = reply.lastIndexOf('{ "message"');
+      if (lastIdx >= 0) {
+        parsed = tryParseFlora(reply.slice(lastIdx));
+      }
+    }
+    
+    // Try 3: regex for any JSON object with message key
+    if (!parsed) {
+      const matches = reply.match(/\{[^{}]*"message"\s*:\s*"[^"]*"[^{}]*\}/g);
+      if (matches) parsed = tryParseFlora(matches[matches.length - 1]);
+    }
+    
+    if (parsed) {
+      floraMsg = parsed.message;
       qrOptions = parsed.quickReplies || [];
       plantLinks = parsed.plants || [];
-    } catch (e) {
-      try {
-        const jsonMatch = reply.match(/\{[\s\S]*"message"\s*:[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          floraMsg = parsed.message || reply;
-          qrOptions = parsed.quickReplies || [];
-          plantLinks = parsed.plants || [];
-        } else {
-          floraMsg = reply;
-        }
-      } catch (e2) {
-        floraMsg = reply;
-      }
+    } else {
+      // Strip any trailing JSON fragment if model ran out of tokens
+      floraMsg = reply.replace(/\s*\{\s*"message"[\s\S]*$/, '').trim() || reply;
     }
 
     conversationHistory.push({ role: 'assistant', content: floraMsg });
