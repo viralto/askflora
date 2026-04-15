@@ -1198,7 +1198,7 @@ async function callFlora(isOpener = false) {
     
     // If model didn't provide links, try to extract from user's request
     if (plantLinks.length === 0 && !isOpener) {
-      const autoLinks = extractImageRequest(userText);
+      const autoLinks = extractImageRequest(userText, floraMsg);
       if (autoLinks.length > 0) plantLinks = autoLinks;
     }
     
@@ -1273,34 +1273,46 @@ function showPlantLinks(plants) {
   scrollToBottom();
 }
 
-function extractImageRequest(text) {
-  if (!text) return [];
-  const lower = text.toLowerCase();
+function extractImageRequest(userText, floraText) {
+  if (!userText) return [];
+  const lower = userText.toLowerCase();
   
   // Check if this is an image request
   const isImageRequest = /show me|can i see|can you show|what does .+ look like|what do .+ look like|picture of|photo of|got a photo|got a picture|image of|see what .+ look/i.test(lower);
   if (!isImageRequest) return [];
   
-  // Try to extract the subject
+  // Try to extract the subject from user's message
   const patterns = [
-    /show me (?:a |an |some |the )?(.+?)(?:\?|$|!|\.)/i,
-    /can (?:i|you) (?:see|show)(?: me)? (?:a |an |some |the )?(.+?)(?:\?|$|!|\.)/i,
-    /what (?:does|do) (?:a |an |the )?(.+?) look like/i,
-    /(?:picture|photo|image) of (?:a |an |some |the )?(.+?)(?:\?|$|!|\.)/i,
-    /see what (?:a |an |the )?(.+?) look/i
+    /show me (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /can (?:i|you) (?:see|show)(?: me)? (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /what (?:does|do) (?:a |an |the )?(.{3,35}?) look like/i,
+    /(?:picture|photo|image) of (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /see what (?:a |an |the )?(.{3,35}?) look/i
   ];
   
   for (const p of patterns) {
-    const match = text.match(p);
-    if (match && match[1]) {
-      let subject = match[1].trim();
-      // Remove trailing punctuation and common words
-      subject = subject.replace(/[?.!,]+$/, '').trim();
-      if (subject.length > 1 && subject.length < 40) {
+    const match = userText.match(p);
+    if (match && match[1] && match[1].trim().length > 2) {
+      let subject = match[1].trim().replace(/[?.!,]+$/, '');
+      if (subject.length > 2 && subject.length < 40) {
         return [subject.charAt(0).toUpperCase() + subject.slice(1)];
       }
     }
   }
+  
+  // User asked vaguely ("show me", "can I see them") - extract from Flora's response
+  if (floraText) {
+    // Look for capitalised plant/item names or quoted names in Flora's text
+    const nameMatches = floraText.match(/\b([A-Z][a-z]+(?:\s+[a-z]+)?)\b/g);
+    if (nameMatches) {
+      const skipWords = new Set(['The','This','That','These','Those','They','There','Here','What','When','Where','How','Does','Also','Just','Right','Well','Good','Nice','Both','Your','Have','Want','Some','Sure','Tap','Let','Can','Are','For','And','But','Not']);
+      const items = nameMatches
+        .filter(n => !skipWords.has(n) && n.length > 2)
+        .slice(0, 3);
+      if (items.length > 0) return items;
+    }
+  }
+  
   return [];
 }
 
