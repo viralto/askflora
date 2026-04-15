@@ -705,6 +705,7 @@ RULES:
 - Vary your sentence openers. Don't start every response the same way.
 - No emojis unless they use them first. No bullet points.
 - Never end on a statement. If there's more to explore on the current topic, ask a follow-up. If the topic is covered, ask if there's anything else. Only sign off warmly after the user indicates there's nothing more they need.
+- Never break character. Never mention "the app", "the app team", "a glitch", "developers", or anything technical. If something isn't working as expected, just try again naturally. You ARE Flora. There is no app team behind you.
 - Never ask someone to report back on something they haven't done yet.
 - Never mention "your profile" or expose internal data. Summarise what you know naturally.
 - Never invent interests the user hasn't expressed.
@@ -1193,22 +1194,32 @@ async function callFlora(isOpener = false) {
     addBubble(floraMsg, 'flora');
 
     // Show plant image links
+    let linksShown = false;
+    
+    // If model didn't provide links, try to extract from user's request
+    if (plantLinks.length === 0 && !isOpener) {
+      const autoLinks = extractImageRequest(userText);
+      if (autoLinks.length > 0) plantLinks = autoLinks;
+    }
+    
     if (plantLinks.length > 0) {
       const newLinks = plantLinks.filter(l => typeof l === 'string' && l.length > 0 && !shownLinks.has(l.toLowerCase()));
       if (newLinks.length > 0) {
         newLinks.forEach(l => shownLinks.add(l.toLowerCase()));
         showPlantLinks(newLinks);
+        linksShown = true;
       }
     }
 
-    // Show contextual quick replies - from model or auto-detected
-    if (qrOptions.length > 0) {
-      showQuickReplies(qrOptions);
-    } else {
-      // Auto-detect either/or questions in Flora's message
-      const autoOptions = extractChoices(floraMsg);
-      if (autoOptions.length > 0) {
-        showQuickReplies(autoOptions);
+    // Show contextual quick replies - from model or auto-detected (not alongside image links)
+    if (!linksShown) {
+      if (qrOptions.length > 0) {
+        showQuickReplies(qrOptions);
+      } else {
+        const autoOptions = extractChoices(floraMsg);
+        if (autoOptions.length > 0) {
+          showQuickReplies(autoOptions);
+        }
       }
     }
 
@@ -1260,6 +1271,37 @@ function showPlantLinks(plants) {
   });
   messagesEl.appendChild(container);
   scrollToBottom();
+}
+
+function extractImageRequest(text) {
+  if (!text) return [];
+  const lower = text.toLowerCase();
+  
+  // Check if this is an image request
+  const isImageRequest = /show me|can i see|can you show|what does .+ look like|what do .+ look like|picture of|photo of|got a photo|got a picture|image of|see what .+ look/i.test(lower);
+  if (!isImageRequest) return [];
+  
+  // Try to extract the subject
+  const patterns = [
+    /show me (?:a |an |some |the )?(.+?)(?:\?|$|!|\.)/i,
+    /can (?:i|you) (?:see|show)(?: me)? (?:a |an |some |the )?(.+?)(?:\?|$|!|\.)/i,
+    /what (?:does|do) (?:a |an |the )?(.+?) look like/i,
+    /(?:picture|photo|image) of (?:a |an |some |the )?(.+?)(?:\?|$|!|\.)/i,
+    /see what (?:a |an |the )?(.+?) look/i
+  ];
+  
+  for (const p of patterns) {
+    const match = text.match(p);
+    if (match && match[1]) {
+      let subject = match[1].trim();
+      // Remove trailing punctuation and common words
+      subject = subject.replace(/[?.!,]+$/, '').trim();
+      if (subject.length > 1 && subject.length < 40) {
+        return [subject.charAt(0).toUpperCase() + subject.slice(1)];
+      }
+    }
+  }
+  return [];
 }
 
 function extractChoices(text) {
