@@ -1268,6 +1268,9 @@ function extractChoices(text) {
   const lastQ = [...sentences].reverse().find(s => s.trim().endsWith('?'));
   if (!lastQ) return [];
 
+  // Skip open-ended questions - these aren't real either/or choices
+  if (/^(what are you|what do you|what's your|what have you|how do|how are|where do|where are|why do|why are|when do|when did|tell me|can you tell|what kind of|what sort of|what type of)/i.test(lastQ.trim())) return [];
+
   // Look for "X or Y?" pattern
   const orMatch = lastQ.match(/\b(.{2,30}?)\s+or\s+(.{2,30}?)\?$/i);
   if (!orMatch) return [];
@@ -1291,8 +1294,14 @@ function extractChoices(text) {
   const commaMatch = lastQ.match(/\b(.{2,30}?),\s+(.{2,30}?),?\s+or\s+(.{2,30}?)\?$/i);
   if (commaMatch) {
     let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(cleanOption);
+    // Skip if options look like verbs/actions rather than concrete choices
+    if (opts.some(o => /^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(o))) return [];
     if (opts.every(o => o.length <= 25)) return opts;
   }
+
+  // Skip if options look like verbs rather than nouns
+  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optA)) return [];
+  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optB)) return [];
 
   // Only return if options are reasonable length for buttons
   if (optA.length > 25 || optB.length > 25) return [];
