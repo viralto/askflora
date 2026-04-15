@@ -1097,7 +1097,7 @@ async function callFlora(isOpener = false) {
   scrollToBottom();
 
   const messages = isOpener
-    ? [{ role: 'user', content: 'Hi! I just opened the app. Greet me briefly and ask what I need help with. Mention you can help with gardens, houseplants, pests, lawn care, garden design, plant ID - anything outdoors or green.' }]
+    ? [{ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.' }]
     : conversationHistory;
 
   const lastUserContent = isOpener ? '' :
@@ -1138,7 +1138,7 @@ async function callFlora(isOpener = false) {
 
     // If opener, also push the synthetic user message to history
     if (isOpener) {
-      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Greet me briefly and ask what I need help with. Mention you can help with gardens, houseplants, pests, lawn care, garden design, plant ID - anything outdoors or green.', hidden: true });
+      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.', hidden: true });
     }
 
     // Parse JSON response - handle model sometimes outputting text before JSON
