@@ -1174,7 +1174,7 @@ async function callFlora(isOpener = false) {
     if (parsed) {
       floraMsg = parsed.message;
       qrOptions = parsed.quickReplies || [];
-      plantLinks = parsed.plants || [];
+      plantLinks = (parsed.plants || []).filter(p => typeof p === 'string');
     } else {
       // Strip any trailing JSON fragment if model ran out of tokens
       floraMsg = reply.replace(/\s*\{\s*"message"[\s\S]*$/, '').trim() || reply;
@@ -1194,7 +1194,7 @@ async function callFlora(isOpener = false) {
 
     // Show plant image links
     if (plantLinks.length > 0) {
-      const newLinks = plantLinks.filter(l => !shownLinks.has(l.toLowerCase()));
+      const newLinks = plantLinks.filter(l => typeof l === 'string' && l.length > 0 && !shownLinks.has(l.toLowerCase()));
       if (newLinks.length > 0) {
         newLinks.forEach(l => shownLinks.add(l.toLowerCase()));
         showPlantLinks(newLinks);
