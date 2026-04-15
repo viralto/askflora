@@ -731,7 +731,7 @@ You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
   "plants": ["Plant Name 1", "Plant Name 2"]
 }
 
-quickReplies: IMPORTANT. If your message ends with an either/or question or a question with 2-3 obvious short answers, you MUST include quick replies. Examples: "traps or deterrents?" needs ["Traps", "Deterrents"]. "Is it sunny, shady, or mixed?" needs ["Sunny", "Shady", "Mixed"]. "Want me to go into more detail?" needs ["Yes please", "No I'm good"]. Only use an empty array [] for open-ended questions or statements.
+quickReplies: Put tappable answer options here when your message asks an either/or or simple choice question. NEVER put options in the message text itself. The app renders these as buttons automatically. Use an empty array for open-ended questions or statements.
 
 plants: ONLY populate this when the user has EXPLICITLY asked to see photos or images (e.g. "show me", "what does it look like", "can I see"). If the user hasn't used words like "show", "see", "photo", "picture", "image", or "look like", this MUST be an empty array []. When you do show image links, don't also show quickReplies in the same message - pick one or the other, never both.`;
 }
