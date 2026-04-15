@@ -1201,9 +1201,15 @@ async function callFlora(isOpener = false) {
       }
     }
 
-    // Show contextual quick replies from Flora
+    // Show contextual quick replies - from model or auto-detected
     if (qrOptions.length > 0) {
       showQuickReplies(qrOptions);
+    } else {
+      // Auto-detect either/or questions in Flora's message
+      const autoOptions = extractChoices(floraMsg);
+      if (autoOptions.length > 0) {
+        showQuickReplies(autoOptions);
+      }
     }
 
   } catch (err) {
@@ -1254,6 +1260,42 @@ function showPlantLinks(plants) {
   });
   messagesEl.appendChild(container);
   scrollToBottom();
+}
+
+function extractChoices(text) {
+  // Find the last question in the message
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const lastQ = [...sentences].reverse().find(s => s.trim().endsWith('?'));
+  if (!lastQ) return [];
+
+  // Look for "X or Y?" pattern
+  const orMatch = lastQ.match(/\b(.{2,30}?)\s+or\s+(.{2,30}?)\?$/i);
+  if (!orMatch) return [];
+
+  let optA = orMatch[1].trim();
+  let optB = orMatch[2].trim();
+
+  // Clean up leading articles/prepositions
+  optA = optA.replace(/^(a |an |the |just |more |some |to )/i, '');
+  optB = optB.replace(/^(a |an |the |just |more |some |to )/i, '');
+
+  // Capitalise first letter
+  optA = optA.charAt(0).toUpperCase() + optA.slice(1);
+  optB = optB.charAt(0).toUpperCase() + optB.slice(1);
+
+  // Check for comma-separated list: "X, Y, or Z?"
+  const commaMatch = lastQ.match(/\b(.{2,25}?),\s+(.{2,25}?),?\s+or\s+(.{2,30}?)\?$/i);
+  if (commaMatch) {
+    let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(o => {
+      o = o.trim().replace(/^(a |an |the |just |more |some |to )/i, '');
+      return o.charAt(0).toUpperCase() + o.slice(1);
+    });
+    if (opts.every(o => o.length <= 25)) return opts;
+  }
+
+  // Only return if options are reasonable length for buttons
+  if (optA.length > 25 || optB.length > 25) return [];
+  return [optA, optB];
 }
 
 function showQuickReplies(options) {
