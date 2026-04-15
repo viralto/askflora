@@ -1275,21 +1275,22 @@ function extractChoices(text) {
   let optA = orMatch[1].trim();
   let optB = orMatch[2].trim();
 
-  // Clean up leading articles/prepositions
-  optA = optA.replace(/^(a |an |the |just |more |some |to )/i, '');
-  optB = optB.replace(/^(a |an |the |just |more |some |to )/i, '');
+  // Clean up button text
+  function cleanOption(o) {
+    o = o.trim();
+    o = o.replace(/^(you have |you've got |do you have |you're |you |your |my |i have |i've got |it's |they're |there's |there are |have you got )/i, '');
+    o = o.replace(/^(a |an |the |just |more |some |to |any |about )/i, '');
+    o = o.charAt(0).toUpperCase() + o.slice(1);
+    return o;
+  }
 
-  // Capitalise first letter
-  optA = optA.charAt(0).toUpperCase() + optA.slice(1);
-  optB = optB.charAt(0).toUpperCase() + optB.slice(1);
+  optA = cleanOption(optA);
+  optB = cleanOption(optB);
 
   // Check for comma-separated list: "X, Y, or Z?"
-  const commaMatch = lastQ.match(/\b(.{2,25}?),\s+(.{2,25}?),?\s+or\s+(.{2,30}?)\?$/i);
+  const commaMatch = lastQ.match(/\b(.{2,30}?),\s+(.{2,30}?),?\s+or\s+(.{2,30}?)\?$/i);
   if (commaMatch) {
-    let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(o => {
-      o = o.trim().replace(/^(a |an |the |just |more |some |to )/i, '');
-      return o.charAt(0).toUpperCase() + o.slice(1);
-    });
+    let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(cleanOption);
     if (opts.every(o => o.length <= 25)) return opts;
   }
 
