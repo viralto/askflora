@@ -1620,8 +1620,8 @@ const io = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 // ─── Check if the visitor already has access ───
-// If they have a valid key cookie, change the primary CTA so they can jump
-// straight back to chatting without going through the taster or key form again.
+// If they have a valid key cookie, swap the primary hero CTA so they can jump
+// straight back to chatting instead of re-joining the beta.
 (async function checkExistingAccess() {
   try {
     const resp = await fetch(`${WORKER_URL}/check-access`, {
@@ -1630,24 +1630,26 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
     });
     const data = await resp.json();
 
+    const goToChat = () => { window.location.href = CHAT_URL; };
+
     if (data.ok && data.mode === 'full') {
-      // Full access - swap the taster button for a continue button
-      tasterBtn.textContent = 'Continue chatting';
-      tasterBtn.onclick = null;
-      // Remove the existing click listener and replace with direct navigation
-      const newBtn = tasterBtn.cloneNode(true);
-      tasterBtn.parentNode.replaceChild(newBtn, tasterBtn);
-      newBtn.addEventListener('click', () => {
-        window.location.href = CHAT_URL;
-      });
+      // Full access: replace "Join the Beta Crew" with a big "Continue chatting"
+      // and hide the taster button (no point offering a taster to a member).
+      const newHero = heroRequestBtn.cloneNode(true);
+      newHero.textContent = 'Continue chatting';
+      heroRequestBtn.parentNode.replaceChild(newHero, heroRequestBtn);
+      newHero.addEventListener('click', goToChat);
+      tasterBtn.style.display = 'none';
     } else if (data.ok && data.mode === 'taster' && typeof data.remaining === 'number' && data.remaining > 0) {
-      // Mid-taster with messages remaining - let them continue
-      tasterBtn.textContent = 'Continue chatting';
-      const newBtn = tasterBtn.cloneNode(true);
-      tasterBtn.parentNode.replaceChild(newBtn, tasterBtn);
-      newBtn.addEventListener('click', () => {
-        window.location.href = CHAT_URL;
-      });
+      // Mid-taster: primary becomes "Continue chatting". Convert the "Say hello"
+      // button into an upgrade nudge so they can join the Beta Crew properly.
+      const newHero = heroRequestBtn.cloneNode(true);
+      newHero.textContent = 'Continue chatting';
+      heroRequestBtn.parentNode.replaceChild(newHero, heroRequestBtn);
+      newHero.addEventListener('click', goToChat);
+
+      tasterBtn.textContent = 'Join the Beta Crew';
+      tasterBtn.onclick = openModal;
     }
     // If taster_exhausted or none, leave the default buttons as they are
   } catch (err) {
