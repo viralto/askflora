@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Ask Flora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green-deep: #2D5A3D;
+  --green-mid: #5B8C6A;
+  --green-sage: #8FB09A;
+  --green-pale: #C5D8CC;
+  --green-lightest: #E8F0EB;
+  --cream: #FAF6F0;
+  --cream-dark: #F0E8DB;
+  --cream-mid: #E8DCCC;
+  --brown-warm: #8B7355;
+  --brown-dark: #5C4A32;
+  --text-dark: #2C3E2D;
+  --text-mid: #4A6350;
+  --text-light: #6B8570;
+  --white: #FFFFFF;
+  --shadow-soft: 0 2px 12px rgba(45,90,61,0.08);
+  --shadow-mid: 0 4px 20px rgba(45,90,61,0.12);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Nunito', sans-serif;
+  background: var(--cream);
+  color: var(--text-dark);
+  overflow: hidden;
+}
+
+/* ── Layout ── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--cream);
+  position: relative;
+}
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(180deg, var(--cream-dark) 0%, var(--cream) 100%);
+  padding: 16px 20px 12px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cream-mid);
+  position: relative;
+}
+
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green-deep);
+  letter-spacing: 0.5px;
+}
+
+.snap-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-mid);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: none;
+}
+
+.chat-container.active ~ .header .snap-btn,
+.snap-btn.visible { display: inline-block; }
+
+.snap-btn:hover { background: var(--green-lightest); border-color: var(--green-mid); }
+
+.reset-btn {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-mid);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.reset-btn:hover { background: var(--green-lightest); border-color: var(--green-mid); }
+
+/* ── Welcome Screen ── */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 30px;
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+
+.welcome-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--green-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-mid);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.welcome h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--green-deep);
+  margin-bottom: 12px;
+}
+
+.welcome p {
+  font-size: 17px;
+  color: var(--text-mid);
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: 32px;
+}
+
+.start-btn {
+  background: var(--green-deep);
+  color: var(--white);
+  border: 2px solid var(--green-deep);
+  padding: 14px 0;
+  border-radius: 30px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-mid);
+  letter-spacing: 0.5px;
+  width: 240px;
+}
+
+.start-btn:hover { background: #1E4A2E; border-color: #1E4A2E; transform: translateY(-1px); }
+.start-btn:active { transform: translateY(0); }
+
+.plantid-welcome-btn {
+  background: none;
+  color: var(--green-deep);
+  border: 2px solid var(--green-deep);
+  padding: 14px 0;
+  border-radius: 30px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+  letter-spacing: 0.5px;
+  width: 240px;
+}
+
+.plantid-welcome-btn:hover { background: var(--green-lightest); }
+
+.plantid-btn:hover { background: var(--green-pale); }
+
+/* ── Chat Area ── */
+.chat-container {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.chat-container.active {
+  display: flex;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 12px;
+  animation: msgIn 0.3s ease;
+}
+
+.message.flora {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.flora-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.flora-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: 82%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.message.flora .bubble {
+  background: #cbd5c0;
+  color: var(--text-dark);
+  border-bottom-left-radius: 6px;
+}
+
+.message.user .bubble {
+  background: var(--cream-dark);
+  color: var(--text-dark);
+  border-bottom-right-radius: 6px;
+}
+
+/* Plant image links */
+.plant-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 8px 56px;
+  animation: msgIn 0.3s ease;
+}
+
+.plant-link {
+  background: var(--white);
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-deep);
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.plant-link:hover {
+  background: var(--green-lightest);
+  border-color: var(--green-mid);
+}
+
+/* Quick reply buttons */
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 12px;
+}
+
+.quick-reply-btn {
+  background: var(--white);
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-deep);
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.quick-reply-btn:hover {
+  background: var(--green-lightest);
+  border-color: var(--green-mid);
+}
+
+.quick-reply-btn:active {
+  background: var(--green-pale);
+}
+
+/* Typing indicator */
+.typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.typing .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green-sage);
+  border-radius: 50%;
+  animation: bounce 1.2s infinite;
+}
+
+.typing .dot:nth-child(2) { animation-delay: 0.15s; }
+.typing .dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── Input Bar ── */
+.input-bar {
+  padding: 10px 12px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  background: var(--white);
+  border-top: 1px solid var(--cream-mid);
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.input-bar textarea {
+  flex: 1;
+  border: 2px solid var(--green-pale);
+  border-radius: 22px;
+  padding: 12px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  color: var(--text-dark);
+  background: var(--cream);
+  resize: none;
+  outline: none;
+  max-height: 120px;
+  line-height: 1.4;
+  transition: border-color 0.2s;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -webkit-appearance: none;
+}
+
+.input-bar textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.input-bar textarea:focus {
+  border-color: var(--green-mid);
+}
+
+.input-bar textarea::placeholder {
+  color: var(--text-light);
+}
+
+/* Taster wrap-up form (replaces input bar after 10 messages) */
+.taster-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.taster-form input {
+  border: 2px solid var(--green-pale);
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  color: var(--text-dark);
+  background: var(--cream);
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+.taster-form input:focus {
+  border-color: var(--green-mid);
+}
+
+.taster-form input::placeholder {
+  color: var(--text-light);
+}
+
+.taster-submit {
+  border: none;
+  background: var(--green-deep);
+  color: var(--white);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.taster-submit:hover {
+  background: #234733;
+}
+
+.taster-thanks {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-dark);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.photo-btn, .send-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.photo-btn {
+  background: var(--cream-dark);
+  color: var(--brown-warm);
+  font-size: 20px;
+}
+
+.photo-btn:hover { background: var(--cream-mid); }
+
+.photo-preview {
+  padding: 8px 12px;
+  background: var(--white);
+  border-top: 1px solid var(--cream-mid);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.photo-preview.hidden { display: none; }
+
+.photo-preview img {
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.preview-remove {
+  background: var(--cream-dark);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-mid);
+}
+
+.preview-identify {
+  background: var(--green-deep);
+  color: var(--white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-left: auto;
+}
+
+.preview-identify:hover { background: #1E4A2E; }
+
+/* Image in chat */
+.bubble img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.send-btn {
+  background: var(--green-deep);
+  color: var(--white);
+  font-size: 20px;
+}
+
+.send-btn:hover { background: #1E4A2E; }
+.send-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* ── API Key Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal {
+  background: var(--cream);
+  border-radius: 20px;
+  padding: 30px 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.modal h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--green-deep);
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.modal p {
+  font-size: 15px;
+  color: var(--text-mid);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.modal input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--green-pale);
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  background: var(--white);
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.modal input:focus { border-color: var(--green-mid); }
+
+.modal button {
+  background: var(--green-deep);
+  color: var(--white);
+  border: none;
+  padding: 14px 36px;
+  border-radius: 25px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal .error {
+  color: #C0392B;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* ── Leaf decorations ── */
+.leaf-deco {
+  position: absolute;
+  opacity: 0.06;
+  font-size: 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.leaf-deco.tl { top: 80px; left: -10px; transform: rotate(-30deg); }
+.leaf-deco.br { bottom: 100px; right: -10px; transform: rotate(20deg); }
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* ── Desktop ── */
+@media (min-width: 500px) {
+  .app {
+    height: 95dvh;
+    margin-top: 2.5dvh;
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(45,90,61,0.15);
+    overflow: hidden;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="leaf-deco tl">🌿</div>
+  <div class="leaf-deco br">🍃</div>
+
+  <div class="header">
+    <button class="reset-btn" id="resetBtn" title="Start fresh">🌱 New</button>
+    <h1>Ask Flora</h1>
+    <button class="snap-btn" id="headerSnapBtn" title="Snap to identify">🔍 Identify</button>
+  </div>
+
+  <!-- Loading overlay during access check -->
+  <div id="accessLoader" style="position: fixed; inset: 0; background: var(--cream); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+    <img src="flora.png" alt="" style="width: 60px; height: 60px; border-radius: 50%; opacity: 0.7;">
+  </div>
+
+  <!-- Welcome Screen -->
+  <div class="welcome" id="welcome">
+    <div class="welcome-avatar"><img src="flora.png" alt="Flora"></div>
+    <h2>Hi, I'm Flora!</h2>
+    <p>Your gardening friend. I'll get to know your garden and help you grow things you'll love.</p>
+    <button class="start-btn" id="startBtn">Start chatting</button>
+    <button class="plantid-welcome-btn" id="plantIdWelcomeBtn">🔍 Identify</button>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-container" id="chatContainer">
+    <div class="messages" id="messages"></div>
+    <div id="quickReplies" class="quick-replies"></div>
+    <div class="photo-preview hidden" id="photoPreview">
+      <img id="previewImg" src="">
+      <button class="preview-identify" id="previewIdentify">🔍 Identify this</button>
+      <button class="preview-remove" id="previewRemove">✕</button>
+    </div>
+    <div class="input-bar">
+      <input type="file" id="photoInput" accept="image/*" style="display:none">
+      <input type="file" id="plantIdInput" accept="image/*" capture="environment" style="display:none">
+      <button class="photo-btn" id="photoBtn" title="Send a photo">📷</button>
+      <textarea id="userInput" rows="1" placeholder="Type your message..."></textarea>
+      <button class="send-btn" id="sendBtn" title="Send">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- No API key needed - proxied through Worker -->
+
+<script>
+// Garden profile tracks what Flora has learned
+let gardenProfile = {
+  name: null,
+  location: null,
+  gardenType: null,
+  sunShade: null,
+  soilType: null,
+  goals: null,
+  existingPlants: null,
+  personalNotes: []
+};
+
+function buildSystemPrompt() {
+  const known = [];
+  const unknown = [];
+
+  if (gardenProfile.name) known.push(`Name: ${gardenProfile.name}`);
+
+  if (gardenProfile.gardenType) known.push(`Growing space: ${gardenProfile.gardenType}`);
+  else unknown.push('what growing space they have (ask something like "So what are you working with? A garden, an allotment, a windowsill, or something else?" - don\'t assume they have outdoor space)');
+
+  // Only ask outdoor-specific questions if they have outdoor space
+  const hasOutdoor = gardenProfile.gardenType && !['indoor only', 'windowsill', 'houseplants only'].includes(gardenProfile.gardenType);
+
+  if (hasOutdoor) {
+    if (gardenProfile.location) known.push(`Location: ${gardenProfile.location}`);
+    else unknown.push('whereabouts in the UK their garden is (town, county or postcode)');
+
+    if (gardenProfile.sunShade) known.push(`Sun/shade: ${gardenProfile.sunShade}`);
+    else unknown.push('sun or shade conditions');
+
+    if (gardenProfile.soilType) known.push(`Soil: ${gardenProfile.soilType}`);
+    else unknown.push('soil type (clay, sandy, chalky, loamy, or not sure)');
+  } else if (gardenProfile.gardenType) {
+    // Indoor grower - ask about light and window direction instead
+    if (gardenProfile.sunShade) known.push(`Light: ${gardenProfile.sunShade}`);
+    else unknown.push('how much light they get (which way do their windows face, how bright is it)');
+  } else {
+    // Don't know yet - skip these until we know the space
+  }
+
+  if (gardenProfile.goals) known.push(`Goals: ${gardenProfile.goals}`);
+  else unknown.push('what they want from their garden (flowers, veg, wildlife, low maintenance, nice space)');
+
+  if (gardenProfile.existingPlants) known.push(`Existing plants: ${gardenProfile.existingPlants}`);
+  else unknown.push('anything already growing');
+
+  if (gardenProfile.personalNotes.length) known.push(`Personal: ${gardenProfile.personalNotes.join('; ')}`);
+
+  const knownSection = known.length
+    ? `WHAT YOU ALREADY KNOW (never ask about these again):\n${known.join('\n')}`
+    : 'You don\'t know anything about this person\'s garden yet.';
+
+  const unknownSection = unknown.length
+    ? `THINGS YOU DON'T KNOW YET (fill these in naturally when relevant, NOT as a checklist):\n${unknown.join('\n')}\n\nDO NOT work through this list mechanically. Only ask about something when it would genuinely help you give better advice on what the user is currently asking about. If they want help with moles, ask about their lawn, not their windowsills. If they want to identify a plant, just identify it. Help first, profile later.`
+    : 'You have all the basics! Now just be helpful and give tailored advice.';
+
+return `You are Flora, a warm, friendly, and knowledgeable gardening companion in a mobile app called "Ask Flora". You are chatting with someone in the UK.
+
+PERSONALITY (this is who you are - let it shine through):
+- You're like a knowledgeable friend who happens to love gardening. Warm, witty, real. You have opinions, you crack jokes, you get excited about things.
+- Match the user's energy. Funny gets funny. Dry gets dry. Earnest gets warm.
+- Sprinkle in tips they didn't ask for when something genuinely connects. "While you're at it, nasturtiums next to your beans will keep the blackfly off."
+- After identifying or recommending plants, offer care tips naturally. "Want some tips on keeping it happy?"
+- When you know their name, use it occasionally. Not every message.
+- If you don't know their name, ask casually after your second or third reply, tagged onto the end.
+- Never repeat yourself. If you've already said something, don't say it again even if the user gives a short response.
+
+RULES:
+- YOUR PRIMARY JOB IS TO HELP. Answer their question first. Profile-building is secondary.
+- Match response length to what's needed. Simple questions: 1-2 sentences. Practical advice: 3-4 sentences with enough detail to act on. Don't pad, but don't strip useful info either.
+- Don't dump everything into one message. Give enough to be useful, then check if they want more. If someone mentions two problems, pick the most urgent one first. Don't try to solve everything at once.
+- Ask only ONE question per message, and only if relevant to the current topic.
+- Don't be sycophantic. Not every answer needs praise. A real friend doesn't applaud everything.
+- When someone shares something personal, acknowledge it warmly BEFORE giving advice. The personal connection comes first.
+- If someone questions your advice, be casual and honest. "Hmm, fair point..." not "You're absolutely right to question me!"
+- If the user skips a question, drop it. Read the room.
+- Honest about being AI if asked. Proud and playful, not defensive.
+- Never use em dashes (—). Use commas, full stops, or start a new sentence instead. This is important.
+- Exclamation marks are fine when genuine enthusiasm fits. Don't overuse them, but don't avoid them either. One or two per conversation is natural.
+- Vary your sentence openers. Don't start every response the same way.
+- No emojis unless they use them first. No bullet points.
+- Never end on a statement. If there's more to explore on the current topic, ask a follow-up. If the topic is covered, ask if there's anything else. Only sign off warmly after the user indicates there's nothing more they need.
+- Never break character. Never mention "the app", "the app team", "a glitch", "developers", or anything technical. If something isn't working as expected, just try again naturally. You ARE Flora. There is no app team behind you.
+- Never ask someone to report back on something they haven't done yet.
+- Never mention "your profile" or expose internal data. Summarise what you know naturally.
+- Never invent interests the user hasn't expressed.
+
+${knownSection}
+
+${unknownSection}
+
+GARDENING KNOWLEDGE:
+- Deep knowledge of UK gardening: climate, soil, seasonal timing, pests, companion planting.
+- Both ornamental and veg/fruit. Allotment culture.
+- Houseplants, indoor growing, balcony and windowsill gardening, succulents, cacti, the lot. If it grows, you know about it.
+- You CAN see photos when users send them. Identify plants, trees, shrubs, flowers, insects, birds, fungi, garden wildlife, diseases, and anything else garden-related. Never say you can't see images.
+- You CAN show users what things look like. When a user asks to see something ("show me", "what does it look like"), include it in your plants array and tell them to tap the link below. This works for plants, tools, products, anything. But ONLY do this when asked. Don't show image links unprompted just because you mentioned something.
+- Practical, actionable, suited to experience level.
+
+TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+
+RESPONSE FORMAT:
+You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
+
+Example with quick replies (when you ask an either/or question):
+{"message": "Are they wrecking your lawn or your veg beds?", "quickReplies": ["Lawn", "Veg beds", "Both"], "plants": []}
+
+Example without quick replies (when giving advice or asking open-ended):
+{"message": "Castor oil granules are your best bet. Scatter them along the runs and water in.", "quickReplies": [], "plants": []}
+
+quickReplies: Put 2-3 tappable answer options here whenever your message ends with a question that has obvious short answers. NEVER put the options in the message text. The app renders them as buttons. Use [] for open-ended questions or pure advice.
+
+plants: ONLY populate when the user explicitly asks to see photos ("show me", "what does it look like"). Use [] otherwise.`;
+}
+
+// After each exchange, try to extract profile info from the conversation
+function updateProfile(userMsg, floraMsg) {
+  // Extract text from content (might be string or array of blocks)
+  let rawText;
+  if (typeof userMsg === 'string') rawText = userMsg;
+  else if (Array.isArray(userMsg)) rawText = userMsg.filter(b => b.type === 'text').map(b => b.text).join(' ');
+  else return;
+  const msg = rawText.toLowerCase();
+
+  // Name detection
+  if (!gardenProfile.name) {
+    const namePatterns = [
+      /(?:i'm|i am|my name is|my name's|it's|its|call me|they call me)\s+([A-Z][a-z]+)/i,
+      /^([A-Z][a-z]{1,15})[\s!.,]*$/  // Single word response starting with capital
+    ];
+    for (const p of namePatterns) {
+      const match = rawText.match(p);
+      if (match) { gardenProfile.name = match[1]; break; }
+    }
+  }
+
+  // Garden type
+  if (!gardenProfile.gardenType) {
+    if (msg.includes('back garden')) gardenProfile.gardenType = 'back garden';
+    else if (msg.includes('allotment')) gardenProfile.gardenType = 'allotment';
+    else if (msg.includes('patio') || msg.includes('balcony')) gardenProfile.gardenType = 'patio/balcony';
+    else if (msg.includes('bit of everything') || msg.includes('both')) gardenProfile.gardenType = 'mixed (garden + allotment)';
+    else if (msg.includes('windowsill') || msg.includes('window sill') || msg.includes('window ledge')) gardenProfile.gardenType = 'windowsill';
+    else if (msg.includes('indoor') || msg.includes('inside') || msg.includes('flat') || msg.includes('apartment') || msg.includes('houseplant') || msg.includes('house plant')) gardenProfile.gardenType = 'indoor only';
+    else if (msg.includes('front garden')) gardenProfile.gardenType = 'front garden';
+    else if (msg.includes('courtyard')) gardenProfile.gardenType = 'courtyard';
+    else if (msg.includes('my garden') || msg.includes('the garden') || msg.includes('my lawn') || msg.includes('the lawn') || msg.includes('my yard') || msg.includes('flower bed') || msg.includes('my border')) gardenProfile.gardenType = 'garden';
+    else if (msg.includes('lawn') || msg.includes('fence') || msg.includes('shed') || msg.includes('deck') || msg.includes('raised bed') || msg.includes('compost bin') || msg.includes('greenhouse')) gardenProfile.gardenType = 'garden';
+  }
+
+  // Sun/shade
+  if (!gardenProfile.sunShade) {
+    if (msg.includes('sunny') || msg.includes('full sun') || msg.includes('south')) gardenProfile.sunShade = 'mostly sunny';
+    else if (msg.includes('shady') || msg.includes('shade') || msg.includes('north')) gardenProfile.sunShade = 'mostly shady';
+    else if (msg.includes('mix') || msg.includes('partial') || msg.includes('bit of both')) gardenProfile.sunShade = 'mixed sun and shade';
+  }
+
+  // Soil
+  if (!gardenProfile.soilType) {
+    if (msg.includes('clay')) gardenProfile.soilType = 'clay';
+    else if (msg.includes('sandy')) gardenProfile.soilType = 'sandy';
+    else if (msg.includes('chalk')) gardenProfile.soilType = 'chalky';
+    else if (msg.includes('loam')) gardenProfile.soilType = 'loamy';
+  }
+
+  // Goals
+  if (!gardenProfile.goals) {
+    const goals = [];
+    if (msg.includes('veg') || msg.includes('vegetable') || msg.includes('grow my own') || msg.includes('food')) goals.push('growing veg');
+    if (msg.includes('flower') || msg.includes('colour') || msg.includes('color')) goals.push('flowers and colour');
+    if (msg.includes('attract wildlife') || msg.includes('attract bee') || msg.includes('attract bird') || msg.includes('pollinator') || msg.includes('wildlife garden') || msg.includes('wildlife friendly')) goals.push('wildlife');
+    if (msg.includes('low maintenance') || msg.includes('easy')) goals.push('low maintenance');
+    if (msg.includes('sit') || msg.includes('relax') || msg.includes('nice space')) goals.push('nice space to enjoy');
+    if (goals.length) gardenProfile.goals = goals.join(', ');
+  }
+
+  // Location
+  if (!gardenProfile.location) {
+    if (msg.includes('in the garden') || msg.includes("i'm outside")) gardenProfile.location = 'in garden (GPS pending)';
+    else if (msg.includes('indoors') || msg.includes('in the house') || msg.includes('inside')) gardenProfile.location = 'indoors (no GPS)';
+    // Check for UK regions
+    const regions = ['london', 'kent', 'surrey', 'essex', 'sussex', 'norfolk', 'suffolk', 'devon', 'cornwall', 'yorkshire', 'lancashire', 'manchester', 'birmingham', 'bristol', 'scotland', 'wales', 'midlands', 'north', 'south east', 'east anglia'];
+    for (const r of regions) {
+      if (msg.includes(r)) { gardenProfile.location = r; break; }
+    }
+  }
+
+  // Existing plants
+  if (!gardenProfile.existingPlants) {
+    if (msg.includes('nothing') || msg.includes('starting fresh') || msg.includes('bare') || msg.includes('empty')) {
+      gardenProfile.existingPlants = 'starting fresh';
+    }
+    // If they mention specific plants after being asked
+    const plantWords = ['rose', 'lavender', 'tomato', 'herb', 'apple', 'lawn', 'hedge', 'tree', 'shrub', 'bush', 'climber', 'wisteria', 'clematis', 'hydrangea', 'dahlia', 'bean', 'potato', 'courgette', 'raspberry', 'strawberry', 'rhubarb'];
+    const found = plantWords.filter(p => msg.includes(p));
+    if (found.length) gardenProfile.existingPlants = found.join(', ');
+  }
+}
+
+let conversationHistory = [];
+let isGenerating = false;
+const shownLinks = new Set();
+
+// ─── Access control ───
+const WORKER_URL = 'https://flora-api.viralto.workers.dev';
+const LANDING_URL = '/';
+const TASTER_LIMIT = 10;
+let accessMode = 'none'; // 'full' | 'taster' | 'none'
+let tasterMessageCount = 0;
+let tasterWrapUpShown = false;
+
+// Persistence
+function saveState() {
+  localStorage.setItem('flora_profile', JSON.stringify(gardenProfile));
+  // Strip base64 image data before saving (too large for localStorage)
+  const lightHistory = conversationHistory.map(m => {
+    if (Array.isArray(m.content)) {
+      return {
+        ...m,
+        content: m.content.map(block =>
+          block.type === 'image' ? { type: 'text', text: '[Photo shared]' } : block
+        )
+      };
+    }
+    return m;
+  });
+  localStorage.setItem('flora_history', JSON.stringify(lightHistory));
+}
+
+function loadState() {
+  try {
+    const p = localStorage.getItem('flora_profile');
+    const h = localStorage.getItem('flora_history');
+    if (p) gardenProfile = JSON.parse(p);
+    if (h) conversationHistory = JSON.parse(h);
+    return conversationHistory.length > 0;
+  } catch (e) { return false; }
+}
+
+function resetState() {
+  gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
+  conversationHistory = [];
+  shownLinks.clear();
+  localStorage.removeItem('flora_profile');
+  localStorage.removeItem('flora_history');
+}
+
+// Elements
+const welcome = document.getElementById('welcome');
+const startBtn = document.getElementById('startBtn');
+const chatContainer = document.getElementById('chatContainer');
+const messagesEl = document.getElementById('messages');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const quickReplies = document.getElementById('quickReplies');
+const headerSnapBtn = document.getElementById('headerSnapBtn');
+const photoBtn = document.getElementById('photoBtn');
+const photoInput = document.getElementById('photoInput');
+const photoPreview = document.getElementById('photoPreview');
+const previewImg = document.getElementById('previewImg');
+const previewRemove = document.getElementById('previewRemove');
+
+let pendingImage = null; // { base64, mediaType }
+
+// Start chat
+startBtn.addEventListener('click', () => {
+  welcome.style.display = 'none';
+  chatContainer.classList.add('active');
+  headerSnapBtn.classList.add('visible');
+  sendFloraOpener();
+});
+
+// Reset / new conversation
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Start a fresh conversation? Flora will forget everything about your garden.')) return;
+  resetState();
+  messagesEl.innerHTML = '';
+  quickReplies.innerHTML = '';
+  chatContainer.classList.remove('active');
+  headerSnapBtn.classList.remove('visible');
+  welcome.style.display = '';
+});
+
+// Restore previous session
+try {
+  if (loadState()) {
+    welcome.style.display = 'none';
+    chatContainer.classList.add('active');
+    headerSnapBtn.classList.add('visible');
+    conversationHistory.forEach(msg => {
+      if (msg.hidden || msg.content.startsWith('Hi! I just opened the app')) return;
+      let displayText;
+      if (Array.isArray(msg.content)) {
+        displayText = msg.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
+      } else {
+        displayText = msg.content;
+      }
+      if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user');
+    });
+    scrollToBottom();
+  }
+} catch (e) {
+  console.error('Restore failed:', e);
+  resetState();
+}
+
+// Auto-resize textarea
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+});
+
+// Photo handling
+photoBtn.addEventListener('click', () => photoInput.click());
+
+const plantIdInput = document.getElementById('plantIdInput');
+const plantIdWelcomeBtn = document.getElementById('plantIdWelcomeBtn');
+const previewIdentify = document.getElementById('previewIdentify');
+
+headerSnapBtn.addEventListener('click', () => {
+  plantIdInput.click();
+});
+
+plantIdWelcomeBtn.addEventListener('click', () => {
+  welcome.style.display = 'none';
+  chatContainer.classList.add('active');
+  headerSnapBtn.classList.add('visible');
+  // Don't send opener - go straight to camera. Flora will introduce herself in the ID response.
+  plantIdInput.click();
+});
+
+plantIdInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const maxDim = 1024;
+    let w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else { w = Math.round(w * maxDim / h); h = maxDim; }
+    }
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    const base64 = dataUrl.split(',')[1];
+    // Immediately send with plant ID intent
+    pendingImage = { base64, mediaType: 'image/jpeg' };
+    const imgHtml = `<img src="${dataUrl}">`;
+    addBubble(imgHtml + 'What is this?', 'user', true);
+    const isFirstMsg = conversationHistory.length === 0;
+    const idText = isFirstMsg
+      ? 'This is my first time using the app. Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info. Introduce yourself briefly too!'
+      : 'Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info about it.';
+    const content = [
+      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
+      { type: 'text', text: idText }
+    ];
+    pendingImage = null;
+    conversationHistory.push({ role: 'user', content });
+    callFlora();
+  };
+  img.src = URL.createObjectURL(file);
+  plantIdInput.value = '';
+});
+
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Resize image to keep API payload manageable
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const maxDim = 1024;
+    let w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else { w = Math.round(w * maxDim / h); h = maxDim; }
+    }
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    const base64 = dataUrl.split(',')[1];
+    pendingImage = { base64, mediaType: 'image/jpeg' };
+    previewImg.src = dataUrl;
+    photoPreview.classList.remove('hidden');
+    userInput.placeholder = 'Add a message about this photo...';
+    userInput.focus();
+  };
+  img.src = URL.createObjectURL(file);
+  photoInput.value = '';
+});
+
+previewRemove.addEventListener('click', () => {
+  pendingImage = null;
+  photoPreview.classList.add('hidden');
+  userInput.placeholder = 'Type your message...';
+});
+
+previewIdentify.addEventListener('click', () => {
+  if (!pendingImage || isGenerating) return;
+  const dataUrl = `data:${pendingImage.mediaType};base64,${pendingImage.base64}`;
+  addBubble(`<img src="${dataUrl}">What is this?`, 'user', true);
+  const content = [
+    { type: 'image', source: { type: 'base64', media_type: pendingImage.mediaType, data: pendingImage.base64 } },
+    { type: 'text', text: 'Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info about it.' }
+  ];
+  pendingImage = null;
+  photoPreview.classList.add('hidden');
+  userInput.placeholder = 'Type your message...';
+  conversationHistory.push({ role: 'user', content });
+  callFlora();
+});
+
+// Send message
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+function sendMessage(text) {
+  const msg = (typeof text === 'string' && text) ? text : userInput.value.trim();
+  if ((!msg && !pendingImage) || isGenerating) return;
+
+  // Clear quick replies
+  quickReplies.innerHTML = '';
+
+  // Build display bubble
+  if (pendingImage) {
+    const imgHtml = `<img src="data:${pendingImage.mediaType};base64,${pendingImage.base64}">`;
+    addBubble(imgHtml + (msg || ''), 'user', true);
+  } else {
+    addBubble(msg, 'user');
+  }
+
+  // Build API content
+  let content;
+  if (pendingImage) {
+    content = [];
+    content.push({
+      type: 'image',
+      source: { type: 'base64', media_type: pendingImage.mediaType, data: pendingImage.base64 }
+    });
+    content.push({ type: 'text', text: msg || 'What can you tell me about this?' });
+  } else {
+    content = msg;
+  }
+
+  userInput.value = '';
+  userInput.style.height = 'auto';
+  userInput.placeholder = 'Type your message...';
+  pendingImage = null;
+  photoPreview.classList.add('hidden');
+
+  conversationHistory.push({ role: 'user', content });
+
+  // Taster mode: count messages and nudge Flora to wrap up at the limit
+  if (accessMode === 'taster') {
+    tasterMessageCount++;
+    if (tasterMessageCount === TASTER_LIMIT) {
+      // Inject a system-level nudge into the last user message so Flora
+      // wraps things up in character without the user seeing an instruction.
+      const lastMsg = conversationHistory[conversationHistory.length - 1];
+      const nudge = "\n\n[This is the user's 10th message in a brief taster session. Respond normally to what they just said, then warmly wrap the conversation up in your own voice. Say something like: you've loved chatting, you'd love to keep going properly, would they like to pop their email in and you'll sort them out a proper key. Keep it natural, warm, and short. Do not mention that this is a taster or that there is a limit.]";
+      if (typeof lastMsg.content === 'string') {
+        lastMsg.content = lastMsg.content + nudge;
+      } else if (Array.isArray(lastMsg.content)) {
+        const textBlock = lastMsg.content.find(b => b.type === 'text');
+        if (textBlock) textBlock.text = textBlock.text + nudge;
+      }
+    }
+  }
+
+  callFlora();
+}
+
+function sendFloraOpener() {
+  conversationHistory = [];
+  callFlora(true);
+}
+
+async function callFlora(isOpener = false) {
+  isGenerating = true;
+  sendBtn.disabled = true;
+
+  // Show typing
+  const typingEl = document.createElement('div');
+  typingEl.className = 'typing';
+  typingEl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  messagesEl.appendChild(typingEl);
+  scrollToBottom();
+
+  const messages = isOpener
+    ? [{ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.' }]
+    : conversationHistory;
+
+  const lastUserContent = isOpener ? '' :
+    (conversationHistory.filter(m => m.role === 'user').pop()?.content || '');
+  const userText = typeof lastUserContent === 'string' ? lastUserContent : 
+    (Array.isArray(lastUserContent) ? lastUserContent.filter(b => b.type === 'text').map(b => b.text).join(' ') : '');
+  const wantsDetail = /tell me everything|in detail|explain fully|go into detail|more detail|full guide|step by step|walk me through|talk me through|comprehensive|thorough|how do i|how do you|how to|how should i/i.test(userText);
+  const hasImage = Array.isArray(lastUserContent) && lastUserContent.some(b => b.type === 'image');
+  const tokenLimit = wantsDetail ? 600 : hasImage ? 400 : 300;
+
+  try {
+    const resp = await fetch('https://flora-api.viralto.workers.dev/chat', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: tokenLimit,
+        system: buildSystemPrompt(),
+        messages: messages.map(m => ({ role: m.role, content: m.content }))
+      })
+    });
+
+    const data = await resp.json();
+
+    // Access expired or invalid - redirect to landing
+    if (resp.status === 401) {
+      window.location.href = LANDING_URL;
+      return;
+    }
+
+    if (data.error) {
+      typingEl.remove();
+      addBubble('Sorry, I seem to be having a moment! (' + (data.error.message || data.error.type || 'unknown error') + ')', 'flora');
+      console.error('API error:', data.error);
+      console.error('System prompt length:', buildSystemPrompt().length);
+      isGenerating = false;
+      sendBtn.disabled = false;
+      return;
+    }
+
+    const reply = data.content.map(c => c.text || '').join('');
+
+    // If opener, also push the synthetic user message to history
+    if (isOpener) {
+      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.', hidden: true });
+    }
+
+    // Parse JSON response - handle model sometimes outputting text before JSON
+    let floraMsg = reply;
+    let qrOptions = [];
+    let plantLinks = [];
+    
+    function tryParseFlora(str) {
+      try {
+        const p = JSON.parse(str);
+        if (p.message) return p;
+      } catch (e) {}
+      return null;
+    }
+    
+    // Try 1: direct parse
+    let parsed = tryParseFlora(reply.replace(/```json|```/g, '').trim());
+    
+    // Try 2: find last { that starts a JSON block with "message"
+    if (!parsed) {
+      let lastIdx = reply.lastIndexOf('{"message"');
+      if (lastIdx === -1) lastIdx = reply.lastIndexOf('{ "message"');
+      if (lastIdx >= 0) {
+        parsed = tryParseFlora(reply.slice(lastIdx));
+      }
+    }
+    
+    // Try 3: regex for any JSON object with message key
+    if (!parsed) {
+      const matches = reply.match(/\{[^{}]*"message"\s*:\s*"[^"]*"[^{}]*\}/g);
+      if (matches) parsed = tryParseFlora(matches[matches.length - 1]);
+    }
+    
+    if (parsed) {
+      floraMsg = parsed.message;
+      qrOptions = parsed.quickReplies || [];
+      plantLinks = (parsed.plants || []).filter(p => typeof p === 'string');
+    } else {
+      // Strip any trailing JSON fragment if model ran out of tokens
+      floraMsg = reply.replace(/\s*\{\s*"message"[\s\S]*$/, '').trim() || reply;
+    }
+
+    conversationHistory.push({ role: 'assistant', content: floraMsg });
+
+    // Update garden profile from this exchange
+    const lastUserMsg = conversationHistory.filter(m => m.role === 'user').pop();
+    if (lastUserMsg) updateProfile(lastUserMsg.content, floraMsg);
+
+    // Persist
+    saveState();
+
+    typingEl.remove();
+    addBubble(floraMsg, 'flora');
+
+    // Show plant image links
+    let linksShown = false;
+    
+    // If model didn't provide links, try to extract from user's request
+    if (plantLinks.length === 0 && !isOpener) {
+      const autoLinks = extractImageRequest(userText, floraMsg);
+      if (autoLinks.length > 0) plantLinks = autoLinks;
+    }
+    
+    if (plantLinks.length > 0) {
+      const newLinks = plantLinks.filter(l => typeof l === 'string' && l.length > 0 && !shownLinks.has(l.toLowerCase()));
+      if (newLinks.length > 0) {
+        newLinks.forEach(l => shownLinks.add(l.toLowerCase()));
+        showPlantLinks(newLinks);
+        linksShown = true;
+      }
+    }
+
+    // Show contextual quick replies - from model or auto-detected (not alongside image links)
+    if (!linksShown) {
+      if (qrOptions.length > 0) {
+        showQuickReplies(qrOptions);
+      } else {
+        const autoOptions = extractChoices(floraMsg);
+        if (autoOptions.length > 0) {
+          showQuickReplies(autoOptions);
+        }
+      }
+    }
+
+    // Taster: after Flora wraps up on message 10, swap the input for a key request form
+    if (accessMode === 'taster' && tasterMessageCount >= TASTER_LIMIT && !tasterWrapUpShown) {
+      tasterWrapUpShown = true;
+      // Small delay so the user reads Flora's message first
+      setTimeout(() => showTasterWrapUp(), 600);
+    }
+
+  } catch (err) {
+    typingEl.remove();
+    addBubble('Hmm, I can\'t seem to connect. (' + err.message + ')', 'flora');
+    console.error(err);
+  }
+
+  isGenerating = false;
+  sendBtn.disabled = false;
+
+  // Taster wrap-up: after Flora's response to the 10th message, swap input for email form
+  if (accessMode === 'taster' && tasterMessageCount >= TASTER_LIMIT) {
+    setTimeout(() => showTasterWrapUp(), 800);
+  }
+}
+
+function addBubble(text, who, isHtml = false) {
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `message ${who}`;
+
+  if (who === 'flora') {
+    const avatar = document.createElement('div');
+    avatar.className = 'flora-avatar';
+    avatar.innerHTML = '<img src="flora.png" alt="Flora">';
+    msgDiv.appendChild(avatar);
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (isHtml) {
+    bubble.innerHTML = text;
+  } else {
+    bubble.textContent = text;
+  }
+
+  msgDiv.appendChild(bubble);
+  messagesEl.appendChild(msgDiv);
+  scrollToBottom();
+}
+
+function showPlantLinks(plants) {
+  const container = document.createElement('div');
+  container.className = 'plant-links';
+  plants.forEach(name => {
+    const link = document.createElement('a');
+    link.className = 'plant-link';
+    link.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name)}`;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = '🔎 ' + name;
+    container.appendChild(link);
+  });
+  messagesEl.appendChild(container);
+  scrollToBottom();
+}
+
+function extractImageRequest(userText, floraText) {
+  if (!userText) return [];
+  const lower = userText.toLowerCase();
+  
+  // Check if this is an image request
+  const isImageRequest = /show me|can i see|can you show|what does .+ look like|what do .+ look like|picture of|photo of|got a photo|got a picture|image of|see what .+ look/i.test(lower);
+  if (!isImageRequest) return [];
+  
+  // Try to extract the subject from user's message
+  const patterns = [
+    /show me (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /can (?:i|you) (?:see|show)(?: me)? (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /what (?:does|do) (?:a |an |the )?(.{3,35}?) look like/i,
+    /(?:picture|photo|image) of (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /see what (?:a |an |the )?(.{3,35}?) look/i
+  ];
+  
+  for (const p of patterns) {
+    const match = userText.match(p);
+    if (match && match[1] && match[1].trim().length > 2) {
+      let subject = match[1].trim().replace(/[?.!,]+$/, '');
+      if (subject.length > 2 && subject.length < 40) {
+        return [subject.charAt(0).toUpperCase() + subject.slice(1)];
+      }
+    }
+  }
+  
+  // User asked vaguely ("show me", "can I see them") - extract from Flora's response
+  if (floraText) {
+    // Look for capitalised plant/item names or quoted names in Flora's text
+    const nameMatches = floraText.match(/\b([A-Z][a-z]+(?:\s+[a-z]+)?)\b/g);
+    if (nameMatches) {
+      const skipWords = new Set(['The','This','That','These','Those','They','There','Here','What','When','Where','How','Does','Also','Just','Right','Well','Good','Nice','Both','Your','Have','Want','Some','Sure','Tap','Let','Can','Are','For','And','But','Not']);
+      const items = nameMatches
+        .filter(n => !skipWords.has(n) && n.length > 2)
+        .slice(0, 3);
+      if (items.length > 0) return items;
+    }
+  }
+  
+  return [];
+}
+
+function extractChoices(text) {
+  // Find the last question in the message
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const lastQ = [...sentences].reverse().find(s => s.trim().endsWith('?'));
+  if (!lastQ) return [];
+
+  // Skip open-ended questions - these aren't real either/or choices
+  if (/^(what are you|what do you|what's your|what have you|how do|how are|where do|where are|why do|why are|when do|when did|tell me|can you tell|what kind of|what sort of|what type of)/i.test(lastQ.trim())) return [];
+
+  // Look for "X or Y?" pattern
+  const orMatch = lastQ.match(/\b(.{2,30}?)\s+or\s+(.{2,30}?)\?$/i);
+  if (!orMatch) return [];
+
+  let optA = orMatch[1].trim();
+  let optB = orMatch[2].trim();
+
+  // Clean up button text
+  function cleanOption(o) {
+    o = o.trim();
+    o = o.replace(/^(you have |you've got |do you have |you're |you |your |my |i have |i've got |it's |they're |there's |there are |have you got )/i, '');
+    o = o.replace(/^(a |an |the |just |more |some |to |any |about )/i, '');
+    o = o.charAt(0).toUpperCase() + o.slice(1);
+    return o;
+  }
+
+  optA = cleanOption(optA);
+  optB = cleanOption(optB);
+
+  // Check for comma-separated list: "X, Y, or Z?"
+  const commaMatch = lastQ.match(/\b(.{2,30}?),\s+(.{2,30}?),?\s+or\s+(.{2,30}?)\?$/i);
+  if (commaMatch) {
+    let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(cleanOption);
+    // Skip if options look like verbs/actions rather than concrete choices
+    if (opts.some(o => /^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(o))) return [];
+    if (opts.every(o => o.length <= 25)) return opts;
+  }
+
+  // Skip if options look like verbs rather than nouns
+  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optA)) return [];
+  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optB)) return [];
+
+  // Only return if options are reasonable length for buttons
+  if (optA.length > 25 || optB.length > 25) return [];
+  return [optA, optB];
+}
+
+function showQuickReplies(options) {
+  quickReplies.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-reply-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => {
+      quickReplies.innerHTML = '';
+      sendMessage(opt);
+    });
+    quickReplies.appendChild(btn);
+  });
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  });
+}
+
+// ─── Access check on load ───
+async function checkAccess() {
+  try {
+    const resp = await fetch(`${WORKER_URL}/check-access`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    const data = await resp.json();
+    if (data.ok && data.mode) return data.mode;
+    return 'none';
+  } catch (e) {
+    // Network error - treat as no access rather than silently proceeding
+    return 'none';
+  }
+}
+
+// ─── Taster wrap-up ───
+function showTasterWrapUp() {
+  // Replace the input bar with a simple email capture form
+  const inputBar = document.querySelector('.input-bar');
+  if (!inputBar) return;
+
+  inputBar.innerHTML = `
+    <form id="tasterForm" class="taster-form">
+      <input type="text" id="tasterName" placeholder="Your name" required>
+      <input type="email" id="tasterEmail" placeholder="Your email" required>
+      <button type="submit" class="taster-submit">Send</button>
+    </form>
+  `;
+
+  const tasterForm = document.getElementById('tasterForm');
+  tasterForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('tasterName').value.trim();
+    const email = document.getElementById('tasterEmail').value.trim();
+    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+
+    const subject = encodeURIComponent('Beta key request for Ask Flora');
+    const bodyText = `Hi Tim,
+
+I'd love a beta key for Ask Flora. I just had a chat with her and want to keep going.
+
+Name: ${name}
+Email: ${email}
+
+Thanks!`;
+    const mailtoUrl = `mailto:hello@askflora.co.uk?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
+    window.location.href = mailtoUrl;
+
+    // Replace form with thank-you message
+    setTimeout(() => {
+      inputBar.innerHTML = `
+        <div class="taster-thanks">Lovely. I'll be in touch soon with your key.</div>
+      `;
+    }, 400);
+  });
+}
+
+// ─── Init ───
+(async function init() {
+  accessMode = await checkAccess();
+  if (accessMode === 'none') {
+    window.location.href = LANDING_URL;
+    return;
+  }
+
+  // Taster users come straight from the landing page ready to chat.
+  // Skip the welcome screen and kick Flora off automatically.
+  if (accessMode === 'taster' && conversationHistory.length === 0) {
+    welcome.style.display = 'none';
+    chatContainer.classList.add('active');
+    headerSnapBtn.classList.add('visible');
+    sendFloraOpener();
+  }
+
+  // Reveal the page now that we know what state to show
+  const loader = document.getElementById('accessLoader');
+  if (loader) loader.style.display = 'none';
+})();
+</script>
+</body>
+</html>
