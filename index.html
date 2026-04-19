@@ -1307,7 +1307,7 @@ footer {
         <p id="successLead" style="margin-bottom:16px;">Welcome aboard, <span id="successName"></span>. Your key is yours alone, please don't share it, each one only works for one person.</p>
         <div class="key-display" id="keyDisplay"></div>
         <p id="successRemaining" style="margin-top:16px; font-size:14px; color:var(--text-light);"></p>
-        <a href="/chat" class="btn btn-primary" id="enterChatBtn" style="width:100%; justify-content:center; margin-top:16px;">Open Ask Flora</a>
+        <button class="btn btn-primary" id="enterChatBtn" style="width:100%; justify-content:center; margin-top:16px;">Open Ask Flora</button>
       </div>
     </div>
     <div id="requestQueuedView" style="display:none;">
@@ -1487,6 +1487,13 @@ function showSuccessView(data) {
   } else {
     remainingEl.textContent = '';
   }
+
+  // Wire up the enter button. The Worker already set the access cookie
+  // when it auto-issued the key, so we just need to redirect.
+  const enterBtn = document.getElementById('enterChatBtn');
+  enterBtn.onclick = () => {
+    window.location.href = CHAT_URL;
+  };
 
   requestFormView.style.display = 'none';
   requestQueuedView.style.display = 'none';

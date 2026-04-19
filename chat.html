@@ -1643,17 +1643,9 @@ function showTasterWrapUp() {
             <button type="button" class="taster-submit" id="enterChatBtn">Carry on chatting</button>
           </div>
         `;
-        document.getElementById('enterChatBtn').addEventListener('click', async () => {
-          // Validate the key server-side to set the access cookie
-          try {
-            await fetch(`${WORKER_URL}/validate-key`, {
-              method: 'POST',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ key: data.key })
-            });
-          } catch {}
-          // Full reload so the chat app picks up the new access cookie
+        document.getElementById('enterChatBtn').addEventListener('click', () => {
+          // The Worker already set the access cookie when auto-issuing.
+          // Full reload so the chat app picks up the new access cookie.
           window.location.reload();
         });
       } else if (data.ok && data.queued) {
