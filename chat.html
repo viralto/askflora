@@ -1137,7 +1137,7 @@ function handlePickedPhoto(e) {
     pendingImage = { base64, mediaType: 'image/jpeg' };
     previewImg.src = dataUrl;
     photoPreview.classList.remove('hidden');
-    userInput.placeholder = 'Add a message about this photo...';
+    userInput.placeholder = 'Add a message...';
     userInput.focus();
   };
   img.src = URL.createObjectURL(file);
