@@ -964,6 +964,12 @@ startBtn.addEventListener('click', () => {
 
 // Reset / new conversation
 document.getElementById('resetBtn').addEventListener('click', () => {
+  // Taster users can't really "start fresh" - they share a single 10-message allowance.
+  // Send them back to the landing page instead.
+  if (accessMode === 'taster') {
+    window.location.href = LANDING_URL;
+    return;
+  }
   if (!confirm('Start a fresh conversation? Flora will forget everything about your garden.')) return;
   resetState();
   messagesEl.innerHTML = '';
@@ -1221,6 +1227,18 @@ async function callFlora(isOpener = false) {
     // Access expired or invalid - redirect to landing
     if (resp.status === 401) {
       window.location.href = LANDING_URL;
+      return;
+    }
+
+    // Taster limit reached - trigger the wrap-up form directly
+    if (resp.status === 402) {
+      typingEl.remove();
+      isGenerating = false;
+      sendBtn.disabled = false;
+      if (!tasterWrapUpShown) {
+        tasterWrapUpShown = true;
+        showTasterWrapUp();
+      }
       return;
     }
 
@@ -1532,30 +1550,40 @@ function showTasterWrapUp() {
   }, 50);
 
   const tasterForm = document.getElementById('tasterForm');
-  tasterForm.addEventListener('submit', (e) => {
+  tasterForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('tasterName').value.trim();
     const email = document.getElementById('tasterEmail').value.trim();
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
 
-    const subject = encodeURIComponent('Beta key request for Ask Flora');
-    const bodyText = `Hi Tim,
+    const submitBtn = tasterForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
 
-I'd love a beta key for Ask Flora. I just had a chat with her and want to keep going.
+    try {
+      const resp = await fetch(`${WORKER_URL}/request-key`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, source: 'taster' })
+      });
+      const data = await resp.json();
 
-Name: ${name}
-Email: ${email}
-
-Thanks!`;
-    const mailtoUrl = `mailto:hello@askflora.co.uk?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
-    window.location.href = mailtoUrl;
-
-    // Replace form with thank-you message
-    setTimeout(() => {
-      inputBar.innerHTML = `
-        <div class="taster-thanks">Lovely. I'll be in touch soon with your key.</div>
-      `;
-    }, 400);
+      if (data.ok) {
+        inputBar.innerHTML = `
+          <div class="taster-thanks">Lovely. I've got your details and I'll send your key over shortly.</div>
+        `;
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        alert(data.error || 'Something went wrong. Try again.');
+      }
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+      alert("Couldn't reach Flora. Check your connection and try again.");
+    }
   });
 }
 
