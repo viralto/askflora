@@ -887,7 +887,7 @@ let isGenerating = false;
 const shownLinks = new Set();
 
 // ─── Access control ───
-const WORKER_URL = 'https://flora-api.viralto.workers.dev';
+const WORKER_URL = 'https://askflora.co.uk/api';
 const LANDING_URL = '/';
 const TASTER_LIMIT = 10;
 let accessMode = 'none'; // 'full' | 'taster' | 'none'
@@ -1195,7 +1195,7 @@ async function callFlora(isOpener = false) {
   const tokenLimit = wantsDetail ? 600 : hasImage ? 400 : 300;
 
   try {
-    const resp = await fetch('https://flora-api.viralto.workers.dev/chat', {
+    const resp = await fetch('https://askflora.co.uk/api/chat', {
       method: 'POST',
       credentials: 'include',
       headers: {
