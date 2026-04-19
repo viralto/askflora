@@ -606,81 +606,6 @@ section {
 .memory-note.n2 { top: 60px; right: 10px; transform: rotate(2deg); background: var(--warm-cream); }
 .memory-note.n3 { top: 150px; left: 40px; transform: rotate(-1.5deg); }
 
-/* ─── Beta access section ─── */
-.beta {
-  padding: 60px 0 100px;
-}
-@media (max-width: 600px) {
-  .beta { padding: 32px 0 56px; }
-}
-.beta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-}
-@media (max-width: 860px) {
-  .beta-grid { grid-template-columns: 1fr; }
-}
-
-.beta-card {
-  background: var(--white);
-  border-radius: 24px;
-  padding: 36px 32px;
-  border: 1px solid rgba(168, 196, 162, 0.3);
-  box-shadow: var(--shadow-soft);
-  display: flex;
-  flex-direction: column;
-}
-@media (max-width: 600px) {
-  .beta-card { padding: 28px 22px; border-radius: 20px; }
-  .beta-card h3 { font-size: 24px; }
-}
-.beta-card.primary {
-  background: var(--green-deep);
-  color: var(--white);
-  border-color: var(--green-deep);
-}
-.beta-card-eyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--green-mid);
-  margin-bottom: 12px;
-}
-.beta-card.primary .beta-card-eyebrow { color: var(--green-pale); }
-
-.beta-card h3 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 28px;
-  color: var(--green-deep);
-  line-height: 1.2;
-  margin-bottom: 14px;
-  letter-spacing: -0.2px;
-}
-.beta-card.primary h3 { color: var(--white); }
-
-.beta-card p {
-  font-size: 16px;
-  color: var(--text-mid);
-  line-height: 1.55;
-  margin-bottom: 24px;
-  flex: 1;
-}
-.beta-card.primary p { color: var(--green-lightest); }
-
-.beta-card .btn { width: 100%; justify-content: center; }
-.beta-card.primary .btn-primary {
-  background: var(--white);
-  color: var(--green-deep);
-  border-color: var(--white);
-}
-.beta-card.primary .btn-primary:hover {
-  background: var(--green-lightest);
-  border-color: var(--green-lightest);
-}
-
 /* Beta key form */
 .key-form {
   display: flex;
@@ -1037,7 +962,7 @@ footer {
     </a>
     <div class="nav-links">
       <a href="#chats" class="nav-link">See her in action</a>
-      <a href="#beta" class="nav-link nav-key-link">About the beta</a>
+      <a href="#" class="nav-link nav-key-link" id="navKeyBtn">Get a key</a>
     </div>
   </div>
 </nav>
@@ -1194,50 +1119,6 @@ footer {
   </div>
 </section>
 
-<!-- Beta access -->
-<section class="beta" id="beta">
-  <div class="container">
-    <div style="text-align:center; max-width:620px; margin: 0 auto 40px;" class="reveal">
-      <div class="section-kicker">The beta</div>
-      <h3 class="section-heading">She's still settling in.</h3>
-      <p class="section-sub" style="margin-top: 14px;">Flora's in closed beta while we teach her the ropes. We're letting people in slowly, a handful at a time, so we can actually listen to what's working.</p>
-    </div>
-
-    <div class="beta-grid">
-      <!-- Request -->
-      <div class="beta-card primary reveal" id="request">
-        <div class="beta-card-eyebrow">Don't have one yet?</div>
-        <h3>Request a beta key</h3>
-        <p>Tell us a bit about what you grow and we'll send a key over. No waiting lists that swallow your email forever. Promise.</p>
-        <button class="btn btn-primary" id="requestBtn">Join the Beta Crew</button>
-      </div>
-
-      <!-- Redeem -->
-      <div class="beta-card reveal" id="key">
-        <div class="beta-card-eyebrow">Already got a key?</div>
-        <h3>Pop it in here.</h3>
-        <p>Enter the beta key from your invite email to unlock Flora. They look like <code style="background:var(--cream-dark);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px;color:var(--brown-dark);">FLORA-XXXX-XXXX</code>.</p>
-        <form class="key-form" id="keyForm" novalidate>
-          <div class="key-input-wrap">
-            <input
-              type="text"
-              id="keyInput"
-              class="key-input"
-              placeholder="FLORA-XXXX-XXXX"
-              autocomplete="off"
-              spellcheck="false"
-              maxlength="15"
-              aria-label="Beta key"
-            >
-          </div>
-          <div class="key-feedback" id="keyFeedback">We'll match it against your invite.</div>
-          <button type="submit" class="btn btn-submit" id="keySubmit">Unlock Flora</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- What she is / isn't -->
 <section class="honest">
   <div class="container">
@@ -1274,9 +1155,8 @@ footer {
     <div class="footer-sprig">Put the kettle on. Let's talk gardens.</div>
     <div class="footer-meta">
       <span>askflora.co.uk</span>
-      <a href="#beta">Beta</a>
       <a href="mailto:hello@askflora.co.uk">hello@askflora.co.uk</a>
-      <a href="#key" id="specialKeyLink">I have a special key</a>
+      <a href="#" id="specialKeyLink">I have a special key</a>
     </div>
   </div>
 </footer>
@@ -1322,6 +1202,31 @@ footer {
         <p style="margin-bottom:0;">I've got your details and I'll be in touch when the next batch opens. In the meantime, don't prune anything you can't un-prune.</p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Key entry modal -->
+<div class="modal-overlay" id="keyModal" role="dialog" aria-modal="true" aria-labelledby="keyModalTitle">
+  <div class="modal">
+    <button class="modal-close" id="keyModalClose" aria-label="Close">✕</button>
+    <h3 id="keyModalTitle">Pop your key in.</h3>
+    <p>Enter the beta key from your invite email to unlock Flora. They look like <code style="background:var(--cream-dark);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px;color:var(--brown-dark);">FLORA-XXXX-XXXX</code>.</p>
+    <form class="key-form" id="keyForm" novalidate style="margin-top:8px;">
+      <div class="key-input-wrap">
+        <input
+          type="text"
+          id="keyInput"
+          class="key-input"
+          placeholder="FLORA-XXXX-XXXX"
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="15"
+          aria-label="Beta key"
+        >
+      </div>
+      <div class="key-feedback" id="keyFeedback">We'll match it against your invite.</div>
+      <button type="submit" class="btn btn-primary" id="keySubmit" style="width:100%; justify-content:center; margin-top:6px;">Unlock Flora</button>
+    </form>
   </div>
 </div>
 
@@ -1456,7 +1361,6 @@ function showTasterUsedMessage() {
 
 // ─── Request modal (auto-issue with Turnstile) ───
 const modal = document.getElementById('requestModal');
-const requestBtn = document.getElementById('requestBtn');
 const modalClose = document.getElementById('modalClose');
 const requestForm = document.getElementById('requestForm');
 const requestFormView = document.getElementById('requestFormView');
@@ -1477,9 +1381,7 @@ function openModal() {
 }
 function closeModal() { modal.classList.remove('open'); }
 
-requestBtn.addEventListener('click', openModal);
-
-// The big hero CTA also opens the same modal
+// The big hero CTA opens the request modal
 const heroRequestBtn = document.getElementById('heroRequestBtn');
 if (heroRequestBtn) heroRequestBtn.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
@@ -1591,15 +1493,40 @@ async function loadBetaStatus() {
 }
 loadBetaStatus();
 
-// Handle the nav "Got a key?": smoothly scroll + focus
-document.querySelectorAll('a[href="#key"]').forEach(link => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    document.getElementById('key').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setTimeout(() => keyInput.focus({ preventScroll: true }), 600);
-  });
+// ─── Key entry modal ───
+const keyModal = document.getElementById('keyModal');
+const keyModalClose = document.getElementById('keyModalClose');
+
+function openKeyModal() {
+  keyModal.classList.add('open');
+  // Clear any stale state from a previous attempt
+  keyInput.value = '';
+  keyInput.classList.remove('error', 'success');
+  keyFeedback.classList.remove('error', 'success');
+  keyFeedback.textContent = "We'll match it against your invite.";
+  keySubmit.disabled = false;
+  keySubmit.textContent = 'Unlock Flora';
+  setTimeout(() => keyInput.focus(), 250);
+}
+function closeKeyModal() { keyModal.classList.remove('open'); }
+
+// Footer "I have a special key" and nav "Get a key" both open the key modal
+document.getElementById('specialKeyLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  openKeyModal();
+});
+document.getElementById('navKeyBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  openKeyModal();
 });
 
+keyModalClose.addEventListener('click', closeKeyModal);
+keyModal.addEventListener('click', (e) => { if (e.target === keyModal) closeKeyModal(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && keyModal.classList.contains('open')) closeKeyModal();
+});
+
+// Taster-exhausted message still uses #request to open the join modal
 document.querySelectorAll('a[href="#request"]').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -1640,6 +1567,9 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       heroRequestBtn.parentNode.replaceChild(newHero, heroRequestBtn);
       newHero.addEventListener('click', goToChat);
       tasterBtn.style.display = 'none';
+      // Members don't need the "Get a key" nav button either
+      const navKey = document.getElementById('navKeyBtn');
+      if (navKey) navKey.style.display = 'none';
     } else if (data.ok && data.mode === 'taster' && typeof data.remaining === 'number' && data.remaining > 0) {
       // Mid-taster: primary becomes "Continue chatting". Convert the "Say hello"
       // button into an upgrade nudge so they can join the Beta Crew properly.
