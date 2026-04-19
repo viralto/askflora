@@ -266,6 +266,11 @@ nav {
   border-color: var(--green-mid);
 }
 
+.btn-large {
+  font-size: 18px;
+  padding: 18px 34px;
+}
+
 .hero-note {
   font-size: 14px;
   color: var(--text-light);
@@ -1048,9 +1053,8 @@ footer {
     <p class="hero-sub">I'm Flora. Think of me as the gardening pal who's always got dirt under their fingernails. The one you ring about the moles on the lawn, the wilting monstera, the basil on the windowsill that's given up. Whether you've got an allotment, a balcony or three pots by the back door, I learn your set-up so the advice actually fits.</p>
 
     <div class="hero-cta-row">
-      <button type="button" class="btn btn-primary" id="tasterBtn">Say hello to Flora</button>
-      <a href="#key" class="btn btn-secondary">I've got a beta key</a>
-      <a href="#request" class="btn btn-secondary">Join the Beta Crew</a>
+      <button type="button" class="btn btn-primary btn-large" id="heroRequestBtn">Join the Beta Crew</button>
+      <button type="button" class="btn btn-secondary" id="tasterBtn">Say hello to Flora first</button>
     </div>
     <p class="hero-note">askflora.co.uk · made in the UK, for British growers</p>
   </div>
@@ -1272,6 +1276,7 @@ footer {
       <span>askflora.co.uk</span>
       <a href="#beta">Beta</a>
       <a href="mailto:hello@askflora.co.uk">hello@askflora.co.uk</a>
+      <a href="#key" id="specialKeyLink">I have a special key</a>
     </div>
   </div>
 </footer>
@@ -1473,6 +1478,10 @@ function openModal() {
 function closeModal() { modal.classList.remove('open'); }
 
 requestBtn.addEventListener('click', openModal);
+
+// The big hero CTA also opens the same modal
+const heroRequestBtn = document.getElementById('heroRequestBtn');
+if (heroRequestBtn) heroRequestBtn.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
