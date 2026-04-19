@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -979,6 +980,27 @@ footer {
   margin-bottom: 12px;
 }
 
+.key-display {
+  background: var(--green-lightest);
+  border: 2px dashed var(--green-pale);
+  border-radius: 14px;
+  padding: 16px 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--green-deep);
+  user-select: all;
+  cursor: text;
+  word-break: break-all;
+}
+
+.cf-turnstile {
+  margin: 4px 0;
+  display: flex;
+  justify-content: center;
+}
+
 /* Reveal on scroll */
 .reveal {
   opacity: 0;
@@ -1028,7 +1050,7 @@ footer {
     <div class="hero-cta-row">
       <button type="button" class="btn btn-primary" id="tasterBtn">Say hello to Flora</button>
       <a href="#key" class="btn btn-secondary">I've got a beta key</a>
-      <a href="#request" class="btn btn-secondary">Request one</a>
+      <a href="#request" class="btn btn-secondary">Join the Beta Crew</a>
     </div>
     <p class="hero-note">askflora.co.uk · made in the UK, for British growers</p>
   </div>
@@ -1183,7 +1205,7 @@ footer {
         <div class="beta-card-eyebrow">Don't have one yet?</div>
         <h3>Request a beta key</h3>
         <p>Tell us a bit about what you grow and we'll send a key over. No waiting lists that swallow your email forever. Promise.</p>
-        <button class="btn btn-primary" id="requestBtn">Request a beta key →</button>
+        <button class="btn btn-primary" id="requestBtn">Join the Beta Crew</button>
       </div>
 
       <!-- Redeem -->
@@ -1259,29 +1281,40 @@ footer {
   <div class="modal">
     <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
     <div id="requestFormView">
-      <h3 id="requestTitle">Request a beta key</h3>
-      <p>No spam, no drip campaigns. Just a key in your inbox and the occasional note from me when it genuinely matters.</p>
+      <h3 id="requestTitle">Join Flora's Beta Crew</h3>
+      <p>Pop your details in and I'll hand you a key on the spot. <span id="slotsLine" style="display:none;"></span></p>
       <form class="modal-form" id="requestForm" novalidate>
         <div class="modal-field">
           <label for="reqName">Your name</label>
-          <input type="text" id="reqName" required>
+          <input type="text" id="reqName" required autocomplete="name">
         </div>
         <div class="modal-field">
           <label for="reqEmail">Email</label>
-          <input type="email" id="reqEmail" required placeholder="you@example.co.uk">
+          <input type="email" id="reqEmail" required placeholder="you@example.co.uk" autocomplete="email">
         </div>
         <div class="modal-field">
           <label for="reqGarden">Tell me a bit about what you grow</label>
-          <textarea id="reqGarden" placeholder="Small balcony in Leeds, a few herbs on the windowsill, one very dramatic monstera…"></textarea>
+          <textarea id="reqGarden" placeholder="Small balcony in Leeds, a few herbs on the windowsill, one very dramatic monstera..."></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:6px;">Send it over</button>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_v43-iBw-5ivia" data-theme="light"></div>
+        <button type="submit" class="btn btn-primary" id="requestSubmitBtn" style="width:100%; justify-content:center; margin-top:6px;">Get my key</button>
       </form>
     </div>
     <div id="requestSuccessView" style="display:none;">
       <div class="modal-success">
         <span class="sprig">🌱</span>
-        <h3 style="margin-bottom:8px;">Noted, thank you.</h3>
-        <p style="margin-bottom:0;">I've got your details. I'll send your key over shortly. In the meantime, don't prune anything you can't un-prune.</p>
+        <h3 id="successHeading" style="margin-bottom:8px;">You're in Flora's Beta Crew!</h3>
+        <p id="successLead" style="margin-bottom:16px;">Welcome aboard, <span id="successName"></span>. Your key is yours alone, please don't share it, each one only works for one person.</p>
+        <div class="key-display" id="keyDisplay"></div>
+        <p id="successRemaining" style="margin-top:16px; font-size:14px; color:var(--text-light);"></p>
+        <a href="/chat" class="btn btn-primary" id="enterChatBtn" style="width:100%; justify-content:center; margin-top:16px;">Open Ask Flora</a>
+      </div>
+    </div>
+    <div id="requestQueuedView" style="display:none;">
+      <div class="modal-success">
+        <span class="sprig">🌱</span>
+        <h3 style="margin-bottom:8px;">This batch is full.</h3>
+        <p style="margin-bottom:0;">I've got your details and I'll be in touch when the next batch opens. In the meantime, don't prune anything you can't un-prune.</p>
       </div>
     </div>
   </div>
@@ -1416,19 +1449,25 @@ function showTasterUsedMessage() {
   });
 }
 
-// ─── Request modal (mailto) ───
+// ─── Request modal (auto-issue with Turnstile) ───
 const modal = document.getElementById('requestModal');
 const requestBtn = document.getElementById('requestBtn');
 const modalClose = document.getElementById('modalClose');
 const requestForm = document.getElementById('requestForm');
 const requestFormView = document.getElementById('requestFormView');
 const requestSuccessView = document.getElementById('requestSuccessView');
+const requestQueuedView = document.getElementById('requestQueuedView');
 
 function openModal() {
   modal.classList.add('open');
   requestFormView.style.display = '';
   requestSuccessView.style.display = 'none';
+  requestQueuedView.style.display = 'none';
   requestForm.reset();
+  // Reset Turnstile widget if it's been rendered
+  if (window.turnstile) {
+    try { window.turnstile.reset(); } catch {}
+  }
   setTimeout(() => document.getElementById('reqName').focus(), 250);
 }
 function closeModal() { modal.classList.remove('open'); }
@@ -1437,6 +1476,28 @@ requestBtn.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+function showSuccessView(data) {
+  document.getElementById('successName').textContent = data.name || 'friend';
+  document.getElementById('keyDisplay').textContent = data.key;
+
+  const remainingEl = document.getElementById('successRemaining');
+  if (typeof data.remaining === 'number' && data.remaining > 0) {
+    remainingEl.textContent = `${data.remaining} ${data.remaining === 1 ? 'slot' : 'slots'} left in the current batch.`;
+  } else {
+    remainingEl.textContent = '';
+  }
+
+  requestFormView.style.display = 'none';
+  requestQueuedView.style.display = 'none';
+  requestSuccessView.style.display = '';
+}
+
+function showQueuedView() {
+  requestFormView.style.display = 'none';
+  requestSuccessView.style.display = 'none';
+  requestQueuedView.style.display = '';
+}
 
 requestForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -1447,27 +1508,45 @@ requestForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  const submitBtn = requestForm.querySelector('button[type="submit"]');
+  // Get Turnstile token
+  let turnstileToken = '';
+  const tsInput = document.querySelector('[name="cf-turnstile-response"]');
+  if (tsInput) turnstileToken = tsInput.value;
+
+  if (!turnstileToken) {
+    alert("Just give the verification a moment to complete, then try again.");
+    return;
+  }
+
+  const submitBtn = document.getElementById('requestSubmitBtn');
   const originalText = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Sending...';
+  submitBtn.textContent = 'Sorting your key...';
 
   try {
     const resp = await fetch(`${WORKER_URL}/request-key`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, garden, source: 'landing' })
+      body: JSON.stringify({ name, email, garden, source: 'landing', turnstileToken })
     });
     const data = await resp.json();
 
-    if (data.ok) {
-      requestFormView.style.display = 'none';
-      requestSuccessView.style.display = '';
+    if (data.ok && data.key) {
+      showSuccessView(data);
+    } else if (data.ok && data.queued) {
+      showQueuedView();
+    } else if (data.ok) {
+      // Edge case: deduped but no key available
+      showQueuedView();
     } else {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
       alert(data.error || 'Something went wrong. Try again.');
+      // Reset Turnstile for a fresh attempt
+      if (window.turnstile) {
+        try { window.turnstile.reset(); } catch {}
+      }
     }
   } catch (err) {
     submitBtn.disabled = false;
@@ -1475,6 +1554,26 @@ requestForm.addEventListener('submit', async (e) => {
     alert("Couldn't reach Flora. Check your connection and try again.");
   }
 });
+
+// Fetch and show remaining slots when modal opens
+async function loadBetaStatus() {
+  try {
+    const resp = await fetch(`${WORKER_URL}/beta-status`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    const data = await resp.json();
+    const slotsLine = document.getElementById('slotsLine');
+    if (data.full) {
+      slotsLine.textContent = "(This batch is full, but leave your details and I'll be in touch when the next opens up.)";
+      slotsLine.style.display = '';
+    } else if (typeof data.remaining === 'number' && data.remaining > 0) {
+      slotsLine.textContent = `${data.remaining} ${data.remaining === 1 ? 'spot' : 'spots'} left in the current batch.`;
+      slotsLine.style.display = '';
+    }
+  } catch {}
+}
+loadBetaStatus();
 
 // Handle the nav "Got a key?": smoothly scroll + focus
 document.querySelectorAll('a[href="#key"]').forEach(link => {

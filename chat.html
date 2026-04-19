@@ -8,6 +8,7 @@
 <title>Ask Flora</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -446,6 +447,56 @@ html, body {
   color: var(--text-dark);
   font-size: 15px;
   line-height: 1.4;
+}
+
+.taster-issued {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 4px;
+  width: 100%;
+  text-align: center;
+}
+
+.taster-issued-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green-deep);
+  line-height: 1.3;
+}
+
+.taster-key-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.taster-key {
+  background: var(--green-lightest);
+  border: 2px dashed var(--green-pale);
+  border-radius: 12px;
+  padding: 14px 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--green-deep);
+  user-select: all;
+  cursor: text;
+  word-break: break-all;
+}
+
+.taster-remaining {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.cf-turnstile {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0;
 }
 
 .photo-btn, .send-btn {
@@ -1530,20 +1581,19 @@ async function checkAccess() {
 
 // ─── Taster wrap-up ───
 function showTasterWrapUp() {
-  // Replace the input bar with a simple email capture form
   const inputBar = document.querySelector('.input-bar');
   if (!inputBar) return;
 
   inputBar.innerHTML = `
     <form id="tasterForm" class="taster-form">
-      <div class="taster-form-intro">Pop your details in and I'll email a proper key your way so we can keep going.</div>
+      <div class="taster-form-intro">Pop your details in and I'll sort you a key on the spot so we can keep going.</div>
       <input type="text" id="tasterName" placeholder="Your name" required autocomplete="name">
       <input type="email" id="tasterEmail" placeholder="Your email" required autocomplete="email">
-      <button type="submit" class="taster-submit">Send</button>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_v43-iBw-5ivia" data-theme="light"></div>
+      <button type="submit" class="taster-submit" id="tasterSubmit">Get my key</button>
     </form>
   `;
 
-  // Ensure the form is visible by scrolling the messages area
   setTimeout(() => {
     const messages = document.getElementById('messages');
     if (messages) messages.scrollTop = messages.scrollHeight;
@@ -1556,28 +1606,67 @@ function showTasterWrapUp() {
     const email = document.getElementById('tasterEmail').value.trim();
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
 
-    const submitBtn = tasterForm.querySelector('button[type="submit"]');
+    let turnstileToken = '';
+    const tsInput = tasterForm.querySelector('[name="cf-turnstile-response"]');
+    if (tsInput) turnstileToken = tsInput.value;
+
+    if (!turnstileToken) {
+      alert("Just give the verification a moment to complete, then try again.");
+      return;
+    }
+
+    const submitBtn = document.getElementById('tasterSubmit');
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
+    submitBtn.textContent = 'Sorting your key...';
 
     try {
       const resp = await fetch(`${WORKER_URL}/request-key`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, source: 'taster' })
+        body: JSON.stringify({ name, email, source: 'taster', turnstileToken })
       });
       const data = await resp.json();
 
-      if (data.ok) {
+      if (data.ok && data.key) {
+        // Show the key inline with an enter button
+        const remainingLine = (typeof data.remaining === 'number' && data.remaining > 0)
+          ? `<div class="taster-remaining">${data.remaining} ${data.remaining === 1 ? 'slot' : 'slots'} left in the current batch.</div>`
+          : '';
         inputBar.innerHTML = `
-          <div class="taster-thanks">Lovely. I've got your details and I'll send your key over shortly.</div>
+          <div class="taster-issued">
+            <div class="taster-issued-heading">You're in the Beta Crew, ${escapeHtml(data.name || name)}!</div>
+            <div class="taster-key-label">Your key (yours alone, please don't share it):</div>
+            <div class="taster-key">${escapeHtml(data.key)}</div>
+            ${remainingLine}
+            <button type="button" class="taster-submit" id="enterChatBtn">Carry on chatting</button>
+          </div>
+        `;
+        document.getElementById('enterChatBtn').addEventListener('click', async () => {
+          // Validate the key server-side to set the access cookie
+          try {
+            await fetch(`${WORKER_URL}/validate-key`, {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ key: data.key })
+            });
+          } catch {}
+          // Full reload so the chat app picks up the new access cookie
+          window.location.reload();
+        });
+      } else if (data.ok && data.queued) {
+        inputBar.innerHTML = `
+          <div class="taster-thanks">This batch is full. I've got your details and I'll be in touch when the next one opens.</div>
         `;
       } else {
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
         alert(data.error || 'Something went wrong. Try again.');
+        if (window.turnstile) {
+          try { window.turnstile.reset(); } catch {}
+        }
       }
     } catch (err) {
       submitBtn.disabled = false;
@@ -1585,6 +1674,13 @@ function showTasterWrapUp() {
       alert("Couldn't reach Flora. Check your connection and try again.");
     }
   });
+}
+
+// Escape HTML to avoid injection when inserting the name or key into innerHTML
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = String(s);
+  return div.innerHTML;
 }
 
 // ─── Init ───
