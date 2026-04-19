@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1156,6 +1155,7 @@ footer {
     <div class="footer-meta">
       <span>askflora.co.uk</span>
       <a href="mailto:hello@askflora.co.uk">hello@askflora.co.uk</a>
+      <a href="/privacy">Privacy</a>
       <a href="#" id="specialKeyLink">I have a special key</a>
     </div>
   </div>
@@ -1182,6 +1182,7 @@ footer {
           <textarea id="reqGarden" placeholder="Small balcony in Leeds, a few herbs on the windowsill, one very dramatic monstera..."></textarea>
         </div>
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_v43-iBw-5ivia" data-theme="light"></div>
+        <p style="font-size:13px; color:var(--text-light); margin: 12px 0 4px; line-height:1.5;">By joining, you agree to Flora's <a href="/privacy" target="_blank" rel="noopener" style="color:var(--green-deep); font-weight:600;">privacy policy</a>. We'll only email you about your beta access.</p>
         <button type="submit" class="btn btn-primary" id="requestSubmitBtn" style="width:100%; justify-content:center; margin-top:6px;">Get my key</button>
       </form>
     </div>
@@ -1226,6 +1227,7 @@ footer {
       </div>
       <div class="key-feedback" id="keyFeedback">We'll match it against your invite.</div>
       <button type="submit" class="btn btn-primary" id="keySubmit" style="width:100%; justify-content:center; margin-top:6px;">Unlock Flora</button>
+      <p style="font-size:13px; color:var(--text-light); text-align:center; margin-top:14px; line-height:1.5;">By unlocking, you agree to Flora's <a href="/privacy" target="_blank" rel="noopener" style="color:var(--green-deep); font-weight:600;">privacy policy</a>.</p>
     </form>
   </div>
 </div>
@@ -1367,13 +1369,27 @@ const requestFormView = document.getElementById('requestFormView');
 const requestSuccessView = document.getElementById('requestSuccessView');
 const requestQueuedView = document.getElementById('requestQueuedView');
 
+// Turnstile is only loaded when the join form is opened (lawful basis: contract-preparatory),
+// not on every page view, so visitors who never try to join aren't processed by Cloudflare.
+let turnstileLoaded = false;
+function ensureTurnstileLoaded() {
+  if (turnstileLoaded) return;
+  turnstileLoaded = true;
+  const s = document.createElement('script');
+  s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+  s.async = true;
+  s.defer = true;
+  document.head.appendChild(s);
+}
+
 function openModal() {
+  ensureTurnstileLoaded();
   modal.classList.add('open');
   requestFormView.style.display = '';
   requestSuccessView.style.display = 'none';
   requestQueuedView.style.display = 'none';
   requestForm.reset();
-  // Reset Turnstile widget if it's been rendered
+  // Reset Turnstile widget if it's already been rendered from a previous open
   if (window.turnstile) {
     try { window.turnstile.reset(); } catch {}
   }

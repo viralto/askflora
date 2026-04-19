@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy · Ask Flora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #2D5A3D;
+    --green-mid: #5B8C6A;
+    --green-pale: #cbd5c0;
+    --cream: #FAF6F0;
+    --cream-mid: #F0E8D8;
+    --text-dark: #2A2A2A;
+    --text-mid: #555;
+    --text-light: #7A7A7A;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    line-height: 1.6;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Top bar */
+  .topbar {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(91, 140, 106, 0.15);
+    background: var(--cream);
+  }
+  .topbar-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--green-deep);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+  }
+  .back-link {
+    font-size: 14px;
+    color: var(--green-mid);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .back-link:hover { color: var(--green-deep); }
+
+  /* Content */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 64px 24px 80px;
+  }
+
+  @media (max-width: 600px) {
+    main { padding: 40px 20px 64px; }
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--green-mid);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 48px;
+    color: var(--green-deep);
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 36px; }
+  }
+
+  .intro {
+    font-size: 19px;
+    color: var(--text-mid);
+    line-height: 1.55;
+    margin-bottom: 48px;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--green-deep);
+    line-height: 1.2;
+    margin-top: 48px;
+    margin-bottom: 16px;
+    letter-spacing: -0.2px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text-dark);
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong {
+    color: var(--green-deep);
+    font-weight: 700;
+  }
+
+  ul {
+    margin-bottom: 16px;
+    padding-left: 22px;
+  }
+  ul li {
+    margin-bottom: 10px;
+    color: var(--text-dark);
+  }
+  ul li::marker { color: var(--green-mid); }
+
+  a {
+    color: var(--green-deep);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--green-pale);
+    text-underline-offset: 3px;
+  }
+  a:hover { text-decoration-color: var(--green-deep); }
+
+  .callout {
+    background: var(--white);
+    border: 1px solid var(--green-pale);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin: 24px 0;
+  }
+
+  .placeholder {
+    background: #FFF4D6;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-style: italic;
+    color: #7A5B00;
+    font-weight: 600;
+  }
+
+  .updated {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(91, 140, 106, 0.15);
+    font-size: 14px;
+    color: var(--text-light);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="wordmark">Ask Flora</a>
+    <a href="/" class="back-link">← Back to the home page</a>
+  </div>
+</header>
+
+<main>
+  <div class="eyebrow">Privacy</div>
+  <h1>Flora's privacy policy.</h1>
+  <p class="intro">Plain English, because legalese helps nobody. Here's exactly what Flora knows about you, why, and what you can do about it.</p>
+
+  <h2>Who's behind this</h2>
+  <p>Ask Flora is run by <strong>Punk Industries Ltd</strong>, a company based in the UK. We're the data controller, which means we're the ones responsible for your data. For anything on this page, email <a href="mailto:hello@askflora.co.uk">hello@askflora.co.uk</a>.</p>
+
+  <h2>What Flora knows about you, and why</h2>
+
+  <p><strong>When you ask for a beta key</strong>, Flora stores your name, email, and the short bit you wrote about your garden. Your name and email are used to send you your key and to stop the same person claiming a key twice in a short window. The garden description helps us understand who's in the beta. Nothing else is done with any of it.</p>
+
+  <p><strong>When you chat with Flora</strong>, your messages are processed by Anthropic so Flora can reply. Your conversation is also saved so Flora can pick up where you left off next time and remember things about your garden. If you mention personal details like where you live or who you live with, that goes into the conversation log. Don't share anything you wouldn't want stored.</p>
+
+  <p><strong>When you open the form to ask for a beta key</strong>, a small anti-bot tool from Cloudflare called Turnstile checks you're a real person before your request goes through. It uses signals like your IP address and some browser characteristics, only for that check. It doesn't run when you're just reading the site, and it doesn't follow you around the web.</p>
+
+  <h2>The lawful bases we rely on</h2>
+  <ul>
+    <li><strong>Contract</strong> covers everything needed to run the beta for you: your name and email to issue your key, the record that proves you've got access, your chat history so Flora can remember you, and the Turnstile check when you open the join form.</li>
+    <li><strong>Consent</strong> covers anything optional. Right now that's just the short garden description on the join form. You can skip it, and you can withdraw your consent later by asking us to delete it.</li>
+  </ul>
+  <p>We don't rely on "legitimate interests". If a piece of data can't be justified under Contract or Consent, we don't collect it.</p>
+
+  <h2>Cookies, briefly</h2>
+  <p>Two cookies matter:</p>
+  <ul>
+    <li><strong>flora_access</strong> remembers that you've got a valid beta key, so you don't have to re-enter it each visit.</li>
+    <li><strong>flora_taster</strong> remembers your short preview session if you tried Flora without a key.</li>
+  </ul>
+  <p>Both are set on your device, marked HttpOnly, and aren't shared with anyone. Neither is used for advertising or tracking. Turnstile may also set a short-lived cookie for anti-bot purposes.</p>
+
+  <h2>Who else sees your data</h2>
+  <p>Two companies touch your data, both because Flora literally couldn't run without them:</p>
+  <ul>
+    <li><strong>Cloudflare</strong> hosts the site, stores your beta record and conversation history, and runs the anti-bot tool. Data is stored on their UK and European infrastructure where possible.</li>
+    <li><strong>Anthropic</strong> processes your chat messages so Flora can reply. Anthropic is based in the United States. They act as a processor on our behalf under a data processing agreement, and the transfer relies on Standard Contractual Clauses and Anthropic's certification under the EU-US Data Privacy Framework.</li>
+  </ul>
+  <p>That's it. No analytics. No advertising. No mailing list. No "trusted partners".</p>
+
+  <h2>How long we keep things</h2>
+  <ul>
+    <li>Your beta key and basic contact details: while your beta access is active, plus six months of breathing room in case you come back.</li>
+    <li>Your garden description: the same window.</li>
+    <li>Your conversation history: until you ask us to delete it, or until the beta closes, whichever comes first.</li>
+    <li>Anti-bot data: managed by Cloudflare, typically retained for a few days.</li>
+  </ul>
+  <p>If you want any of this gone sooner, just email us.</p>
+
+  <h2>Your rights</h2>
+  <p>You've got the standard UK GDPR set:</p>
+  <ul>
+    <li>Ask us what we hold on you (subject access).</li>
+    <li>Ask us to correct it.</li>
+    <li>Ask us to delete it.</li>
+    <li>Ask us to send it to you in a portable format.</li>
+    <li>Object to us using it, or withdraw consent where we're relying on it.</li>
+  </ul>
+  <p>Email <a href="mailto:hello@askflora.co.uk">hello@askflora.co.uk</a> and we'll sort it within a month, usually much sooner.</p>
+
+  <div class="callout">
+    <p>If we mess up and you're not happy with how we respond, you have the right to complain to the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>.</p>
+  </div>
+
+  <h2>Changes to this page</h2>
+  <p>If we change how Flora handles data, we'll update this page and put a new date at the bottom. For anything material, we'll email Beta Crew members too.</p>
+
+  <div class="updated">Last updated: 19 April 2026</div>
+</main>
+
+</body>
+</html>
