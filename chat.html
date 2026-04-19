@@ -68,29 +68,6 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-.snap-btn {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: 1.5px solid var(--green-pale);
-  color: var(--green-mid);
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: none;
-}
-
-.chat-container.active ~ .header .snap-btn,
-.snap-btn.visible { display: inline-block; }
-
-.snap-btn:hover { background: var(--green-lightest); border-color: var(--green-mid); }
-
 .reset-btn {
   position: absolute;
   left: 12px;
@@ -546,23 +523,46 @@ html, body {
   font-size: 14px;
   cursor: pointer;
   color: var(--text-mid);
-}
-
-.preview-identify {
-  background: var(--green-deep);
-  color: var(--white);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 16px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
   margin-left: auto;
 }
 
-.preview-identify:hover { background: #1E4A2E; }
+.photo-menu {
+  background: var(--white);
+  border-top: 1px solid var(--cream-mid);
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.photo-menu.hidden { display: none; }
+
+.photo-menu-option {
+  flex: 1;
+  background: var(--cream);
+  border: 1px solid var(--cream-mid);
+  border-radius: 14px;
+  padding: 14px 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--green-deep);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.photo-menu-option:hover,
+.photo-menu-option:active {
+  background: var(--cream-mid);
+}
+
+.photo-menu-icon {
+  font-size: 24px;
+  line-height: 1;
+}
 
 /* Image in chat */
 .bubble img {
@@ -701,7 +701,6 @@ html, body {
   <div class="header">
     <button class="reset-btn" id="resetBtn" title="Start fresh">🌱 New</button>
     <h1>Ask Flora</h1>
-    <button class="snap-btn" id="headerSnapBtn" title="Snap to identify">🔍 Identify</button>
   </div>
 
   <!-- Loading overlay during access check -->
@@ -725,8 +724,17 @@ html, body {
     <div id="quickReplies" class="quick-replies"></div>
     <div class="photo-preview hidden" id="photoPreview">
       <img id="previewImg" src="">
-      <button class="preview-identify" id="previewIdentify">🔍 Identify this</button>
       <button class="preview-remove" id="previewRemove">✕</button>
+    </div>
+    <div class="photo-menu hidden" id="photoMenu">
+      <button class="photo-menu-option" id="menuCamera">
+        <span class="photo-menu-icon">📷</span>
+        <span>Take a photo</span>
+      </button>
+      <button class="photo-menu-option" id="menuLibrary">
+        <span class="photo-menu-icon">🖼️</span>
+        <span>Choose from library</span>
+      </button>
     </div>
     <div class="input-bar">
       <input type="file" id="photoInput" accept="image/*" style="display:none">
@@ -997,9 +1005,13 @@ const messagesEl = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 const quickReplies = document.getElementById('quickReplies');
-const headerSnapBtn = document.getElementById('headerSnapBtn');
 const photoBtn = document.getElementById('photoBtn');
 const photoInput = document.getElementById('photoInput');
+const plantIdInput = document.getElementById('plantIdInput');
+const plantIdWelcomeBtn = document.getElementById('plantIdWelcomeBtn');
+const photoMenu = document.getElementById('photoMenu');
+const menuCamera = document.getElementById('menuCamera');
+const menuLibrary = document.getElementById('menuLibrary');
 const photoPreview = document.getElementById('photoPreview');
 const previewImg = document.getElementById('previewImg');
 const previewRemove = document.getElementById('previewRemove');
@@ -1010,7 +1022,6 @@ let pendingImage = null; // { base64, mediaType }
 startBtn.addEventListener('click', () => {
   welcome.style.display = 'none';
   chatContainer.classList.add('active');
-  headerSnapBtn.classList.add('visible');
   sendFloraOpener();
 });
 
@@ -1027,7 +1038,6 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   messagesEl.innerHTML = '';
   quickReplies.innerHTML = '';
   chatContainer.classList.remove('active');
-  headerSnapBtn.classList.remove('visible');
   welcome.style.display = '';
 });
 
@@ -1036,7 +1046,6 @@ try {
   if (loadState()) {
     welcome.style.display = 'none';
     chatContainer.classList.add('active');
-    headerSnapBtn.classList.add('visible');
     conversationHistory.forEach(msg => {
       if (msg.hidden || msg.content.startsWith('Hi! I just opened the app')) return;
       let displayText;
@@ -1060,67 +1069,57 @@ userInput.addEventListener('input', () => {
   userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
 });
 
-// Photo handling
-photoBtn.addEventListener('click', () => photoInput.click());
+// Detect touch devices (phones/tablets) to decide whether to show the
+// take-or-upload menu. On desktop we skip the menu and just open the file picker.
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
-const plantIdInput = document.getElementById('plantIdInput');
-const plantIdWelcomeBtn = document.getElementById('plantIdWelcomeBtn');
-const previewIdentify = document.getElementById('previewIdentify');
+function openPhotoMenuOrPicker() {
+  if (isTouchDevice) {
+    photoMenu.classList.remove('hidden');
+  } else {
+    photoInput.click();
+  }
+}
+function closePhotoMenu() {
+  photoMenu.classList.add('hidden');
+}
 
-headerSnapBtn.addEventListener('click', () => {
+photoBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  openPhotoMenuOrPicker();
+});
+
+menuCamera.addEventListener('click', () => {
+  closePhotoMenu();
   plantIdInput.click();
 });
 
+menuLibrary.addEventListener('click', () => {
+  closePhotoMenu();
+  photoInput.click();
+});
+
+// Dismiss the menu on outside tap
+document.addEventListener('click', (e) => {
+  if (!photoMenu.classList.contains('hidden') && !photoMenu.contains(e.target)) {
+    closePhotoMenu();
+  }
+});
+
+// Welcome screen Identify button: skip welcome and go straight to camera.
+// The photo will flow through the normal preview, so the user can add a
+// message or just tap send to hear what Flora thinks.
 plantIdWelcomeBtn.addEventListener('click', () => {
   welcome.style.display = 'none';
   chatContainer.classList.add('active');
-  headerSnapBtn.classList.add('visible');
-  // Don't send opener - go straight to camera. Flora will introduce herself in the ID response.
   plantIdInput.click();
 });
 
-plantIdInput.addEventListener('change', (e) => {
+// Both file inputs (photoInput for library, plantIdInput for camera) share
+// the same handler: downscale, stash as pendingImage, show the preview.
+function handlePickedPhoto(e) {
   const file = e.target.files[0];
   if (!file) return;
-  const img = new Image();
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    const maxDim = 1024;
-    let w = img.width, h = img.height;
-    if (w > maxDim || h > maxDim) {
-      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-      else { w = Math.round(w * maxDim / h); h = maxDim; }
-    }
-    canvas.width = w;
-    canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-    const base64 = dataUrl.split(',')[1];
-    // Immediately send with plant ID intent
-    pendingImage = { base64, mediaType: 'image/jpeg' };
-    const imgHtml = `<img src="${dataUrl}">`;
-    addBubble(imgHtml + 'What is this?', 'user', true);
-    const isFirstMsg = conversationHistory.length === 0;
-    const idText = isFirstMsg
-      ? 'This is my first time using the app. Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info. Introduce yourself briefly too!'
-      : 'Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info about it.';
-    const content = [
-      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
-      { type: 'text', text: idText }
-    ];
-    pendingImage = null;
-    conversationHistory.push({ role: 'user', content });
-    callFlora();
-  };
-  img.src = URL.createObjectURL(file);
-  plantIdInput.value = '';
-});
-
-photoInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  // Resize image to keep API payload manageable
   const img = new Image();
   img.onload = () => {
     const canvas = document.createElement('canvas');
@@ -1142,28 +1141,16 @@ photoInput.addEventListener('change', (e) => {
     userInput.focus();
   };
   img.src = URL.createObjectURL(file);
-  photoInput.value = '';
-});
+  e.target.value = '';
+}
+
+photoInput.addEventListener('change', handlePickedPhoto);
+plantIdInput.addEventListener('change', handlePickedPhoto);
 
 previewRemove.addEventListener('click', () => {
   pendingImage = null;
   photoPreview.classList.add('hidden');
   userInput.placeholder = 'Type your message...';
-});
-
-previewIdentify.addEventListener('click', () => {
-  if (!pendingImage || isGenerating) return;
-  const dataUrl = `data:${pendingImage.mediaType};base64,${pendingImage.base64}`;
-  addBubble(`<img src="${dataUrl}">What is this?`, 'user', true);
-  const content = [
-    { type: 'image', source: { type: 'base64', media_type: pendingImage.mediaType, data: pendingImage.base64 } },
-    { type: 'text', text: 'Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info about it.' }
-  ];
-  pendingImage = null;
-  photoPreview.classList.add('hidden');
-  userInput.placeholder = 'Type your message...';
-  conversationHistory.push({ role: 'user', content });
-  callFlora();
 });
 
 // Send message
@@ -1696,7 +1683,6 @@ function escapeHtml(s) {
   if (accessMode === 'taster' && conversationHistory.length === 0) {
     welcome.style.display = 'none';
     chatContainer.classList.add('active');
-    headerSnapBtn.classList.add('visible');
     sendFloraOpener();
   }
 
