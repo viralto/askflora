@@ -1503,6 +1503,42 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ─── Check if the visitor already has access ───
+// If they have a valid key cookie, change the primary CTA so they can jump
+// straight back to chatting without going through the taster or key form again.
+(async function checkExistingAccess() {
+  try {
+    const resp = await fetch(`${WORKER_URL}/check-access`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    const data = await resp.json();
+
+    if (data.ok && data.mode === 'full') {
+      // Full access - swap the taster button for a continue button
+      tasterBtn.textContent = 'Continue chatting';
+      tasterBtn.onclick = null;
+      // Remove the existing click listener and replace with direct navigation
+      const newBtn = tasterBtn.cloneNode(true);
+      tasterBtn.parentNode.replaceChild(newBtn, tasterBtn);
+      newBtn.addEventListener('click', () => {
+        window.location.href = CHAT_URL;
+      });
+    } else if (data.ok && data.mode === 'taster' && typeof data.remaining === 'number' && data.remaining > 0) {
+      // Mid-taster with messages remaining - let them continue
+      tasterBtn.textContent = 'Continue chatting';
+      const newBtn = tasterBtn.cloneNode(true);
+      tasterBtn.parentNode.replaceChild(newBtn, tasterBtn);
+      newBtn.addEventListener('click', () => {
+        window.location.href = CHAT_URL;
+      });
+    }
+    // If taster_exhausted or none, leave the default buttons as they are
+  } catch (err) {
+    // Network error - no change, default buttons remain
+  }
+})();
 </script>
 
 </body>
