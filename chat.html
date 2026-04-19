@@ -1047,20 +1047,29 @@ try {
     welcome.style.display = 'none';
     chatContainer.classList.add('active');
     conversationHistory.forEach(msg => {
-      if (msg.hidden || msg.content.startsWith('Hi! I just opened the app')) return;
-      let displayText;
-      if (Array.isArray(msg.content)) {
-        displayText = msg.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
-      } else {
-        displayText = msg.content;
+      try {
+        if (msg.hidden) return;
+        // The synthetic opener is always a string; skip it. For array content
+        // (e.g. messages that originally carried a photo), this check is safely bypassed.
+        if (typeof msg.content === 'string' && msg.content.startsWith('Hi! I just opened the app')) return;
+
+        let displayText;
+        if (Array.isArray(msg.content)) {
+          displayText = msg.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
+        } else {
+          displayText = msg.content;
+        }
+        if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user');
+      } catch (inner) {
+        console.error('Failed to render a message; skipping it:', inner, msg);
       }
-      if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user');
     });
     scrollToBottom();
   }
 } catch (e) {
+  // A top-level restore failure shouldn't wipe the user's history.
+  // Leave localStorage alone so a future reload can try again.
   console.error('Restore failed:', e);
-  resetState();
 }
 
 // Auto-resize textarea
