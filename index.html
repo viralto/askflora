@@ -961,7 +961,7 @@ footer {
       <span>Ask Flora</span>
     </a>
     <div class="nav-links">
-      <a href="#chats" class="nav-link">See her in action</a>
+      <a href="#chats" class="nav-link" id="navChatsLink">See her in action</a>
       <a href="#" class="nav-link nav-key-link" id="navKeyBtn">Get a key</a>
     </div>
   </div>
@@ -1570,6 +1570,9 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       // Members don't need the "Get a key" nav button either
       const navKey = document.getElementById('navKeyBtn');
       if (navKey) navKey.style.display = 'none';
+      // Or the "See her in action" preview link, they've already seen her
+      const navChats = document.getElementById('navChatsLink');
+      if (navChats) navChats.style.display = 'none';
     } else if (data.ok && data.mode === 'taster' && typeof data.remaining === 'number' && data.remaining > 0) {
       // Mid-taster: primary becomes "Continue chatting". Convert the "Say hello"
       // button into an upgrade nudge so they can join the Beta Crew properly.
@@ -1580,6 +1583,9 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
       tasterBtn.textContent = 'Join the Beta Crew';
       tasterBtn.onclick = openModal;
+      // Tasters are already seeing her in action, hide the preview link
+      const navChatsT = document.getElementById('navChatsLink');
+      if (navChatsT) navChatsT.style.display = 'none';
     }
     // If taster_exhausted or none, leave the default buttons as they are
   } catch (err) {
