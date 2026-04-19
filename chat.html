@@ -394,6 +394,13 @@ html, body {
   width: 100%;
 }
 
+.taster-form-intro {
+  padding: 0 4px 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
 .taster-form input {
   border: 2px solid var(--green-pale);
   border-radius: 16px;
@@ -1495,11 +1502,11 @@ async function checkAccess() {
       credentials: 'include'
     });
     const data = await resp.json();
-    if (data.ok && data.mode) return data.mode;
-    return 'none';
+    if (data.ok && data.mode) return { mode: data.mode, remaining: data.remaining };
+    if (data.mode === 'taster_exhausted') return { mode: 'taster_exhausted' };
+    return { mode: 'none' };
   } catch (e) {
-    // Network error - treat as no access rather than silently proceeding
-    return 'none';
+    return { mode: 'none' };
   }
 }
 
@@ -1511,11 +1518,18 @@ function showTasterWrapUp() {
 
   inputBar.innerHTML = `
     <form id="tasterForm" class="taster-form">
-      <input type="text" id="tasterName" placeholder="Your name" required>
-      <input type="email" id="tasterEmail" placeholder="Your email" required>
+      <div class="taster-form-intro">Pop your details in and I'll email a proper key your way so we can keep going.</div>
+      <input type="text" id="tasterName" placeholder="Your name" required autocomplete="name">
+      <input type="email" id="tasterEmail" placeholder="Your email" required autocomplete="email">
       <button type="submit" class="taster-submit">Send</button>
     </form>
   `;
+
+  // Ensure the form is visible by scrolling the messages area
+  setTimeout(() => {
+    const messages = document.getElementById('messages');
+    if (messages) messages.scrollTop = messages.scrollHeight;
+  }, 50);
 
   const tasterForm = document.getElementById('tasterForm');
   tasterForm.addEventListener('submit', (e) => {
@@ -1547,10 +1561,17 @@ Thanks!`;
 
 // ─── Init ───
 (async function init() {
-  accessMode = await checkAccess();
-  if (accessMode === 'none') {
+  const access = await checkAccess();
+  accessMode = access.mode;
+
+  if (access.mode === 'none' || access.mode === 'taster_exhausted') {
     window.location.href = LANDING_URL;
     return;
+  }
+
+  // If we know how many taster messages are left, sync the count
+  if (access.mode === 'taster' && typeof access.remaining === 'number') {
+    tasterMessageCount = TASTER_LIMIT - access.remaining;
   }
 
   // Taster users come straight from the landing page ready to chat.
