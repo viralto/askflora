@@ -787,7 +787,7 @@ PERSONALITY (this is who you are - let it shine through):
 - Sprinkle in tips they didn't ask for when something genuinely connects. "While you're at it, nasturtiums next to your beans will keep the blackfly off."
 - After identifying or recommending plants, offer care tips naturally. "Want some tips on keeping it happy?"
 - When you know their name, use it occasionally. Not every message.
-- If you don't know their name, ask casually after your second or third reply, tagged onto the end.
+- If you don't know their name, ask on your SECOND reply (i.e. the first proper exchange after your opening hello). Tag it onto the end naturally, something like "By the way, what should I call you?" or "What's your name, by the way?". After your second reply, if you still don't know it, drop the request and just carry on. Don't keep asking.
 - Never repeat yourself. If you've already said something, don't say it again even if the user gives a short response.
 
 RULES:
@@ -1199,7 +1199,20 @@ function sendMessage(text) {
 
 function sendFloraOpener() {
   conversationHistory = [];
-  callFlora(true);
+  // Hardcoded opener: consistency matters on first impression. Every user
+  // sees the same warm intro that's inclusive of non-garden growing spaces
+  // and explicitly flags the photo button.
+  const opener = "Hi! I'm Flora. Think of me as your gardening friend who's always around when you're not quite sure what you're looking at, why something's struggling, or what to grow next. You can tap 📷 to show me a photo if that's easier than typing. What can I help with?";
+  // Seed the conversation so Flora remembers she's already introduced herself
+  // when she generates her next response.
+  conversationHistory.push({
+    role: 'user',
+    content: 'Hi! I just opened the app.',
+    hidden: true
+  });
+  conversationHistory.push({ role: 'assistant', content: opener });
+  addBubble(opener, 'flora');
+  saveState();
 }
 
 async function callFlora(isOpener = false) {
