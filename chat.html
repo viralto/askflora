@@ -833,7 +833,7 @@ Example with quick replies (when you ask an either/or question):
 Example without quick replies (when giving advice or asking open-ended):
 {"message": "Castor oil granules are your best bet. Scatter them along the runs and water in.", "quickReplies": []}
 
-quickReplies: Put 2-3 tappable answer options here whenever your message ends with a question that has obvious short answers. NEVER put the options in the message text. The app renders them as buttons. Use [] for open-ended questions or pure advice.`;
+quickReplies: Use these very sparingly. Most of the time leave this as []. This is a chat, not a database app — conversation is the point, and peppering every question with tappable buttons makes it feel cold and restrictive. Only populate quickReplies when you're asking a genuine either/or clarification where the answer is a single word or very short phrase ("Lawn" or "Veg beds", "Sun" or "Shade", "Morning" or "Evening"). NEVER put the options in the message text. The app renders them as buttons. If the question is open, descriptive, or the user would naturally want to type a sentence back, use [].`;
 }
 
 // After each exchange, try to extract profile info from the conversation
@@ -1328,14 +1328,11 @@ async function callFlora(isOpener = false) {
     typingEl.remove();
     addBubble(floraMsg, 'flora');
 
-    // Show contextual quick replies - from model or auto-detected
+    // Show contextual quick replies - only if Flora explicitly provided them.
+    // No auto-detection fallback: guessing from Flora's text produced weird
+    // results (fragments of the question appearing as buttons).
     if (qrOptions.length > 0) {
       showQuickReplies(qrOptions);
-    } else {
-      const autoOptions = extractChoices(floraMsg);
-      if (autoOptions.length > 0) {
-        showQuickReplies(autoOptions);
-      }
     }
 
     // Taster: after Flora wraps up on message 10, swap the input for a key request form
@@ -1382,52 +1379,6 @@ function addBubble(text, who, isHtml = false) {
   msgDiv.appendChild(bubble);
   messagesEl.appendChild(msgDiv);
   scrollToBottom();
-}
-
-function extractChoices(text) {
-  // Find the last question in the message
-  const sentences = text.split(/(?<=[.!?])\s+/);
-  const lastQ = [...sentences].reverse().find(s => s.trim().endsWith('?'));
-  if (!lastQ) return [];
-
-  // Skip open-ended questions - these aren't real either/or choices
-  if (/^(what are you|what do you|what's your|what have you|how do|how are|where do|where are|why do|why are|when do|when did|tell me|can you tell|what kind of|what sort of|what type of)/i.test(lastQ.trim())) return [];
-
-  // Look for "X or Y?" pattern
-  const orMatch = lastQ.match(/\b(.{2,30}?)\s+or\s+(.{2,30}?)\?$/i);
-  if (!orMatch) return [];
-
-  let optA = orMatch[1].trim();
-  let optB = orMatch[2].trim();
-
-  // Clean up button text
-  function cleanOption(o) {
-    o = o.trim();
-    o = o.replace(/^(you have |you've got |do you have |you're |you |your |my |i have |i've got |it's |they're |there's |there are |have you got )/i, '');
-    o = o.replace(/^(a |an |the |just |more |some |to |any |about )/i, '');
-    o = o.charAt(0).toUpperCase() + o.slice(1);
-    return o;
-  }
-
-  optA = cleanOption(optA);
-  optB = cleanOption(optB);
-
-  // Check for comma-separated list: "X, Y, or Z?"
-  const commaMatch = lastQ.match(/\b(.{2,30}?),\s+(.{2,30}?),?\s+or\s+(.{2,30}?)\?$/i);
-  if (commaMatch) {
-    let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(cleanOption);
-    // Skip if options look like verbs/actions rather than concrete choices
-    if (opts.some(o => /^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(o))) return [];
-    if (opts.every(o => o.length <= 25)) return opts;
-  }
-
-  // Skip if options look like verbs rather than nouns
-  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optA)) return [];
-  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optB)) return [];
-
-  // Only return if options are reasonable length for buttons
-  if (optA.length > 25 || optB.length > 25) return [];
-  return [optA, optB];
 }
 
 function showQuickReplies(options) {
