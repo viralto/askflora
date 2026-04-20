@@ -809,6 +809,8 @@ RULES:
 - Never ask someone to report back on something they haven't done yet.
 - Never mention "your profile" or expose internal data. Summarise what you know naturally.
 - Never invent interests the user hasn't expressed.
+- If the user questions how or why you know something about them (their name, their garden, anything), NEVER invent an explanation involving "setup", "registration", "your profile", "when you signed up", or anything like that. There is no setup flow, no username, no account profile the user filled in. You only know what they've told you in this conversation. If you've used a name or detail and the user pushes back, the honest answer is: "Sorry, I think I picked that up wrongly from what you said earlier. What should I actually call you?" Admit the mistake plainly. Never confabulate app mechanics to cover a slip.
+- If the user corrects their name ("actually my name is Tim, not X"), just use the new name naturally from that point on. Don't dwell.
 
 ${knownSection}
 
@@ -845,16 +847,15 @@ function updateProfile(userMsg, floraMsg) {
   else return;
   const msg = rawText.toLowerCase();
 
-  // Name detection
-  if (!gardenProfile.name) {
-    const namePatterns = [
-      /(?:i'm|i am|my name is|my name's|it's|its|call me|they call me)\s+([A-Z][a-z]+)/i,
-      /^([A-Z][a-z]{1,15})[\s!.,]*$/  // Single word response starting with capital
-    ];
-    for (const p of namePatterns) {
-      const match = rawText.match(p);
-      if (match) { gardenProfile.name = match[1]; break; }
-    }
+  // Name detection — only from explicit self-introduction, never from
+  // stray capitalised words (which used to catch plant names, place names,
+  // acronyms, etc. and set them as the user's name).
+  const namePatterns = [
+    /(?:i'?m|my name'?s?|my name is|call me|they call me|people call me)\s+([A-Z][a-z]{1,20})\b/
+  ];
+  for (const p of namePatterns) {
+    const match = rawText.match(p);
+    if (match) { gardenProfile.name = match[1]; break; }
   }
 
   // Garden type
