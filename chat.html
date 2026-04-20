@@ -244,33 +244,6 @@ html, body {
   border-bottom-right-radius: 6px;
 }
 
-/* Plant image links */
-.plant-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 16px 8px 56px;
-  animation: msgIn 0.3s ease;
-}
-
-.plant-link {
-  background: var(--white);
-  border: 1.5px solid var(--green-pale);
-  color: var(--green-deep);
-  padding: 8px 14px;
-  border-radius: 16px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.15s;
-}
-
-.plant-link:hover {
-  background: var(--green-lightest);
-  border-color: var(--green-mid);
-}
-
 /* Quick reply buttons */
 .quick-replies {
   display: flex;
@@ -846,7 +819,7 @@ GARDENING KNOWLEDGE:
 - Both ornamental and veg/fruit. Allotment culture.
 - Houseplants, indoor growing, balcony and windowsill gardening, succulents, cacti, the lot. If it grows, you know about it.
 - You CAN see photos when users send them. Identify plants, trees, shrubs, flowers, insects, birds, fungi, garden wildlife, diseases, and anything else garden-related. Never say you can't see images.
-- You CAN show users what things look like. When a user asks to see something ("show me", "what does it look like"), include it in your plants array and tell them to tap the link below. This works for plants, tools, products, anything. But ONLY do this when asked. Don't show image links unprompted just because you mentioned something.
+- You CANNOT show users pictures of anything. You have no way to display images, share photos, or link to visuals. If someone asks to see a plant or anything else, describe it clearly in words. Never offer to show a picture, never say "tap below", never suggest the user will see an image. If pressed, say something like "I can't show you a picture directly, but a quick Google Images search for [thing] will turn one up."
 - Practical, actionable, suited to experience level.
 
 TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
@@ -855,14 +828,12 @@ RESPONSE FORMAT:
 You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
 
 Example with quick replies (when you ask an either/or question):
-{"message": "Are they wrecking your lawn or your veg beds?", "quickReplies": ["Lawn", "Veg beds", "Both"], "plants": []}
+{"message": "Are they wrecking your lawn or your veg beds?", "quickReplies": ["Lawn", "Veg beds", "Both"]}
 
 Example without quick replies (when giving advice or asking open-ended):
-{"message": "Castor oil granules are your best bet. Scatter them along the runs and water in.", "quickReplies": [], "plants": []}
+{"message": "Castor oil granules are your best bet. Scatter them along the runs and water in.", "quickReplies": []}
 
-quickReplies: Put 2-3 tappable answer options here whenever your message ends with a question that has obvious short answers. NEVER put the options in the message text. The app renders them as buttons. Use [] for open-ended questions or pure advice.
-
-plants: ONLY populate when the user explicitly asks to see photos ("show me", "what does it look like"). Use [] otherwise.`;
+quickReplies: Put 2-3 tappable answer options here whenever your message ends with a question that has obvious short answers. NEVER put the options in the message text. The app renders them as buttons. Use [] for open-ended questions or pure advice.`;
 }
 
 // After each exchange, try to extract profile info from the conversation
@@ -951,7 +922,6 @@ function updateProfile(userMsg, floraMsg) {
 
 let conversationHistory = [];
 let isGenerating = false;
-const shownLinks = new Set();
 
 // ─── Access control ───
 const WORKER_URL = 'https://askflora.co.uk/api';
@@ -992,7 +962,6 @@ function loadState() {
 function resetState() {
   gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
   conversationHistory = [];
-  shownLinks.clear();
   localStorage.removeItem('flora_profile');
   localStorage.removeItem('flora_history');
 }
@@ -1310,7 +1279,6 @@ async function callFlora(isOpener = false) {
     // Parse JSON response - handle model sometimes outputting text before JSON
     let floraMsg = reply;
     let qrOptions = [];
-    let plantLinks = [];
     
     function tryParseFlora(str) {
       try {
@@ -1341,7 +1309,8 @@ async function callFlora(isOpener = false) {
     if (parsed) {
       floraMsg = parsed.message;
       qrOptions = parsed.quickReplies || [];
-      plantLinks = (parsed.plants || []).filter(p => typeof p === 'string');
+      // Note: we no longer render any `plants` field Flora might still produce
+      // from older cached behaviour. Silently drop it.
     } else {
       // Strip any trailing JSON fragment if model ran out of tokens
       floraMsg = reply.replace(/\s*\{\s*"message"[\s\S]*$/, '').trim() || reply;
@@ -1359,33 +1328,13 @@ async function callFlora(isOpener = false) {
     typingEl.remove();
     addBubble(floraMsg, 'flora');
 
-    // Show plant image links
-    let linksShown = false;
-    
-    // If model didn't provide links, try to extract from user's request
-    if (plantLinks.length === 0 && !isOpener) {
-      const autoLinks = extractImageRequest(userText, floraMsg);
-      if (autoLinks.length > 0) plantLinks = autoLinks;
-    }
-    
-    if (plantLinks.length > 0) {
-      const newLinks = plantLinks.filter(l => typeof l === 'string' && l.length > 0 && !shownLinks.has(l.toLowerCase()));
-      if (newLinks.length > 0) {
-        newLinks.forEach(l => shownLinks.add(l.toLowerCase()));
-        showPlantLinks(newLinks);
-        linksShown = true;
-      }
-    }
-
-    // Show contextual quick replies - from model or auto-detected (not alongside image links)
-    if (!linksShown) {
-      if (qrOptions.length > 0) {
-        showQuickReplies(qrOptions);
-      } else {
-        const autoOptions = extractChoices(floraMsg);
-        if (autoOptions.length > 0) {
-          showQuickReplies(autoOptions);
-        }
+    // Show contextual quick replies - from model or auto-detected
+    if (qrOptions.length > 0) {
+      showQuickReplies(qrOptions);
+    } else {
+      const autoOptions = extractChoices(floraMsg);
+      if (autoOptions.length > 0) {
+        showQuickReplies(autoOptions);
       }
     }
 
@@ -1433,65 +1382,6 @@ function addBubble(text, who, isHtml = false) {
   msgDiv.appendChild(bubble);
   messagesEl.appendChild(msgDiv);
   scrollToBottom();
-}
-
-function showPlantLinks(plants) {
-  const container = document.createElement('div');
-  container.className = 'plant-links';
-  plants.forEach(name => {
-    const link = document.createElement('a');
-    link.className = 'plant-link';
-    link.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name)}`;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.textContent = '🔎 ' + name;
-    container.appendChild(link);
-  });
-  messagesEl.appendChild(container);
-  scrollToBottom();
-}
-
-function extractImageRequest(userText, floraText) {
-  if (!userText) return [];
-  const lower = userText.toLowerCase();
-  
-  // Check if this is an image request
-  const isImageRequest = /show me|can i see|can you show|what does .+ look like|what do .+ look like|picture of|photo of|got a photo|got a picture|image of|see what .+ look/i.test(lower);
-  if (!isImageRequest) return [];
-  
-  // Try to extract the subject from user's message
-  const patterns = [
-    /show me (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
-    /can (?:i|you) (?:see|show)(?: me)? (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
-    /what (?:does|do) (?:a |an |the )?(.{3,35}?) look like/i,
-    /(?:picture|photo|image) of (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
-    /see what (?:a |an |the )?(.{3,35}?) look/i
-  ];
-  
-  for (const p of patterns) {
-    const match = userText.match(p);
-    if (match && match[1] && match[1].trim().length > 2) {
-      let subject = match[1].trim().replace(/[?.!,]+$/, '');
-      if (subject.length > 2 && subject.length < 40) {
-        return [subject.charAt(0).toUpperCase() + subject.slice(1)];
-      }
-    }
-  }
-  
-  // User asked vaguely ("show me", "can I see them") - extract from Flora's response
-  if (floraText) {
-    // Look for capitalised plant/item names or quoted names in Flora's text
-    const nameMatches = floraText.match(/\b([A-Z][a-z]+(?:\s+[a-z]+)?)\b/g);
-    if (nameMatches) {
-      const skipWords = new Set(['The','This','That','These','Those','They','There','Here','What','When','Where','How','Does','Also','Just','Right','Well','Good','Nice','Both','Your','Have','Want','Some','Sure','Tap','Let','Can','Are','For','And','But','Not']);
-      const items = nameMatches
-        .filter(n => !skipWords.has(n) && n.length > 2)
-        .slice(0, 3);
-      if (items.length > 0) return items;
-    }
-  }
-  
-  return [];
 }
 
 function extractChoices(text) {
