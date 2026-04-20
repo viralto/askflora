@@ -1183,6 +1183,7 @@ footer {
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_v43-iBw-5ivia" data-theme="light"></div>
         <p style="font-size:13px; color:var(--text-light); margin: 12px 0 4px; line-height:1.5;">By joining, you agree to Flora's <a href="/privacy" target="_blank" rel="noopener" style="color:var(--green-deep); font-weight:600;">privacy policy</a>. We'll only email you about your beta access.</p>
         <button type="submit" class="btn btn-primary" id="requestSubmitBtn" style="width:100%; justify-content:center; margin-top:6px;">Get my key</button>
+        <p id="verifyHint" style="font-size:13px; color:var(--text-light); margin: 8px 0 0; line-height:1.4; text-align:center; min-height:18px;"></p>
       </form>
     </div>
     <div id="requestSuccessView" style="display:none;">
@@ -1437,18 +1438,39 @@ requestForm.addEventListener('submit', async (e) => {
   const name = document.getElementById('reqName').value.trim();
   const email = document.getElementById('reqEmail').value.trim();
   const garden = document.getElementById('reqGarden').value.trim();
+  const verifyHint = document.getElementById('verifyHint');
   if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return;
   }
 
-  // Get Turnstile token
-  let turnstileToken = '';
-  const tsInput = document.querySelector('[name="cf-turnstile-response"]');
-  if (tsInput) turnstileToken = tsInput.value;
+  // Get Turnstile token. If it's not ready yet, wait up to 4 seconds for it
+  // to appear before giving up — this covers the case where a fast user fills
+  // the form before Turnstile has finished loading.
+  function getToken() {
+    const tsInput = document.querySelector('[name="cf-turnstile-response"]');
+    return tsInput ? tsInput.value : '';
+  }
+
+  let turnstileToken = getToken();
 
   if (!turnstileToken) {
-    alert("Just give the verification a moment to complete, then try again.");
-    return;
+    verifyHint.textContent = 'Just a moment, finishing security check...';
+    verifyHint.style.color = 'var(--text-light)';
+    const submitBtn = document.getElementById('requestSubmitBtn');
+    submitBtn.disabled = true;
+    const waitStart = Date.now();
+    while (!turnstileToken && Date.now() - waitStart < 4000) {
+      await new Promise(r => setTimeout(r, 200));
+      turnstileToken = getToken();
+    }
+    submitBtn.disabled = false;
+
+    if (!turnstileToken) {
+      verifyHint.textContent = "Security check didn't complete. Try tapping 'Get my key' again.";
+      verifyHint.style.color = 'var(--text-mid)';
+      return;
+    }
+    verifyHint.textContent = '';
   }
 
   const submitBtn = document.getElementById('requestSubmitBtn');
@@ -1475,7 +1497,8 @@ requestForm.addEventListener('submit', async (e) => {
     } else {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
-      alert(data.error || 'Something went wrong. Try again.');
+      verifyHint.textContent = data.error || 'Something went wrong. Try again.';
+      verifyHint.style.color = 'var(--text-mid)';
       // Reset Turnstile for a fresh attempt
       if (window.turnstile) {
         try { window.turnstile.reset(); } catch {}
@@ -1484,7 +1507,8 @@ requestForm.addEventListener('submit', async (e) => {
   } catch (err) {
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
-    alert("Couldn't reach Flora. Check your connection and try again.");
+    verifyHint.textContent = "Couldn't reach Flora. Check your connection and try again.";
+    verifyHint.style.color = 'var(--text-mid)';
   }
 });
 
