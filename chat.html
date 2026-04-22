@@ -1420,10 +1420,16 @@ function scrollToBottom() {
 // ─── Access check on load ───
 async function checkAccess() {
   try {
+    // Abort the request if it takes longer than 10 seconds so the page
+    // doesn't sit stuck on the loader forever.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     const resp = await fetch(`${WORKER_URL}/check-access`, {
       method: 'POST',
-      credentials: 'include'
+      credentials: 'include',
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     const data = await resp.json();
     if (data.ok && data.mode) return { mode: data.mode, remaining: data.remaining };
     if (data.mode === 'taster_exhausted') return { mode: 'taster_exhausted' };
@@ -1531,30 +1537,38 @@ function escapeHtml(s) {
 
 // ─── Init ───
 (async function init() {
-  const access = await checkAccess();
-  accessMode = access.mode;
+  try {
+    const access = await checkAccess();
+    accessMode = access.mode;
 
-  if (access.mode === 'none' || access.mode === 'taster_exhausted') {
-    window.location.href = LANDING_URL;
-    return;
+    if (access.mode === 'none' || access.mode === 'taster_exhausted') {
+      window.location.href = LANDING_URL;
+      return;
+    }
+
+    // If we know how many taster messages are left, sync the count
+    if (access.mode === 'taster' && typeof access.remaining === 'number') {
+      tasterMessageCount = TASTER_LIMIT - access.remaining;
+    }
+
+    // Taster users come straight from the landing page ready to chat.
+    // Skip the welcome screen and kick Flora off automatically.
+    if (accessMode === 'taster' && conversationHistory.length === 0) {
+      welcome.style.display = 'none';
+      chatContainer.classList.add('active');
+      sendFloraOpener();
+    }
+  } catch (e) {
+    // Don't let init failures leave the user staring at the loader forever.
+    // Log the problem; the finally block will still reveal the page.
+    console.error('Init failed:', e);
+  } finally {
+    // Reveal the page now that we know what state to show (or that something
+    // went wrong). The loader must always come down so the user is never
+    // stranded on the Flora icon indefinitely.
+    const loader = document.getElementById('accessLoader');
+    if (loader) loader.style.display = 'none';
   }
-
-  // If we know how many taster messages are left, sync the count
-  if (access.mode === 'taster' && typeof access.remaining === 'number') {
-    tasterMessageCount = TASTER_LIMIT - access.remaining;
-  }
-
-  // Taster users come straight from the landing page ready to chat.
-  // Skip the welcome screen and kick Flora off automatically.
-  if (accessMode === 'taster' && conversationHistory.length === 0) {
-    welcome.style.display = 'none';
-    chatContainer.classList.add('active');
-    sendFloraOpener();
-  }
-
-  // Reveal the page now that we know what state to show
-  const loader = document.getElementById('accessLoader');
-  if (loader) loader.style.display = 'none';
 })();
 </script>
 </body>
