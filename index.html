@@ -117,23 +117,13 @@ nav {
   transition: color 0.15s;
 }
 .nav-link:hover { color: var(--green-deep); }
-.nav-key-link {
-  color: var(--green-deep);
-  background: var(--green-lightest);
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1.5px solid var(--green-pale);
-  transition: all 0.15s;
-}
-.nav-key-link:hover { background: var(--green-pale); color: var(--green-deeper); }
 
 @media (max-width: 600px) {
   .nav-inner { padding: 12px 18px; }
   .wordmark { font-size: 19px; }
   .wordmark-avatar { width: 32px; height: 32px; }
   .nav-links { gap: 10px; }
-  .nav-link:not(.nav-key-link) { display: none; }
-  .nav-key-link { padding: 7px 13px; font-size: 14px; }
+  .nav-link { padding: 7px 13px; font-size: 14px; }
 }
 
 /* ─── Hero ─── */
@@ -960,7 +950,6 @@ footer {
     </a>
     <div class="nav-links">
       <a href="#chats" class="nav-link" id="navChatsLink">See her in action</a>
-      <a href="#" class="nav-link nav-key-link" id="navKeyBtn">Get a key</a>
     </div>
   </div>
 </nav>
@@ -1549,12 +1538,8 @@ function openKeyModal() {
 }
 function closeKeyModal() { keyModal.classList.remove('open'); }
 
-// Footer "I have a special key" and nav "Get a key" both open the key modal
+// Footer "I have a special key" opens the key modal
 document.getElementById('specialKeyLink').addEventListener('click', (e) => {
-  e.preventDefault();
-  openKeyModal();
-});
-document.getElementById('navKeyBtn').addEventListener('click', (e) => {
   e.preventDefault();
   openKeyModal();
 });
@@ -1606,9 +1591,6 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       heroRequestBtn.parentNode.replaceChild(newHero, heroRequestBtn);
       newHero.addEventListener('click', goToChat);
       tasterBtn.style.display = 'none';
-      // Members don't need the "Get a key" nav button either
-      const navKey = document.getElementById('navKeyBtn');
-      if (navKey) navKey.style.display = 'none';
       // Or the "See her in action" preview link, they've already seen her
       const navChats = document.getElementById('navChatsLink');
       if (navChats) navChats.style.display = 'none';
