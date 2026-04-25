@@ -1210,7 +1210,7 @@ footer {
           placeholder="FLORA-XXXX-XXXX"
           autocomplete="off"
           spellcheck="false"
-          maxlength="15"
+          maxlength="30"
           aria-label="Beta key"
         >
       </div>
@@ -1233,19 +1233,16 @@ const keyForm = document.getElementById('keyForm');
 const keyFeedback = document.getElementById('keyFeedback');
 const keySubmit = document.getElementById('keySubmit');
 
-// Auto-format as they type: FLORA-XXXX-XXXX
+// Light formatting: normalise to uppercase, strip whitespace, handle any
+// pasted value gracefully whether or not it includes the FLORA- prefix.
 keyInput.addEventListener('input', (e) => {
-  let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  if (v.startsWith('FLORA')) v = v.slice(5);
-  v = v.slice(0, 8);
-  let formatted = 'FLORA-';
-  if (v.length <= 4) {
-    formatted += v;
-  } else {
-    formatted += v.slice(0, 4) + '-' + v.slice(4, 8);
+  // Strip everything that isn't a letter, number, or hyphen, then uppercase.
+  let v = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  // Collapse repeated FLORA- prefixes (handles "FLORA-FLORA-XXXX-XXXX" paste-on-top).
+  while (v.startsWith('FLORA-FLORA-')) {
+    v = v.slice(6);
   }
-  if (v.length === 0) formatted = '';
-  e.target.value = formatted;
+  e.target.value = v;
 
   keyInput.classList.remove('error', 'success');
   keyFeedback.classList.remove('error', 'success');
