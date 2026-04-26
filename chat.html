@@ -1535,6 +1535,43 @@ function escapeHtml(s) {
   return div.innerHTML;
 }
 
+// ─── Mobile keyboard handling ───
+// The Facebook in-app browser and some mobile browsers don't reliably
+// resize the layout when the keyboard appears, leaving the input box
+// hidden. The Visual Viewport API lets us track the actually-visible
+// area of the screen and resize the app container accordingly.
+(function setupViewportHandling() {
+  const app = document.querySelector('.app');
+  if (!app || !window.visualViewport) return;
+
+  function applyHeight() {
+    // visualViewport.height is the height of the screen NOT covered by
+    // the keyboard or browser chrome. Setting the app to that height
+    // means the input bar at the bottom stays visible above the keyboard.
+    app.style.height = window.visualViewport.height + 'px';
+  }
+
+  // Update on any viewport change (keyboard show/hide, orientation change,
+  // browser chrome appearing/disappearing on scroll).
+  window.visualViewport.addEventListener('resize', applyHeight);
+  window.visualViewport.addEventListener('scroll', applyHeight);
+
+  // Also apply once on load in case we start with a non-default viewport.
+  applyHeight();
+})();
+
+// When the textarea gets focus (keyboard about to appear), nudge the
+// input bar into view. Most browsers do this automatically but some
+// mobile webviews need a hand.
+document.addEventListener('focusin', (e) => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+    // Wait for the keyboard animation to start, then scroll into view.
+    setTimeout(() => {
+      e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }
+});
+
 // ─── Init ───
 (async function init() {
   try {
