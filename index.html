@@ -1145,10 +1145,6 @@ footer {
           <label for="reqEmail">Email</label>
           <input type="email" id="reqEmail" required placeholder="you@example.co.uk" autocomplete="email">
         </div>
-        <div class="modal-field">
-          <label for="reqGarden">Tell me a bit about what you grow</label>
-          <textarea id="reqGarden" placeholder="Small balcony in Leeds, a few herbs on the windowsill, one very dramatic monstera..."></textarea>
-        </div>
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_v43-iBw-5ivia" data-theme="light"></div>
         <button type="submit" class="btn btn-primary" id="requestSubmitBtn" style="width:100%; justify-content:center; margin-top:6px;">Get my key</button>
       </form>
@@ -1362,7 +1358,6 @@ requestForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('reqName').value.trim();
   const email = document.getElementById('reqEmail').value.trim();
-  const garden = document.getElementById('reqGarden').value.trim();
   if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return;
   }
@@ -1387,7 +1382,7 @@ requestForm.addEventListener('submit', async (e) => {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, garden, source: 'landing', turnstileToken })
+      body: JSON.stringify({ name, email, source: 'landing', turnstileToken })
     });
     const data = await resp.json();
 
