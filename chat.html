@@ -68,6 +68,29 @@ html, body {
   letter-spacing: 0.5px;
 }
 
+.snap-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-mid);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: none;
+}
+
+.chat-container.active ~ .header .snap-btn,
+.snap-btn.visible { display: inline-block; }
+
+.snap-btn:hover { background: var(--green-lightest); border-color: var(--green-mid); }
+
 .reset-btn {
   position: absolute;
   left: 12px;
@@ -244,6 +267,33 @@ html, body {
   border-bottom-right-radius: 6px;
 }
 
+/* Plant image links */
+.plant-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 8px 56px;
+  animation: msgIn 0.3s ease;
+}
+
+.plant-link {
+  background: var(--white);
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-deep);
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.plant-link:hover {
+  background: var(--green-lightest);
+  border-color: var(--green-mid);
+}
+
 /* Quick reply buttons */
 .quick-replies {
   display: flex;
@@ -337,112 +387,6 @@ html, body {
   color: var(--text-light);
 }
 
-/* Taster wrap-up form (replaces input bar after 10 messages) */
-.taster-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
-
-.taster-form-intro {
-  padding: 0 4px 4px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
-.taster-form input {
-  border: 2px solid var(--green-pale);
-  border-radius: 16px;
-  padding: 12px 18px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 16px;
-  color: var(--text-dark);
-  background: var(--cream);
-  outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
-  width: 100%;
-}
-
-.taster-form input:focus {
-  border-color: var(--green-mid);
-}
-
-.taster-form input::placeholder {
-  color: var(--text-light);
-}
-
-.taster-submit {
-  border: none;
-  background: var(--green-deep);
-  color: var(--white);
-  font-family: 'Nunito', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 12px 18px;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.taster-submit:hover {
-  background: #234733;
-}
-
-.taster-thanks {
-  padding: 16px;
-  text-align: center;
-  color: var(--text-dark);
-  font-size: 15px;
-  line-height: 1.4;
-}
-
-.taster-issued {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 8px 4px;
-  width: 100%;
-  text-align: center;
-}
-
-.taster-issued-heading {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--green-deep);
-  line-height: 1.3;
-}
-
-.taster-key-label {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.taster-key {
-  background: var(--green-lightest);
-  border: 2px dashed var(--green-pale);
-  border-radius: 12px;
-  padding: 14px 10px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: var(--green-deep);
-  user-select: all;
-  cursor: text;
-  word-break: break-all;
-}
-
-.taster-remaining {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
 .cf-turnstile {
   display: flex;
   justify-content: center;
@@ -496,46 +440,23 @@ html, body {
   font-size: 14px;
   cursor: pointer;
   color: var(--text-mid);
+}
+
+.preview-identify {
+  background: var(--green-deep);
+  color: var(--white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
   margin-left: auto;
 }
 
-.photo-menu {
-  background: var(--white);
-  border-top: 1px solid var(--cream-mid);
-  padding: 8px;
-  display: flex;
-  gap: 8px;
-}
-
-.photo-menu.hidden { display: none; }
-
-.photo-menu-option {
-  flex: 1;
-  background: var(--cream);
-  border: 1px solid var(--cream-mid);
-  border-radius: 14px;
-  padding: 14px 12px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--green-deep);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  transition: background 0.15s;
-}
-
-.photo-menu-option:hover,
-.photo-menu-option:active {
-  background: var(--cream-mid);
-}
-
-.photo-menu-icon {
-  font-size: 24px;
-  line-height: 1;
-}
+.preview-identify:hover { background: #1E4A2E; }
 
 /* Image in chat */
 .bubble img {
@@ -674,6 +595,7 @@ html, body {
   <div class="header">
     <button class="reset-btn" id="resetBtn" title="Start fresh">🌱 New</button>
     <h1>Ask Flora</h1>
+    <button class="snap-btn" id="headerSnapBtn" title="Snap to identify">🔍 Identify</button>
   </div>
 
   <!-- Loading overlay during access check -->
@@ -688,7 +610,6 @@ html, body {
     <p>Your gardening friend. I'll get to know your garden and help you grow things you'll love.</p>
     <button class="start-btn" id="startBtn">Start chatting</button>
     <button class="plantid-welcome-btn" id="plantIdWelcomeBtn">🔍 Identify</button>
-    <p style="font-size:13px; color:var(--text-light); margin-top:28px; line-height:1.5;">By chatting, you agree to Flora's <a href="/privacy" target="_blank" rel="noopener" style="color:var(--green-deep); font-weight:600; text-decoration:underline;">privacy policy</a>.</p>
   </div>
 
   <!-- Chat -->
@@ -697,17 +618,8 @@ html, body {
     <div id="quickReplies" class="quick-replies"></div>
     <div class="photo-preview hidden" id="photoPreview">
       <img id="previewImg" src="">
+      <button class="preview-identify" id="previewIdentify">🔍 Identify this</button>
       <button class="preview-remove" id="previewRemove">✕</button>
-    </div>
-    <div class="photo-menu hidden" id="photoMenu">
-      <button class="photo-menu-option" id="menuCamera">
-        <span class="photo-menu-icon">📷</span>
-        <span>Take a photo</span>
-      </button>
-      <button class="photo-menu-option" id="menuLibrary">
-        <span class="photo-menu-icon">🖼️</span>
-        <span>Choose from library</span>
-      </button>
     </div>
     <div class="input-bar">
       <input type="file" id="photoInput" accept="image/*" style="display:none">
@@ -787,8 +699,7 @@ PERSONALITY (this is who you are - let it shine through):
 - Sprinkle in tips they didn't ask for when something genuinely connects. "While you're at it, nasturtiums next to your beans will keep the blackfly off."
 - After identifying or recommending plants, offer care tips naturally. "Want some tips on keeping it happy?"
 - When you know their name, use it occasionally. Not every message.
-- If you don't know their name, ask for it in a reply that doesn't already contain a question. NEVER put two questions in the same message, it leaves the user unsure which to answer. If your reply to the user already ends in a substantive question ("have you been seeing them regularly?", "is it sun or shade?"), keep it that way and ask for their name another time. Wait for a reply where you're giving advice or confirming something, not asking. Then tag on something like "By the way, what should I call you?". Aim to get it in within the first few exchanges, but a natural single-question reply matters more than the exact turn number.
-- When the user tells you their name, acknowledge it briefly and warmly (e.g. "Nice to meet you, Tim!") and then either pick up the previous thread ("So, back to the rats...") or, if the previous topic was already resolved, ask what else you can help with. Never leave the name exchange as a dead end.
+- If you don't know their name, ask casually after your second or third reply, tagged onto the end.
 - Never repeat yourself. If you've already said something, don't say it again even if the user gives a short response.
 
 RULES:
@@ -796,7 +707,7 @@ RULES:
 - Match response length to what's needed. Simple questions: 1-2 sentences. Practical advice: 3-4 sentences with enough detail to act on. Don't pad, but don't strip useful info either.
 - Don't dump everything into one message. Give enough to be useful, then check if they want more. If someone mentions two problems, pick the most urgent one first. Don't try to solve everything at once.
 - Ask only ONE question per message, and only if relevant to the current topic.
-- Don't be sycophantic. Not every answer needs praise. A real friend doesn't applaud everything. In particular, don't open replies with "great question!", "what a lovely idea!", "what a thoughtful question!" or similar — these are the most obvious LLM tics and they make you sound like a chatbot rather than a friend. Warmth, encouragement and little observations are welcome throughout your replies; reflexive opening flattery is not.
+- Don't be sycophantic. Not every answer needs praise. A real friend doesn't applaud everything.
 - When someone shares something personal, acknowledge it warmly BEFORE giving advice. The personal connection comes first.
 - If someone questions your advice, be casual and honest. "Hmm, fair point..." not "You're absolutely right to question me!"
 - If the user skips a question, drop it. Read the room.
@@ -810,10 +721,6 @@ RULES:
 - Never ask someone to report back on something they haven't done yet.
 - Never mention "your profile" or expose internal data. Summarise what you know naturally.
 - Never invent interests the user hasn't expressed.
-- If the user questions how or why you know something about them (their name, their garden, anything), NEVER invent an explanation involving "setup", "registration", "your profile", "when you signed up", or anything like that. There is no setup flow, no username, no account profile the user filled in. You only know what they've told you in this conversation. If you've used a name or detail and the user pushes back, the honest answer is: "Sorry, I think I picked that up wrongly from what you said earlier. What should I actually call you?" Admit the mistake plainly. Never confabulate app mechanics to cover a slip.
-- If the user corrects their name ("actually my name is Tim, not X"), just use the new name naturally from that point on. Don't dwell.
-- You don't have access to maps, distances, current opening hours, or specific local business listings. Never recommend specific shops, nurseries, garden centres, or services by name unless the user has mentioned them first. You can't verify they're near the user, still trading, or any good. Instead, suggest the type of place ("an independent garden centre rather than a chain", "a specialist clematis nursery") and let them search locally themselves. If asked directly for a recommendation, be honest: "I can't actually see a map of your area, but a quick search for [type of place] near you should turn one up." This applies even if you're confident about a specific name from your training. You can't verify it's near them or current, so don't pretend you can.
-- On plant toxicity: state what you know clearly, both ways. If a plant is genuinely toxic to people or pets (foxgloves, lily of the valley, yew, daffodil bulbs, hellebore, lilies for cats), say so clearly. If a plant is well-established as safe (carrots and most edibles for humans, lavender and sunflowers for general garden use, cat grass and catnip for cats), say that too. Don't hedge unnecessarily. The exception is plants where toxicity is genuinely contested or where pet-safety organisations like the ASPCA or UK's Cats Protection classify a plant as toxic when many gardening sources don't — yarrow is a known example, also chrysanthemums, hostas, and several others. For these contested-classification plants, don't make confident "non-toxic" claims; describe them as "often grown around pets without issue but worth checking Cats Protection's list before planting if your cat's a nibbler" or similar. The mistake to avoid above all is generating a list of "cat-safe plants" or "child-safe plants" and confidently labelling each one safe, because that pattern produces over-confident assertions about contested plants. When suggesting plants for households with pets or children, lean towards plants you're genuinely confident about, and where you're unsure, point to authoritative sources rather than guessing.
 
 ${knownSection}
 
@@ -824,7 +731,7 @@ GARDENING KNOWLEDGE:
 - Both ornamental and veg/fruit. Allotment culture.
 - Houseplants, indoor growing, balcony and windowsill gardening, succulents, cacti, the lot. If it grows, you know about it.
 - You CAN see photos when users send them. Identify plants, trees, shrubs, flowers, insects, birds, fungi, garden wildlife, diseases, and anything else garden-related. Never say you can't see images.
-- Words are how you show plants. You don't display images or share photos, and that's a choice you're confident about, not a limitation you apologise for. Never use words like "sadly", "unfortunately", "I can't", or "I wish I could". When someone asks to see a plant ("show me X", "what does it look like", "have you got a picture?"), describe it vividly in your own words. Talk about its shape, its size, its colour, the way the leaves sit, the texture, what it reminds you of, what it does in a garden. Be specific and visual. If they ask again or specifically push for a photo after you've described it, stay matter-of-fact and warm: "I always feel it's better to describe things rather than just show a standard picture, but a quick image search for [thing] will pull up plenty if you want to see one." No apology. No "sadly". You're not missing a feature, this is how you do it. The description is the answer; the search suggestion is a brief, neutral aside.
+- You CAN show users what things look like. When a user asks to see something ("show me", "what does it look like"), include it in your plants array and tell them to tap the link below. This works for plants, tools, products, anything. But ONLY do this when asked. Don't show image links unprompted just because you mentioned something.
 - Practical, actionable, suited to experience level.
 
 TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
@@ -833,12 +740,14 @@ RESPONSE FORMAT:
 You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
 
 Example with quick replies (when you ask an either/or question):
-{"message": "Are they wrecking your lawn or your veg beds?", "quickReplies": ["Lawn", "Veg beds", "Both"]}
+{"message": "Are they wrecking your lawn or your veg beds?", "quickReplies": ["Lawn", "Veg beds", "Both"], "plants": []}
 
 Example without quick replies (when giving advice or asking open-ended):
-{"message": "Castor oil granules are your best bet. Scatter them along the runs and water in.", "quickReplies": []}
+{"message": "Castor oil granules are your best bet. Scatter them along the runs and water in.", "quickReplies": [], "plants": []}
 
-quickReplies: Use these very sparingly. Most of the time leave this as []. This is a chat, not a database app — conversation is the point, and peppering every question with tappable buttons makes it feel cold and restrictive. Only populate quickReplies when you're asking a genuine either/or clarification where the answer is a single word or very short phrase ("Lawn" or "Veg beds", "Sun" or "Shade", "Morning" or "Evening"). NEVER put the options in the message text. The app renders them as buttons. If the question is open, descriptive, or the user would naturally want to type a sentence back, use [].`;
+quickReplies: Put 2-3 tappable answer options here whenever your message ends with a question that has obvious short answers. NEVER put the options in the message text. The app renders them as buttons. Use [] for open-ended questions or pure advice.
+
+plants: ONLY populate when the user explicitly asks to see photos ("show me", "what does it look like"). Use [] otherwise.`;
 }
 
 // After each exchange, try to extract profile info from the conversation
@@ -850,15 +759,16 @@ function updateProfile(userMsg, floraMsg) {
   else return;
   const msg = rawText.toLowerCase();
 
-  // Name detection — only from explicit self-introduction, never from
-  // stray capitalised words (which used to catch plant names, place names,
-  // acronyms, etc. and set them as the user's name).
-  const namePatterns = [
-    /(?:i'?m|my name'?s?|my name is|call me|they call me|people call me)\s+([A-Z][a-z]{1,20})\b/
-  ];
-  for (const p of namePatterns) {
-    const match = rawText.match(p);
-    if (match) { gardenProfile.name = match[1]; break; }
+  // Name detection
+  if (!gardenProfile.name) {
+    const namePatterns = [
+      /(?:i'm|i am|my name is|my name's|it's|its|call me|they call me)\s+([A-Z][a-z]+)/i,
+      /^([A-Z][a-z]{1,15})[\s!.,]*$/  // Single word response starting with capital
+    ];
+    for (const p of namePatterns) {
+      const match = rawText.match(p);
+      if (match) { gardenProfile.name = match[1]; break; }
+    }
   }
 
   // Garden type
@@ -926,14 +836,12 @@ function updateProfile(userMsg, floraMsg) {
 
 let conversationHistory = [];
 let isGenerating = false;
+const shownLinks = new Set();
 
 // ─── Access control ───
 const WORKER_URL = 'https://askflora.co.uk/api';
 const LANDING_URL = '/';
-const TASTER_LIMIT = 10;
-let accessMode = 'none'; // 'full' | 'taster' | 'none'
-let tasterMessageCount = 0;
-let tasterWrapUpShown = false;
+let accessMode = 'none'; // 'full' | 'none'
 
 // Persistence
 function saveState() {
@@ -966,6 +874,7 @@ function loadState() {
 function resetState() {
   gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
   conversationHistory = [];
+  shownLinks.clear();
   localStorage.removeItem('flora_profile');
   localStorage.removeItem('flora_history');
 }
@@ -978,13 +887,9 @@ const messagesEl = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 const quickReplies = document.getElementById('quickReplies');
+const headerSnapBtn = document.getElementById('headerSnapBtn');
 const photoBtn = document.getElementById('photoBtn');
 const photoInput = document.getElementById('photoInput');
-const plantIdInput = document.getElementById('plantIdInput');
-const plantIdWelcomeBtn = document.getElementById('plantIdWelcomeBtn');
-const photoMenu = document.getElementById('photoMenu');
-const menuCamera = document.getElementById('menuCamera');
-const menuLibrary = document.getElementById('menuLibrary');
 const photoPreview = document.getElementById('photoPreview');
 const previewImg = document.getElementById('previewImg');
 const previewRemove = document.getElementById('previewRemove');
@@ -995,22 +900,18 @@ let pendingImage = null; // { base64, mediaType }
 startBtn.addEventListener('click', () => {
   welcome.style.display = 'none';
   chatContainer.classList.add('active');
+  headerSnapBtn.classList.add('visible');
   sendFloraOpener();
 });
 
 // Reset / new conversation
 document.getElementById('resetBtn').addEventListener('click', () => {
-  // Taster users can't really "start fresh" - they share a single 10-message allowance.
-  // Send them back to the landing page instead.
-  if (accessMode === 'taster') {
-    window.location.href = LANDING_URL;
-    return;
-  }
   if (!confirm('Start a fresh conversation? Flora will forget everything about your garden.')) return;
   resetState();
   messagesEl.innerHTML = '';
   quickReplies.innerHTML = '';
   chatContainer.classList.remove('active');
+  headerSnapBtn.classList.remove('visible');
   welcome.style.display = '';
 });
 
@@ -1019,30 +920,22 @@ try {
   if (loadState()) {
     welcome.style.display = 'none';
     chatContainer.classList.add('active');
+    headerSnapBtn.classList.add('visible');
     conversationHistory.forEach(msg => {
-      try {
-        if (msg.hidden) return;
-        // The synthetic opener is always a string; skip it. For array content
-        // (e.g. messages that originally carried a photo), this check is safely bypassed.
-        if (typeof msg.content === 'string' && msg.content.startsWith('Hi! I just opened the app')) return;
-
-        let displayText;
-        if (Array.isArray(msg.content)) {
-          displayText = msg.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
-        } else {
-          displayText = msg.content;
-        }
-        if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user');
-      } catch (inner) {
-        console.error('Failed to render a message; skipping it:', inner, msg);
+      if (msg.hidden || msg.content.startsWith('Hi! I just opened the app')) return;
+      let displayText;
+      if (Array.isArray(msg.content)) {
+        displayText = msg.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
+      } else {
+        displayText = msg.content;
       }
+      if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user');
     });
     scrollToBottom();
   }
 } catch (e) {
-  // A top-level restore failure shouldn't wipe the user's history.
-  // Leave localStorage alone so a future reload can try again.
   console.error('Restore failed:', e);
+  resetState();
 }
 
 // Auto-resize textarea
@@ -1051,57 +944,67 @@ userInput.addEventListener('input', () => {
   userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
 });
 
-// Detect touch devices (phones/tablets) to decide whether to show the
-// take-or-upload menu. On desktop we skip the menu and just open the file picker.
-const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+// Photo handling
+photoBtn.addEventListener('click', () => photoInput.click());
 
-function openPhotoMenuOrPicker() {
-  if (isTouchDevice) {
-    photoMenu.classList.remove('hidden');
-  } else {
-    photoInput.click();
-  }
-}
-function closePhotoMenu() {
-  photoMenu.classList.add('hidden');
-}
+const plantIdInput = document.getElementById('plantIdInput');
+const plantIdWelcomeBtn = document.getElementById('plantIdWelcomeBtn');
+const previewIdentify = document.getElementById('previewIdentify');
 
-photoBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  openPhotoMenuOrPicker();
-});
-
-menuCamera.addEventListener('click', () => {
-  closePhotoMenu();
+headerSnapBtn.addEventListener('click', () => {
   plantIdInput.click();
 });
 
-menuLibrary.addEventListener('click', () => {
-  closePhotoMenu();
-  photoInput.click();
-});
-
-// Dismiss the menu on outside tap
-document.addEventListener('click', (e) => {
-  if (!photoMenu.classList.contains('hidden') && !photoMenu.contains(e.target)) {
-    closePhotoMenu();
-  }
-});
-
-// Welcome screen Identify button: skip welcome and go straight to camera.
-// The photo will flow through the normal preview, so the user can add a
-// message or just tap send to hear what Flora thinks.
 plantIdWelcomeBtn.addEventListener('click', () => {
   welcome.style.display = 'none';
   chatContainer.classList.add('active');
+  headerSnapBtn.classList.add('visible');
+  // Don't send opener - go straight to camera. Flora will introduce herself in the ID response.
   plantIdInput.click();
 });
 
-// Both file inputs (photoInput for library, plantIdInput for camera) share
-// the same handler: downscale, stash as pendingImage, show the preview.
-function handlePickedPhoto(e) {
+plantIdInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const maxDim = 1024;
+    let w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else { w = Math.round(w * maxDim / h); h = maxDim; }
+    }
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    const base64 = dataUrl.split(',')[1];
+    // Immediately send with plant ID intent
+    pendingImage = { base64, mediaType: 'image/jpeg' };
+    const imgHtml = `<img src="${dataUrl}">`;
+    addBubble(imgHtml + 'What is this?', 'user', true);
+    const isFirstMsg = conversationHistory.length === 0;
+    const idText = isFirstMsg
+      ? 'This is my first time using the app. Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info. Introduce yourself briefly too!'
+      : 'Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info about it.';
+    const content = [
+      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
+      { type: 'text', text: idText }
+    ];
+    pendingImage = null;
+    conversationHistory.push({ role: 'user', content });
+    callFlora();
+  };
+  img.src = URL.createObjectURL(file);
+  plantIdInput.value = '';
+});
+
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Resize image to keep API payload manageable
   const img = new Image();
   img.onload = () => {
     const canvas = document.createElement('canvas');
@@ -1119,20 +1022,32 @@ function handlePickedPhoto(e) {
     pendingImage = { base64, mediaType: 'image/jpeg' };
     previewImg.src = dataUrl;
     photoPreview.classList.remove('hidden');
-    userInput.placeholder = 'Add a message...';
+    userInput.placeholder = 'Add a message about this photo...';
     userInput.focus();
   };
   img.src = URL.createObjectURL(file);
-  e.target.value = '';
-}
-
-photoInput.addEventListener('change', handlePickedPhoto);
-plantIdInput.addEventListener('change', handlePickedPhoto);
+  photoInput.value = '';
+});
 
 previewRemove.addEventListener('click', () => {
   pendingImage = null;
   photoPreview.classList.add('hidden');
   userInput.placeholder = 'Type your message...';
+});
+
+previewIdentify.addEventListener('click', () => {
+  if (!pendingImage || isGenerating) return;
+  const dataUrl = `data:${pendingImage.mediaType};base64,${pendingImage.base64}`;
+  addBubble(`<img src="${dataUrl}">What is this?`, 'user', true);
+  const content = [
+    { type: 'image', source: { type: 'base64', media_type: pendingImage.mediaType, data: pendingImage.base64 } },
+    { type: 'text', text: 'Can you identify this for me? It might be a plant, tree, flower, insect, or anything garden-related. Tell me what it is and any useful info about it.' }
+  ];
+  pendingImage = null;
+  photoPreview.classList.add('hidden');
+  userInput.placeholder = 'Type your message...';
+  conversationHistory.push({ role: 'user', content });
+  callFlora();
 });
 
 // Send message
@@ -1180,42 +1095,12 @@ function sendMessage(text) {
 
   conversationHistory.push({ role: 'user', content });
 
-  // Taster mode: count messages and nudge Flora to wrap up at the limit
-  if (accessMode === 'taster') {
-    tasterMessageCount++;
-    if (tasterMessageCount === TASTER_LIMIT) {
-      // Inject a system-level nudge into the last user message so Flora
-      // wraps things up in character without the user seeing an instruction.
-      const lastMsg = conversationHistory[conversationHistory.length - 1];
-      const nudge = "\n\n[This is the user's 10th message in a brief taster session. Respond normally to what they just said, then warmly wrap the conversation up in your own voice. Say something like: you've loved chatting, you'd love to keep going properly, would they like to pop their email in and you'll sort them out a proper key. Keep it natural, warm, and short. Do not mention that this is a taster or that there is a limit.]";
-      if (typeof lastMsg.content === 'string') {
-        lastMsg.content = lastMsg.content + nudge;
-      } else if (Array.isArray(lastMsg.content)) {
-        const textBlock = lastMsg.content.find(b => b.type === 'text');
-        if (textBlock) textBlock.text = textBlock.text + nudge;
-      }
-    }
-  }
-
   callFlora();
 }
 
 function sendFloraOpener() {
   conversationHistory = [];
-  // Hardcoded opener: consistency matters on first impression. Every user
-  // sees the same warm intro that's inclusive of non-garden growing spaces
-  // and explicitly flags the photo button.
-  const opener = "Hi! I'm Flora. Think of me as your gardening friend who's always around when you're not quite sure what you're looking at, why something's struggling, or what to grow next. You can tap 📷 to show me a photo if that's easier than typing. What can I help with?";
-  // Seed the conversation so Flora remembers she's already introduced herself
-  // when she generates her next response.
-  conversationHistory.push({
-    role: 'user',
-    content: 'Hi! I just opened the app.',
-    hidden: true
-  });
-  conversationHistory.push({ role: 'assistant', content: opener });
-  addBubble(opener, 'flora');
-  saveState();
+  callFlora(true);
 }
 
 async function callFlora(isOpener = false) {
@@ -1264,18 +1149,6 @@ async function callFlora(isOpener = false) {
       return;
     }
 
-    // Taster limit reached - trigger the wrap-up form directly
-    if (resp.status === 402) {
-      typingEl.remove();
-      isGenerating = false;
-      sendBtn.disabled = false;
-      if (!tasterWrapUpShown) {
-        tasterWrapUpShown = true;
-        showTasterWrapUp();
-      }
-      return;
-    }
-
     if (data.error) {
       typingEl.remove();
       addBubble('Sorry, I seem to be having a moment! (' + (data.error.message || data.error.type || 'unknown error') + ')', 'flora');
@@ -1296,6 +1169,7 @@ async function callFlora(isOpener = false) {
     // Parse JSON response - handle model sometimes outputting text before JSON
     let floraMsg = reply;
     let qrOptions = [];
+    let plantLinks = [];
     
     function tryParseFlora(str) {
       try {
@@ -1326,8 +1200,7 @@ async function callFlora(isOpener = false) {
     if (parsed) {
       floraMsg = parsed.message;
       qrOptions = parsed.quickReplies || [];
-      // Note: we no longer render any `plants` field Flora might still produce
-      // from older cached behaviour. Silently drop it.
+      plantLinks = (parsed.plants || []).filter(p => typeof p === 'string');
     } else {
       // Strip any trailing JSON fragment if model ran out of tokens
       floraMsg = reply.replace(/\s*\{\s*"message"[\s\S]*$/, '').trim() || reply;
@@ -1345,18 +1218,34 @@ async function callFlora(isOpener = false) {
     typingEl.remove();
     addBubble(floraMsg, 'flora');
 
-    // Show contextual quick replies - only if Flora explicitly provided them.
-    // No auto-detection fallback: guessing from Flora's text produced weird
-    // results (fragments of the question appearing as buttons).
-    if (qrOptions.length > 0) {
-      showQuickReplies(qrOptions);
+    // Show plant image links
+    let linksShown = false;
+    
+    // If model didn't provide links, try to extract from user's request
+    if (plantLinks.length === 0 && !isOpener) {
+      const autoLinks = extractImageRequest(userText, floraMsg);
+      if (autoLinks.length > 0) plantLinks = autoLinks;
+    }
+    
+    if (plantLinks.length > 0) {
+      const newLinks = plantLinks.filter(l => typeof l === 'string' && l.length > 0 && !shownLinks.has(l.toLowerCase()));
+      if (newLinks.length > 0) {
+        newLinks.forEach(l => shownLinks.add(l.toLowerCase()));
+        showPlantLinks(newLinks);
+        linksShown = true;
+      }
     }
 
-    // Taster: after Flora wraps up on message 10, swap the input for a key request form
-    if (accessMode === 'taster' && tasterMessageCount >= TASTER_LIMIT && !tasterWrapUpShown) {
-      tasterWrapUpShown = true;
-      // Small delay so the user reads Flora's message first
-      setTimeout(() => showTasterWrapUp(), 600);
+    // Show contextual quick replies - from model or auto-detected (not alongside image links)
+    if (!linksShown) {
+      if (qrOptions.length > 0) {
+        showQuickReplies(qrOptions);
+      } else {
+        const autoOptions = extractChoices(floraMsg);
+        if (autoOptions.length > 0) {
+          showQuickReplies(autoOptions);
+        }
+      }
     }
 
   } catch (err) {
@@ -1367,11 +1256,6 @@ async function callFlora(isOpener = false) {
 
   isGenerating = false;
   sendBtn.disabled = false;
-
-  // Taster wrap-up: after Flora's response to the 10th message, swap input for email form
-  if (accessMode === 'taster' && tasterMessageCount >= TASTER_LIMIT) {
-    setTimeout(() => showTasterWrapUp(), 800);
-  }
 }
 
 function addBubble(text, who, isHtml = false) {
@@ -1398,6 +1282,111 @@ function addBubble(text, who, isHtml = false) {
   scrollToBottom();
 }
 
+function showPlantLinks(plants) {
+  const container = document.createElement('div');
+  container.className = 'plant-links';
+  plants.forEach(name => {
+    const link = document.createElement('a');
+    link.className = 'plant-link';
+    link.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name)}`;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = '🔎 ' + name;
+    container.appendChild(link);
+  });
+  messagesEl.appendChild(container);
+  scrollToBottom();
+}
+
+function extractImageRequest(userText, floraText) {
+  if (!userText) return [];
+  const lower = userText.toLowerCase();
+  
+  // Check if this is an image request
+  const isImageRequest = /show me|can i see|can you show|what does .+ look like|what do .+ look like|picture of|photo of|got a photo|got a picture|image of|see what .+ look/i.test(lower);
+  if (!isImageRequest) return [];
+  
+  // Try to extract the subject from user's message
+  const patterns = [
+    /show me (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /can (?:i|you) (?:see|show)(?: me)? (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /what (?:does|do) (?:a |an |the )?(.{3,35}?) look like/i,
+    /(?:picture|photo|image) of (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
+    /see what (?:a |an |the )?(.{3,35}?) look/i
+  ];
+  
+  for (const p of patterns) {
+    const match = userText.match(p);
+    if (match && match[1] && match[1].trim().length > 2) {
+      let subject = match[1].trim().replace(/[?.!,]+$/, '');
+      if (subject.length > 2 && subject.length < 40) {
+        return [subject.charAt(0).toUpperCase() + subject.slice(1)];
+      }
+    }
+  }
+  
+  // User asked vaguely ("show me", "can I see them") - extract from Flora's response
+  if (floraText) {
+    // Look for capitalised plant/item names or quoted names in Flora's text
+    const nameMatches = floraText.match(/\b([A-Z][a-z]+(?:\s+[a-z]+)?)\b/g);
+    if (nameMatches) {
+      const skipWords = new Set(['The','This','That','These','Those','They','There','Here','What','When','Where','How','Does','Also','Just','Right','Well','Good','Nice','Both','Your','Have','Want','Some','Sure','Tap','Let','Can','Are','For','And','But','Not']);
+      const items = nameMatches
+        .filter(n => !skipWords.has(n) && n.length > 2)
+        .slice(0, 3);
+      if (items.length > 0) return items;
+    }
+  }
+  
+  return [];
+}
+
+function extractChoices(text) {
+  // Find the last question in the message
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const lastQ = [...sentences].reverse().find(s => s.trim().endsWith('?'));
+  if (!lastQ) return [];
+
+  // Skip open-ended questions - these aren't real either/or choices
+  if (/^(what are you|what do you|what's your|what have you|how do|how are|where do|where are|why do|why are|when do|when did|tell me|can you tell|what kind of|what sort of|what type of)/i.test(lastQ.trim())) return [];
+
+  // Look for "X or Y?" pattern
+  const orMatch = lastQ.match(/\b(.{2,30}?)\s+or\s+(.{2,30}?)\?$/i);
+  if (!orMatch) return [];
+
+  let optA = orMatch[1].trim();
+  let optB = orMatch[2].trim();
+
+  // Clean up button text
+  function cleanOption(o) {
+    o = o.trim();
+    o = o.replace(/^(you have |you've got |do you have |you're |you |your |my |i have |i've got |it's |they're |there's |there are |have you got )/i, '');
+    o = o.replace(/^(a |an |the |just |more |some |to |any |about )/i, '');
+    o = o.charAt(0).toUpperCase() + o.slice(1);
+    return o;
+  }
+
+  optA = cleanOption(optA);
+  optB = cleanOption(optB);
+
+  // Check for comma-separated list: "X, Y, or Z?"
+  const commaMatch = lastQ.match(/\b(.{2,30}?),\s+(.{2,30}?),?\s+or\s+(.{2,30}?)\?$/i);
+  if (commaMatch) {
+    let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(cleanOption);
+    // Skip if options look like verbs/actions rather than concrete choices
+    if (opts.some(o => /^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(o))) return [];
+    if (opts.every(o => o.length <= 25)) return opts;
+  }
+
+  // Skip if options look like verbs rather than nouns
+  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optA)) return [];
+  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optB)) return [];
+
+  // Only return if options are reasonable length for buttons
+  if (optA.length > 25 || optB.length > 25) return [];
+  return [optA, optB];
+}
+
 function showQuickReplies(options) {
   quickReplies.innerHTML = '';
   options.forEach(opt => {
@@ -1421,155 +1410,33 @@ function scrollToBottom() {
 // ─── Access check on load ───
 async function checkAccess() {
   try {
-    // Abort the request if it takes longer than 10 seconds so the page
-    // doesn't sit stuck on the loader forever.
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
     const resp = await fetch(`${WORKER_URL}/check-access`, {
       method: 'POST',
-      credentials: 'include',
-      signal: controller.signal
+      credentials: 'include'
     });
-    clearTimeout(timeoutId);
     const data = await resp.json();
-    if (data.ok && data.mode) return { mode: data.mode, remaining: data.remaining };
-    if (data.mode === 'taster_exhausted') return { mode: 'taster_exhausted' };
+    // Only 'full' grants access. Anything else (none, taster, taster_exhausted
+    // from legacy cookies) means the user needs to go back to the landing page.
+    if (data.ok && data.mode === 'full') return { mode: 'full' };
     return { mode: 'none' };
   } catch (e) {
     return { mode: 'none' };
   }
-}
-
-// ─── Taster wrap-up ───
-function showTasterWrapUp() {
-  const inputBar = document.querySelector('.input-bar');
-  if (!inputBar) return;
-
-  inputBar.innerHTML = `
-    <form id="tasterForm" class="taster-form">
-      <div class="taster-form-intro">Pop your details in and I'll sort you a key on the spot so we can keep going.</div>
-      <input type="text" id="tasterName" placeholder="Your name" required autocomplete="name">
-      <input type="email" id="tasterEmail" placeholder="Your email" required autocomplete="email">
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_v43-iBw-5ivia" data-theme="light"></div>
-      <button type="submit" class="taster-submit" id="tasterSubmit">Get my key</button>
-    </form>
-  `;
-
-  setTimeout(() => {
-    const messages = document.getElementById('messages');
-    if (messages) messages.scrollTop = messages.scrollHeight;
-  }, 50);
-
-  const tasterForm = document.getElementById('tasterForm');
-  tasterForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('tasterName').value.trim();
-    const email = document.getElementById('tasterEmail').value.trim();
-    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
-
-    let turnstileToken = '';
-    const tsInput = tasterForm.querySelector('[name="cf-turnstile-response"]');
-    if (tsInput) turnstileToken = tsInput.value;
-
-    if (!turnstileToken) {
-      alert("Just give the verification a moment to complete, then try again.");
-      return;
-    }
-
-    const submitBtn = document.getElementById('tasterSubmit');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sorting your key...';
-
-    try {
-      const resp = await fetch(`${WORKER_URL}/request-key`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, source: 'taster', turnstileToken })
-      });
-      const data = await resp.json();
-
-      if (data.ok && data.key) {
-        // Show the key inline with an enter button
-        const remainingLine = (typeof data.remaining === 'number' && data.remaining > 0)
-          ? `<div class="taster-remaining">${data.remaining} ${data.remaining === 1 ? 'slot' : 'slots'} left in the current batch.</div>`
-          : '';
-        inputBar.innerHTML = `
-          <div class="taster-issued">
-            <div class="taster-issued-heading">You're in the Beta Crew, ${escapeHtml(data.name || name)}!</div>
-            <div class="taster-key-label">Your key (yours alone, please don't share it):</div>
-            <div class="taster-key">${escapeHtml(data.key)}</div>
-            ${remainingLine}
-            <button type="button" class="taster-submit" id="enterChatBtn">Carry on chatting</button>
-          </div>
-        `;
-        document.getElementById('enterChatBtn').addEventListener('click', () => {
-          // The Worker already set the access cookie when auto-issuing.
-          // Full reload so the chat app picks up the new access cookie.
-          window.location.reload();
-        });
-      } else if (data.ok && data.queued) {
-        inputBar.innerHTML = `
-          <div class="taster-thanks">This batch is full. I've got your details and I'll be in touch when the next one opens.</div>
-        `;
-      } else {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-        alert(data.error || 'Something went wrong. Try again.');
-        if (window.turnstile) {
-          try { window.turnstile.reset(); } catch {}
-        }
-      }
-    } catch (err) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
-      alert("Couldn't reach Flora. Check your connection and try again.");
-    }
-  });
-}
-
-// Escape HTML to avoid injection when inserting the name or key into innerHTML
-function escapeHtml(s) {
-  const div = document.createElement('div');
-  div.textContent = String(s);
-  return div.innerHTML;
 }
 
 // ─── Init ───
 (async function init() {
-  try {
-    const access = await checkAccess();
-    accessMode = access.mode;
+  const access = await checkAccess();
+  accessMode = access.mode;
 
-    if (access.mode === 'none' || access.mode === 'taster_exhausted') {
-      window.location.href = LANDING_URL;
-      return;
-    }
-
-    // If we know how many taster messages are left, sync the count
-    if (access.mode === 'taster' && typeof access.remaining === 'number') {
-      tasterMessageCount = TASTER_LIMIT - access.remaining;
-    }
-
-    // Taster users come straight from the landing page ready to chat.
-    // Skip the welcome screen and kick Flora off automatically.
-    if (accessMode === 'taster' && conversationHistory.length === 0) {
-      welcome.style.display = 'none';
-      chatContainer.classList.add('active');
-      sendFloraOpener();
-    }
-  } catch (e) {
-    // Don't let init failures leave the user staring at the loader forever.
-    // Log the problem; the finally block will still reveal the page.
-    console.error('Init failed:', e);
-  } finally {
-    // Reveal the page now that we know what state to show (or that something
-    // went wrong). The loader must always come down so the user is never
-    // stranded on the Flora icon indefinitely.
-    const loader = document.getElementById('accessLoader');
-    if (loader) loader.style.display = 'none';
+  if (access.mode !== 'full') {
+    window.location.href = LANDING_URL;
+    return;
   }
+
+  // Reveal the page now that we know what state to show
+  const loader = document.getElementById('accessLoader');
+  if (loader) loader.style.display = 'none';
 })();
 </script>
 </body>
