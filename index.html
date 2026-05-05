@@ -606,90 +606,7 @@ section {
 .memory-note.n2 { top: 60px; right: 10px; transform: rotate(2deg); background: var(--warm-cream); }
 .memory-note.n3 { top: 150px; left: 40px; transform: rotate(-1.5deg); }
 
-/* ─── Beta access section ─── */
-.beta {
-  padding: 60px 0 100px;
-}
-@media (max-width: 600px) {
-  .beta { padding: 32px 0 56px; }
-}
-.beta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-}
-@media (max-width: 860px) {
-  .beta-grid { grid-template-columns: 1fr; }
-}
-
-.beta-card {
-  background: var(--white);
-  border-radius: 24px;
-  padding: 36px 32px;
-  border: 1px solid rgba(168, 196, 162, 0.3);
-  box-shadow: var(--shadow-soft);
-  display: flex;
-  flex-direction: column;
-}
-@media (max-width: 600px) {
-  .beta-card { padding: 28px 22px; border-radius: 20px; }
-  .beta-card h3 { font-size: 24px; }
-}
-.beta-card.primary {
-  background: var(--green-deep);
-  color: var(--white);
-  border-color: var(--green-deep);
-}
-.beta-card-eyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--green-mid);
-  margin-bottom: 12px;
-}
-.beta-card.primary .beta-card-eyebrow { color: var(--green-pale); }
-
-.beta-card h3 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 28px;
-  color: var(--green-deep);
-  line-height: 1.2;
-  margin-bottom: 14px;
-  letter-spacing: -0.2px;
-}
-.beta-card.primary h3 { color: var(--white); }
-
-.beta-card p {
-  font-size: 16px;
-  color: var(--text-mid);
-  line-height: 1.55;
-  margin-bottom: 24px;
-  flex: 1;
-}
-.beta-card.primary p { color: var(--green-lightest); }
-
-.beta-card .btn { width: 100%; justify-content: center; }
-.beta-card.primary .btn-primary {
-  background: var(--white);
-  color: var(--green-deep);
-  border-color: var(--white);
-}
-.beta-card.primary .btn-primary:hover {
-  background: var(--green-lightest);
-  border-color: var(--green-lightest);
-}
-
-/* Beta key form */
-.key-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.key-input-wrap {
-  position: relative;
-}
+/* Beta key input (used in the key-entry modal) */
 .key-input {
   width: 100%;
   padding: 16px 18px;
@@ -734,30 +651,6 @@ section {
 }
 .key-feedback.error { color: #C0392B; font-style: normal; }
 .key-feedback.success { color: var(--green-deep); font-style: normal; }
-
-.btn-submit {
-  background: var(--green-deep);
-  color: var(--white);
-  border-color: var(--green-deep);
-  padding: 14px 22px;
-  border-radius: 14px;
-  font-size: 16px;
-  width: 100%;
-  justify-content: center;
-  cursor: pointer;
-}
-.btn-submit:hover { background: var(--green-deeper); border-color: var(--green-deeper); }
-.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.beta-hint {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-light);
-  margin-top: 6px;
-  line-height: 1.5;
-}
 
 /* ─── FAQ / what she does not ─── */
 .honest {
@@ -1193,50 +1086,6 @@ footer {
   </div>
 </section>
 
-<!-- Beta access -->
-<section class="beta" id="beta">
-  <div class="container">
-    <div style="text-align:center; max-width:620px; margin: 0 auto 40px;" class="reveal">
-      <div class="section-kicker">The beta</div>
-      <h3 class="section-heading">She's still settling in.</h3>
-      <p class="section-sub" style="margin-top: 14px;">Flora's in closed beta while we teach her the ropes. We're letting people in slowly, a handful at a time, so we can actually listen to what's working.</p>
-    </div>
-
-    <div class="beta-grid">
-      <!-- Request -->
-      <div class="beta-card primary reveal" id="request">
-        <div class="beta-card-eyebrow">Don't have one yet?</div>
-        <h3>Request a beta key</h3>
-        <p>Tell us a bit about what you grow and we'll send a key over. No waiting lists that swallow your email forever. Promise.</p>
-        <button class="btn btn-primary" id="requestBtn">Join the Beta Crew</button>
-      </div>
-
-      <!-- Redeem -->
-      <div class="beta-card reveal" id="key">
-        <div class="beta-card-eyebrow">Already got a key?</div>
-        <h3>Pop it in here.</h3>
-        <p>Enter the beta key from your invite email to unlock Flora. They look like <code style="background:var(--cream-dark);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px;color:var(--brown-dark);">FLORA-XXXX-XXXX</code>.</p>
-        <form class="key-form" id="keyForm" novalidate>
-          <div class="key-input-wrap">
-            <input
-              type="text"
-              id="keyInput"
-              class="key-input"
-              placeholder="FLORA-XXXX-XXXX"
-              autocomplete="off"
-              spellcheck="false"
-              maxlength="15"
-              aria-label="Beta key"
-            >
-          </div>
-          <div class="key-feedback" id="keyFeedback">We'll match it against your invite.</div>
-          <button type="submit" class="btn btn-submit" id="keySubmit">Unlock Flora</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- What she is / isn't -->
 <section class="honest">
   <div class="container">
@@ -1324,6 +1173,31 @@ footer {
   </div>
 </div>
 
+<!-- Key-entry modal -->
+<div class="modal-overlay" id="keyModal" role="dialog" aria-modal="true" aria-labelledby="keyModalTitle">
+  <div class="modal">
+    <button class="modal-close" id="keyModalClose" aria-label="Close">✕</button>
+    <h3 id="keyModalTitle">Pop in your key</h3>
+    <p>Enter the beta key you were given. They look like <code style="background:var(--cream-dark);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px;color:var(--brown-dark);">FLORA-XXXX-XXXX</code>.</p>
+    <form class="modal-form" id="keyForm" novalidate>
+      <div class="modal-field">
+        <input
+          type="text"
+          id="keyInput"
+          class="key-input"
+          placeholder="FLORA-XXXX-XXXX"
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="15"
+          aria-label="Beta key"
+        >
+      </div>
+      <div class="key-feedback" id="keyFeedback">We'll check it against your invite.</div>
+      <button type="submit" class="btn btn-primary" id="keySubmit" style="width:100%; justify-content:center; margin-top:6px;">Unlock Flora</button>
+    </form>
+  </div>
+</div>
+
 <script>
 // ─── Config ───
 const WORKER_URL = 'https://askflora.co.uk/api';
@@ -1405,9 +1279,29 @@ keyForm.addEventListener('submit', async (e) => {
   }
 });
 
+// ─── Key modal (open/close) ───
+const keyModal = document.getElementById('keyModal');
+const keyModalClose = document.getElementById('keyModalClose');
+
+function openKeyModal() {
+  keyModal.classList.add('open');
+  keyInput.value = '';
+  keyInput.classList.remove('error', 'success');
+  keyFeedback.classList.remove('error', 'success');
+  keyFeedback.textContent = "We'll check it against your invite.";
+  keySubmit.disabled = false;
+  keySubmit.textContent = 'Unlock Flora';
+  setTimeout(() => keyInput.focus(), 250);
+}
+function closeKeyModal() { keyModal.classList.remove('open'); }
+
+keyModalClose.addEventListener('click', closeKeyModal);
+keyModal.addEventListener('click', (e) => { if (e.target === keyModal) closeKeyModal(); });
+// Escape-to-close already wired up for the request modal closes both
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeKeyModal(); });
+
 // ─── Request modal (auto-issue with Turnstile) ───
 const modal = document.getElementById('requestModal');
-const requestBtn = document.getElementById('requestBtn');
 const modalClose = document.getElementById('modalClose');
 const requestForm = document.getElementById('requestForm');
 const requestFormView = document.getElementById('requestFormView');
@@ -1428,9 +1322,7 @@ function openModal() {
 }
 function closeModal() { modal.classList.remove('open'); }
 
-requestBtn.addEventListener('click', openModal);
-
-// The big hero CTA also opens the same modal
+// The hero CTA opens the request modal
 const heroRequestBtn = document.getElementById('heroRequestBtn');
 if (heroRequestBtn) heroRequestBtn.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
@@ -1542,12 +1434,11 @@ async function loadBetaStatus() {
 }
 loadBetaStatus();
 
-// Handle the nav "Got a key?": smoothly scroll + focus
+// "I have a special key" footer link opens the key entry modal
 document.querySelectorAll('a[href="#key"]').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('key').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setTimeout(() => keyInput.focus({ preventScroll: true }), 600);
+    openKeyModal();
   });
 });
 
