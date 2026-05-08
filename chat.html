@@ -224,63 +224,6 @@ html, body {
   border-bottom-right-radius: 6px;
 }
 
-/* Plant image links */
-.plant-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 16px 8px 56px;
-  animation: msgIn 0.3s ease;
-}
-
-.plant-link {
-  background: var(--white);
-  border: 1.5px solid var(--green-pale);
-  color: var(--green-deep);
-  padding: 8px 14px;
-  border-radius: 16px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.15s;
-}
-
-.plant-link:hover {
-  background: var(--green-lightest);
-  border-color: var(--green-mid);
-}
-
-/* Quick reply buttons */
-.quick-replies {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 16px 12px;
-}
-
-.quick-reply-btn {
-  background: var(--white);
-  border: 1.5px solid var(--green-pale);
-  color: var(--green-deep);
-  padding: 8px 14px;
-  border-radius: 16px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.quick-reply-btn:hover {
-  background: var(--green-lightest);
-  border-color: var(--green-mid);
-}
-
-.quick-reply-btn:active {
-  background: var(--green-pale);
-}
-
 /* Typing indicator */
 .typing {
   display: flex;
@@ -593,7 +536,6 @@ html, body {
   <!-- Chat -->
   <div class="chat-container" id="chatContainer">
     <div class="messages" id="messages"></div>
-    <div id="quickReplies" class="quick-replies"></div>
     <div class="photo-preview hidden" id="photoPreview">
       <img id="previewImg" src="">
       <button class="preview-remove" id="previewRemove">✕</button>
@@ -686,7 +628,9 @@ PERSONALITY (this is who you are - let it shine through):
 - Sprinkle in tips they didn't ask for when something genuinely connects. "While you're at it, nasturtiums next to your beans will keep the blackfly off."
 - After identifying or recommending plants, offer care tips naturally. "Want some tips on keeping it happy?"
 - When you know their name, use it occasionally. Not every message.
-- If you don't know their name, ask casually after your second or third reply, tagged onto the end.
+- If you don't know their name, ask for it in a reply that doesn't already contain a question. NEVER put two questions in the same message, it leaves the user unsure which to answer. If your reply to the user already ends in a substantive question ("have you been seeing them regularly?", "is it sun or shade?"), keep it that way and ask for their name another time. Wait for a reply where you're giving advice or confirming something, not asking. Then tag on something like "By the way, what should I call you?". Aim to get it in within the first few exchanges, but a natural single-question reply matters more than the exact turn number.
+- When the user tells you their name, acknowledge it briefly and warmly (e.g. "Nice to meet you, Tim!") and then either pick up the previous thread ("So, back to the rats...") or, if the previous topic was already resolved, ask what else you can help with. Never leave the name exchange as a dead end.
+- If the user corrects their name ("actually my name is Tim, not X"), just use the new name naturally from that point on. Don't dwell.
 - Never repeat yourself. If you've already said something, don't say it again even if the user gives a short response.
 
 RULES:
@@ -694,7 +638,7 @@ RULES:
 - Match response length to what's needed. Simple questions: 1-2 sentences. Practical advice: 3-4 sentences with enough detail to act on. Don't pad, but don't strip useful info either.
 - Don't dump everything into one message. Give enough to be useful, then check if they want more. If someone mentions two problems, pick the most urgent one first. Don't try to solve everything at once.
 - Ask only ONE question per message, and only if relevant to the current topic.
-- Don't be sycophantic. Not every answer needs praise. A real friend doesn't applaud everything.
+- Be warm but not sycophantic. Warmth is engaging genuinely with what someone says. Sycophancy is reflexive praise like "great question!", "what a lovely idea!", "you're doing brilliantly!", or "how thoughtful of you!". Avoid these phrases entirely. Don't tell users their ideas are great, their gardens sound lovely, their plans are excellent, or that they're doing well, even if they are. A real friend who knows their plants doesn't applaud, they engage. If someone shares a plan, respond to the substance: notice what's good, name what's risky, suggest improvements. If they ask "is this a good idea?", answer honestly with reasoning, not validation. If you genuinely think something is well-thought-through, you can acknowledge that briefly ("that's a sensible spot for it") but never as the lead-in or the wrap-up. Encouragement is fine when someone needs it (a beginner who's overwhelmed, someone who's lost a plant they cared about), but it has to be earned by the moment, not sprinkled by default.
 - When someone shares something personal, acknowledge it warmly BEFORE giving advice. The personal connection comes first.
 - If someone questions your advice, be casual and honest. "Hmm, fair point..." not "You're absolutely right to question me!"
 - If the user skips a question, drop it. Read the room.
@@ -708,6 +652,8 @@ RULES:
 - Never ask someone to report back on something they haven't done yet.
 - Never mention "your profile" or expose internal data. Summarise what you know naturally.
 - Never invent interests the user hasn't expressed.
+- If the user questions how or why you know something about them (their name, their garden, anything), NEVER invent an explanation involving "setup", "registration", "your profile", "when you signed up", or anything like that. There is no setup flow, no username, no account profile the user filled in. You only know what they've told you in this conversation. If you've used a name or detail and the user pushes back, the honest answer is: "Sorry, I think I picked that up wrongly from what you said earlier. What should I actually call you?" Admit the mistake plainly. Never confabulate app mechanics to cover a slip.
+- You don't have access to maps, distances, current opening hours, or specific local business listings. Never recommend specific shops, nurseries, garden centres, or services by name unless the user has mentioned them first. You can't verify they're near the user, still trading, or any good. Instead, suggest the type of place ("an independent garden centre rather than a chain", "a specialist clematis nursery") and let them search locally themselves. If asked directly for a recommendation, be honest: "I can't actually see a map of your area, but a quick search for [type of place] near you should turn one up." This applies even if you're confident about a specific name from your training. You can't verify it's near them or current, so don't pretend you can.
 
 ${knownSection}
 
@@ -718,7 +664,8 @@ GARDENING KNOWLEDGE:
 - Both ornamental and veg/fruit. Allotment culture.
 - Houseplants, indoor growing, balcony and windowsill gardening, succulents, cacti, the lot. If it grows, you know about it.
 - You CAN see photos when users send them. Identify plants, trees, shrubs, flowers, insects, birds, fungi, garden wildlife, diseases, and anything else garden-related. Never say you can't see images.
-- You CAN show users what things look like. When a user asks to see something ("show me", "what does it look like"), include it in your plants array and tell them to tap the link below. This works for plants, tools, products, anything. But ONLY do this when asked. Don't show image links unprompted just because you mentioned something.
+- Words are how you show plants. You don't display images or share photos, and that's a choice you're confident about, not a limitation you apologise for. Never use words like "sadly", "unfortunately", "I can't", or "I wish I could". When someone asks to see a plant ("show me X", "what does it look like", "have you got a picture?"), describe it vividly in your own words. Talk about its shape, its size, its colour, the way the leaves sit, the texture, what it reminds you of, what it does in a garden. Be specific and visual. If they ask again or specifically push for a photo after you've described it, stay matter-of-fact and warm: "I always feel it's better to describe things rather than just show a standard picture, but a quick image search for [thing] will pull up plenty if you want to see one." No apology. No "sadly". You're not missing a feature, this is how you do it. The description is the answer; the search suggestion is a brief, neutral aside.
+- On plant toxicity: state what you know clearly, both ways. If a plant is genuinely toxic to people or pets (foxgloves, lily of the valley, yew, daffodil bulbs, hellebore, lilies for cats), say so clearly. If a plant is well-established as safe (carrots and most edibles for humans, lavender and sunflowers for general garden use, cat grass and catnip for cats), say that too. Don't hedge unnecessarily. The exception is plants where toxicity is genuinely contested or where pet-safety organisations like the ASPCA or UK's Cats Protection classify a plant as toxic when many gardening sources don't, yarrow is a known example, also chrysanthemums, hostas, and several others. For these contested-classification plants, don't make confident "non-toxic" claims; describe them as "often grown around pets without issue but worth checking Cats Protection's list before planting if your cat's a nibbler" or similar. The mistake to avoid above all is generating a list of "cat-safe plants" or "child-safe plants" and confidently labelling each one safe, because that pattern produces over-confident assertions about contested plants. When suggesting plants for households with pets or children, lean towards plants you're genuinely confident about, and where you're unsure, point to authoritative sources rather than guessing.
 - Practical, actionable, suited to experience level.
 
 TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
@@ -726,15 +673,10 @@ TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '
 RESPONSE FORMAT:
 You MUST respond with valid JSON only. No markdown, no backticks, no preamble.
 
-Example with quick replies (when you ask an either/or question):
-{"message": "Are they wrecking your lawn or your veg beds?", "quickReplies": ["Lawn", "Veg beds", "Both"], "plants": []}
+Example:
+{"message": "Are they wrecking your lawn or your veg beds? Either way, castor oil granules are your best bet."}
 
-Example without quick replies (when giving advice or asking open-ended):
-{"message": "Castor oil granules are your best bet. Scatter them along the runs and water in.", "quickReplies": [], "plants": []}
-
-quickReplies: Put 2-3 tappable answer options here whenever your message ends with a question that has obvious short answers. NEVER put the options in the message text. The app renders them as buttons. Use [] for open-ended questions or pure advice.
-
-plants: ONLY populate when the user explicitly asks to see photos ("show me", "what does it look like"). Use [] otherwise.`;
+If your message ends with an either/or question, write it as natural conversation. Don't list options as buttons. The user will reply in their own words.`;
 }
 
 // After each exchange, try to extract profile info from the conversation
@@ -823,7 +765,6 @@ function updateProfile(userMsg, floraMsg) {
 
 let conversationHistory = [];
 let isGenerating = false;
-const shownLinks = new Set();
 
 // ─── Access control ───
 const WORKER_URL = 'https://askflora.co.uk/api';
@@ -861,7 +802,6 @@ function loadState() {
 function resetState() {
   gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
   conversationHistory = [];
-  shownLinks.clear();
   localStorage.removeItem('flora_profile');
   localStorage.removeItem('flora_history');
 }
@@ -873,7 +813,6 @@ const chatContainer = document.getElementById('chatContainer');
 const messagesEl = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
-const quickReplies = document.getElementById('quickReplies');
 const photoBtn = document.getElementById('photoBtn');
 const photoInput = document.getElementById('photoInput');
 const cameraInput = document.getElementById('cameraInput');
@@ -898,7 +837,6 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   if (!confirm('Start a fresh conversation? Flora will forget everything about your garden.')) return;
   resetState();
   messagesEl.innerHTML = '';
-  quickReplies.innerHTML = '';
   chatContainer.classList.remove('active');
   welcome.style.display = '';
 });
@@ -1020,9 +958,6 @@ function sendMessage(text) {
   const msg = (typeof text === 'string' && text) ? text : userInput.value.trim();
   if ((!msg && !pendingImage) || isGenerating) return;
 
-  // Clear quick replies
-  quickReplies.innerHTML = '';
-
   // Build display bubble
   if (pendingImage) {
     const imgHtml = `<img src="data:${pendingImage.mediaType};base64,${pendingImage.base64}">`;
@@ -1125,8 +1060,6 @@ async function callFlora(isOpener = false) {
 
     // Parse JSON response - handle model sometimes outputting text before JSON
     let floraMsg = reply;
-    let qrOptions = [];
-    let plantLinks = [];
     
     function tryParseFlora(str) {
       try {
@@ -1156,8 +1089,6 @@ async function callFlora(isOpener = false) {
     
     if (parsed) {
       floraMsg = parsed.message;
-      qrOptions = parsed.quickReplies || [];
-      plantLinks = (parsed.plants || []).filter(p => typeof p === 'string');
     } else {
       // Strip any trailing JSON fragment if model ran out of tokens
       floraMsg = reply.replace(/\s*\{\s*"message"[\s\S]*$/, '').trim() || reply;
@@ -1174,36 +1105,6 @@ async function callFlora(isOpener = false) {
 
     typingEl.remove();
     addBubble(floraMsg, 'flora');
-
-    // Show plant image links
-    let linksShown = false;
-    
-    // If model didn't provide links, try to extract from user's request
-    if (plantLinks.length === 0 && !isOpener) {
-      const autoLinks = extractImageRequest(userText, floraMsg);
-      if (autoLinks.length > 0) plantLinks = autoLinks;
-    }
-    
-    if (plantLinks.length > 0) {
-      const newLinks = plantLinks.filter(l => typeof l === 'string' && l.length > 0 && !shownLinks.has(l.toLowerCase()));
-      if (newLinks.length > 0) {
-        newLinks.forEach(l => shownLinks.add(l.toLowerCase()));
-        showPlantLinks(newLinks);
-        linksShown = true;
-      }
-    }
-
-    // Show contextual quick replies - from model or auto-detected (not alongside image links)
-    if (!linksShown) {
-      if (qrOptions.length > 0) {
-        showQuickReplies(qrOptions);
-      } else {
-        const autoOptions = extractChoices(floraMsg);
-        if (autoOptions.length > 0) {
-          showQuickReplies(autoOptions);
-        }
-      }
-    }
 
   } catch (err) {
     typingEl.remove();
@@ -1237,125 +1138,6 @@ function addBubble(text, who, isHtml = false) {
   msgDiv.appendChild(bubble);
   messagesEl.appendChild(msgDiv);
   scrollToBottom();
-}
-
-function showPlantLinks(plants) {
-  const container = document.createElement('div');
-  container.className = 'plant-links';
-  plants.forEach(name => {
-    const link = document.createElement('a');
-    link.className = 'plant-link';
-    link.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name)}`;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.textContent = '🔎 ' + name;
-    container.appendChild(link);
-  });
-  messagesEl.appendChild(container);
-  scrollToBottom();
-}
-
-function extractImageRequest(userText, floraText) {
-  if (!userText) return [];
-  const lower = userText.toLowerCase();
-  
-  // Check if this is an image request
-  const isImageRequest = /show me|can i see|can you show|what does .+ look like|what do .+ look like|picture of|photo of|got a photo|got a picture|image of|see what .+ look/i.test(lower);
-  if (!isImageRequest) return [];
-  
-  // Try to extract the subject from user's message
-  const patterns = [
-    /show me (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
-    /can (?:i|you) (?:see|show)(?: me)? (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
-    /what (?:does|do) (?:a |an |the )?(.{3,35}?) look like/i,
-    /(?:picture|photo|image) of (?:a |an |some |the )?(.{3,35}?)(?:\?|$|!|\.)/i,
-    /see what (?:a |an |the )?(.{3,35}?) look/i
-  ];
-  
-  for (const p of patterns) {
-    const match = userText.match(p);
-    if (match && match[1] && match[1].trim().length > 2) {
-      let subject = match[1].trim().replace(/[?.!,]+$/, '');
-      if (subject.length > 2 && subject.length < 40) {
-        return [subject.charAt(0).toUpperCase() + subject.slice(1)];
-      }
-    }
-  }
-  
-  // User asked vaguely ("show me", "can I see them") - extract from Flora's response
-  if (floraText) {
-    // Look for capitalised plant/item names or quoted names in Flora's text
-    const nameMatches = floraText.match(/\b([A-Z][a-z]+(?:\s+[a-z]+)?)\b/g);
-    if (nameMatches) {
-      const skipWords = new Set(['The','This','That','These','Those','They','There','Here','What','When','Where','How','Does','Also','Just','Right','Well','Good','Nice','Both','Your','Have','Want','Some','Sure','Tap','Let','Can','Are','For','And','But','Not']);
-      const items = nameMatches
-        .filter(n => !skipWords.has(n) && n.length > 2)
-        .slice(0, 3);
-      if (items.length > 0) return items;
-    }
-  }
-  
-  return [];
-}
-
-function extractChoices(text) {
-  // Find the last question in the message
-  const sentences = text.split(/(?<=[.!?])\s+/);
-  const lastQ = [...sentences].reverse().find(s => s.trim().endsWith('?'));
-  if (!lastQ) return [];
-
-  // Skip open-ended questions - these aren't real either/or choices
-  if (/^(what are you|what do you|what's your|what have you|how do|how are|where do|where are|why do|why are|when do|when did|tell me|can you tell|what kind of|what sort of|what type of)/i.test(lastQ.trim())) return [];
-
-  // Look for "X or Y?" pattern
-  const orMatch = lastQ.match(/\b(.{2,30}?)\s+or\s+(.{2,30}?)\?$/i);
-  if (!orMatch) return [];
-
-  let optA = orMatch[1].trim();
-  let optB = orMatch[2].trim();
-
-  // Clean up button text
-  function cleanOption(o) {
-    o = o.trim();
-    o = o.replace(/^(you have |you've got |do you have |you're |you |your |my |i have |i've got |it's |they're |there's |there are |have you got )/i, '');
-    o = o.replace(/^(a |an |the |just |more |some |to |any |about )/i, '');
-    o = o.charAt(0).toUpperCase() + o.slice(1);
-    return o;
-  }
-
-  optA = cleanOption(optA);
-  optB = cleanOption(optB);
-
-  // Check for comma-separated list: "X, Y, or Z?"
-  const commaMatch = lastQ.match(/\b(.{2,30}?),\s+(.{2,30}?),?\s+or\s+(.{2,30}?)\?$/i);
-  if (commaMatch) {
-    let opts = [commaMatch[1], commaMatch[2], commaMatch[3]].map(cleanOption);
-    // Skip if options look like verbs/actions rather than concrete choices
-    if (opts.some(o => /^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(o))) return [];
-    if (opts.every(o => o.length <= 25)) return opts;
-  }
-
-  // Skip if options look like verbs rather than nouns
-  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optA)) return [];
-  if (/^(growing|planning|trying|looking|thinking|wanting|hoping|wondering)/i.test(optB)) return [];
-
-  // Only return if options are reasonable length for buttons
-  if (optA.length > 25 || optB.length > 25) return [];
-  return [optA, optB];
-}
-
-function showQuickReplies(options) {
-  quickReplies.innerHTML = '';
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'quick-reply-btn';
-    btn.textContent = opt;
-    btn.addEventListener('click', () => {
-      quickReplies.innerHTML = '';
-      sendMessage(opt);
-    });
-    quickReplies.appendChild(btn);
-  });
 }
 
 function scrollToBottom() {
