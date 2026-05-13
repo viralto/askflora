@@ -224,6 +224,18 @@ html, body {
   border-bottom-right-radius: 6px;
 }
 
+/* Date separator */
+.date-separator {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  margin: 16px 0 8px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  opacity: 0.7;
+}
+
 /* Typing indicator */
 .typing {
   display: flex;
@@ -622,6 +634,9 @@ function buildSystemPrompt() {
 
 return `You are Flora, a warm, friendly, and knowledgeable gardening companion in a mobile app called "Ask Flora". You are chatting with someone in the UK.
 
+TODAY'S DATE: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.
+Past messages in the conversation history are annotated with when they were sent, in the form "[Sent X ago]". You can use these to reason about time naturally. If the user asks when they sent something, or when you discussed something, give a relative answer like "you sent that photo about three weeks ago". If giving advice that depends on timing (e.g. how long since a plant was moved, watered, planted), use these timestamps to inform what you say. Don't draw attention to the "[Sent X ago]" tags themselves, just use the information naturally as if you simply remembered when things happened.
+
 PERSONALITY (this is who you are - let it shine through):
 - You're like a knowledgeable friend who happens to love gardening. Warm, witty, real. You have opinions, you crack jokes, you get excited about things.
 - Match the user's energy. Funny gets funny. Dry gets dry. Earnest gets warm.
@@ -765,6 +780,7 @@ function updateProfile(userMsg, floraMsg) {
 
 let conversationHistory = [];
 let isGenerating = false;
+let lastSeparatorDay = null;
 
 // ─── Access control ───
 const WORKER_URL = 'https://askflora.co.uk/api';
@@ -802,6 +818,7 @@ function loadState() {
 function resetState() {
   gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
   conversationHistory = [];
+  lastSeparatorDay = null;
   localStorage.removeItem('flora_profile');
   localStorage.removeItem('flora_history');
 }
@@ -855,7 +872,7 @@ try {
       } else {
         displayText = msg.content;
       }
-      if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user');
+      if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user', false, msg.timestamp);
     });
     scrollToBottom();
   }
@@ -959,12 +976,14 @@ function sendMessage(text) {
   const msg = (typeof text === 'string' && text) ? text : userInput.value.trim();
   if ((!msg && !pendingImage) || isGenerating) return;
 
+  const messageTimestamp = Date.now();
+  
   // Build display bubble
   if (pendingImage) {
     const imgHtml = `<img src="data:${pendingImage.mediaType};base64,${pendingImage.base64}">`;
-    addBubble(imgHtml + (msg || ''), 'user', true);
+    addBubble(imgHtml + (msg || ''), 'user', true, messageTimestamp);
   } else {
-    addBubble(msg, 'user');
+    addBubble(msg, 'user', false, messageTimestamp);
   }
 
   // Build API content
@@ -986,7 +1005,7 @@ function sendMessage(text) {
   pendingImage = null;
   photoPreview.classList.add('hidden');
 
-  conversationHistory.push({ role: 'user', content });
+  conversationHistory.push({ role: 'user', content, timestamp: messageTimestamp });
 
   callFlora();
 }
@@ -1030,7 +1049,10 @@ async function callFlora(isOpener = false) {
         model: 'claude-sonnet-4-6',
         max_tokens: tokenLimit,
         system: buildSystemPrompt(),
-        messages: messages.map(m => ({ role: m.role, content: m.content }))
+        messages: (() => {
+          const now = Date.now();
+          return messages.map(m => annotateMessageForApi(m, now));
+        })()
       })
     });
 
@@ -1056,7 +1078,7 @@ async function callFlora(isOpener = false) {
 
     // If opener, also push the synthetic user message to history
     if (isOpener) {
-      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.', hidden: true });
+      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.', hidden: true, timestamp: Date.now() });
     }
 
     // Parse JSON response - handle model sometimes outputting text before JSON
@@ -1095,7 +1117,8 @@ async function callFlora(isOpener = false) {
       floraMsg = reply.replace(/\s*\{\s*"message"[\s\S]*$/, '').trim() || reply;
     }
 
-    conversationHistory.push({ role: 'assistant', content: floraMsg });
+    const floraTimestamp = Date.now();
+    conversationHistory.push({ role: 'assistant', content: floraMsg, timestamp: floraTimestamp });
 
     // Update garden profile from this exchange
     const lastUserMsg = conversationHistory.filter(m => m.role === 'user').pop();
@@ -1105,7 +1128,7 @@ async function callFlora(isOpener = false) {
     saveState();
 
     typingEl.remove();
-    addBubble(floraMsg, 'flora');
+    addBubble(floraMsg, 'flora', false, floraTimestamp);
 
   } catch (err) {
     typingEl.remove();
@@ -1117,7 +1140,87 @@ async function callFlora(isOpener = false) {
   sendBtn.disabled = false;
 }
 
-function addBubble(text, who, isHtml = false) {
+function formatRelativeTime(timestamp, now) {
+  if (!timestamp) return null;
+  const diff = now - timestamp;
+  if (diff < 5 * 60 * 1000) return null; // less than 5 minutes - don't annotate
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.floor(diff / 3600000);
+  if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+  const days = Math.floor(diff / 86400000);
+  if (days < 7) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+  const months = Math.floor(days / 30);
+  return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+}
+
+function annotateMessageForApi(msg, now) {
+  const relTime = formatRelativeTime(msg.timestamp, now);
+  if (!relTime) return { role: msg.role, content: msg.content };
+  
+  const prefix = `[Sent ${relTime}] `;
+  if (typeof msg.content === 'string') {
+    return { role: msg.role, content: prefix + msg.content };
+  }
+  if (Array.isArray(msg.content)) {
+    const newContent = [...msg.content];
+    const firstTextIdx = newContent.findIndex(b => b.type === 'text');
+    if (firstTextIdx >= 0) {
+      newContent[firstTextIdx] = {
+        ...newContent[firstTextIdx],
+        text: prefix + newContent[firstTextIdx].text
+      };
+    } else {
+      newContent.unshift({ type: 'text', text: prefix.trim() });
+    }
+    return { role: msg.role, content: newContent };
+  }
+  return { role: msg.role, content: msg.content };
+}
+
+// Date separator helpers
+function formatDateSeparator(timestamp) {
+  if (!timestamp) return '';
+  const msgDate = new Date(timestamp);
+  const now = new Date();
+  
+  // Strip time so we can compare dates
+  const msgDay = new Date(msgDate.getFullYear(), msgDate.getMonth(), msgDate.getDate());
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dayDiff = Math.round((today - msgDay) / 86400000);
+  
+  if (dayDiff === 0) return 'Today';
+  if (dayDiff === 1) return 'Yesterday';
+  if (dayDiff < 7) {
+    return msgDate.toLocaleDateString('en-GB', { weekday: 'long' });
+  }
+  // Older: "13 April" or "13 April 2024" if not this year
+  const sameYear = msgDate.getFullYear() === now.getFullYear();
+  return msgDate.toLocaleDateString('en-GB', { 
+    day: 'numeric', 
+    month: 'long',
+    ...(sameYear ? {} : { year: 'numeric' })
+  });
+}
+
+function maybeInsertDateSeparator(timestamp) {
+  if (!timestamp) return;
+  const msgDate = new Date(timestamp);
+  const dayKey = msgDate.toDateString();
+  if (dayKey === lastSeparatorDay) return;
+  lastSeparatorDay = dayKey;
+  
+  const sep = document.createElement('div');
+  sep.className = 'date-separator';
+  sep.textContent = formatDateSeparator(timestamp);
+  messagesEl.appendChild(sep);
+}
+
+function addBubble(text, who, isHtml = false, timestamp = null) {
+  if (timestamp) maybeInsertDateSeparator(timestamp);
+  
   const msgDiv = document.createElement('div');
   msgDiv.className = `message ${who}`;
 
