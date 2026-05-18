@@ -1007,6 +1007,17 @@ function sendMessage(text) {
 
   conversationHistory.push({ role: 'user', content, timestamp: messageTimestamp });
 
+  // PCD easter egg: "are you on email" gets a specific canned response.
+  // Strict match - any other variant goes to Flora normally.
+  if (typeof content === 'string' && /^\s*are you on email\??\s*$/i.test(content)) {
+    const cannedReply = "You simply have to be these days! You can reach me at hello@askflora.co.uk.";
+    const cannedTimestamp = Date.now();
+    conversationHistory.push({ role: 'assistant', content: cannedReply, timestamp: cannedTimestamp });
+    saveState();
+    addBubble(cannedReply, 'flora', false, cannedTimestamp);
+    return;
+  }
+
   callFlora();
 }
 
