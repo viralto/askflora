@@ -72,15 +72,14 @@ html, body {
 .reset-btn {
   position: absolute;
   left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 10px;
   background: none;
   border: 1.5px solid var(--green-pale);
   color: var(--green-mid);
   font-family: 'Nunito', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 6px 12px;
+  padding: 5px 11px;
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.15s;
@@ -529,7 +528,7 @@ html, body {
   <div class="leaf-deco br">🍃</div>
 
   <div class="header">
-    <button class="reset-btn" id="resetBtn" title="Start fresh">🌱 New</button>
+    <button class="reset-btn" id="resetBtn" title="Clear this conversation and start over">🌱 Start over</button>
     <h1>Ask Flora</h1>
   </div>
 
@@ -855,7 +854,7 @@ startBtn.addEventListener('click', () => {
 
 // Reset / new conversation
 document.getElementById('resetBtn').addEventListener('click', () => {
-  if (!confirm('Start a fresh conversation? Flora will forget everything about your garden.')) return;
+  if (!confirm('Start completely fresh?\n\nThis wipes your whole conversation and everything Flora has learned about your garden. It cannot be undone, and it does not start a new thread alongside the old one. There is only ever one conversation, and this clears it.')) return;
   resetState();
   messagesEl.innerHTML = '';
   chatContainer.classList.remove('active');
