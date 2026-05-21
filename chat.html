@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Ask Flora</title>
@@ -54,6 +54,7 @@ html, body {
 .header {
   background: linear-gradient(180deg, var(--cream-dark) 0%, var(--cream) 100%);
   padding: 16px 20px 12px;
+  padding-top: max(16px, env(safe-area-inset-top));
   text-align: center;
   flex-shrink: 0;
   border-bottom: 1px solid var(--cream-mid);
