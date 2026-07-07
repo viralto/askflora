@@ -228,6 +228,28 @@ html, body {
   border-bottom-right-radius: 6px;
 }
 
+/* Memory export/import cards */
+.memory-card-btn {
+  display: block;
+  margin-top: 10px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  background: var(--green-dark, #4a6741);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.memory-card-btn:active { opacity: 0.85; }
+.memory-card-status {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  font-style: italic;
+}
+
 /* Date separator */
 .date-separator {
   text-align: center;
@@ -877,6 +899,14 @@ function sendMessage(text) {
   const msg = (typeof text === 'string' && text) ? text : userInput.value.trim();
   if ((!msg && !pendingImage) || isGenerating) return;
 
+  // Memory transfer trigger phrases. Exact-match after normalisation, intercepted
+  // before the message reaches history or the API. See flora-history-export-spec.
+  if (!pendingImage && handleMemoryPhrase(msg)) {
+    userInput.value = '';
+    userInput.style.height = 'auto';
+    return;
+  }
+
   const messageTimestamp = Date.now();
   
   // Build display bubble
@@ -925,6 +955,145 @@ function sendMessage(text) {
 function sendFloraOpener() {
   conversationHistory = [];
   callFlora(true);
+}
+
+// ─── Memory transfer (export/import) ───
+// Trigger phrases are matched exactly after normalisation: lowercased, trimmed,
+// punctuation stripped, whitespace collapsed. "Flora, pack a bag!" matches;
+// "flora pack my bag" does not. Deliberate: exactness is what makes accidental
+// triggering near impossible, while punctuation tolerance removes the typing
+// hazard when the phrase is passed on by word of mouth.
+const MEMORY_FORMAT = 'flora-memory';
+const MEMORY_VERSION = 1;
+
+function normalisePhrase(s) {
+  return s.toLowerCase().replace(/[.,!?;:'"]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function handleMemoryPhrase(msg) {
+  const n = normalisePhrase(msg);
+  if (n === 'flora pack a bag') {
+    addBubble(msg, 'user', false, Date.now());
+    showExportCard();
+    return true;
+  }
+  if (n === 'flora unpack my bag') {
+    addBubble(msg, 'user', false, Date.now());
+    showImportCard();
+    return true;
+  }
+  return false;
+}
+
+function hasAnythingToExport() {
+  if (conversationHistory.length > 0) return true;
+  return Object.values(gardenProfile).some(v => Array.isArray(v) ? v.length > 0 : v !== null);
+}
+
+function showExportCard() {
+  if (!hasAnythingToExport()) {
+    addBubble("There's nothing to pack yet! Once we've chatted a bit, this is how you'd take my memory of you to a new device.", 'flora', false, Date.now());
+    return;
+  }
+  const html =
+    'Packing your bag! This gives you a file containing everything I know about you and your garden, including our whole conversation, in readable form. Keep it somewhere safe, and treat it like a diary rather than a ticket stub.' +
+    '<br><br>The simplest way to get it to your new device is to email it to yourself, then open that email on the new device and save the file. AirDrop or a cloud drive work too if you use those.' +
+    '<br><br>On your new device, open me up and type <strong>flora, unpack my bag</strong> and choose this file.' +
+    '<button class="memory-card-btn" onclick="floraExportMemory(this)">Download my memory file</button>' +
+    '<span class="memory-card-status"></span>';
+  addBubble(html, 'flora', true, Date.now());
+}
+
+function floraExportMemory(btn) {
+  const status = btn.parentElement.querySelector('.memory-card-status');
+  try {
+    saveState();
+    const bundle = {
+      format: MEMORY_FORMAT,
+      version: MEMORY_VERSION,
+      exported_at: new Date().toISOString(),
+      profile: JSON.parse(localStorage.getItem('flora_profile') || '{}'),
+      history: JSON.parse(localStorage.getItem('flora_history') || '[]')
+    };
+    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const d = new Date();
+    const pad = x => String(x).padStart(2, '0');
+    a.download = `flora-memory-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    status.textContent = 'Saved! Look in your downloads.';
+  } catch (e) {
+    status.textContent = "Something went wrong packing the file. Try again, and if it keeps happening, drop me a line at hello@askflora.co.uk";
+  }
+}
+
+function showImportCard() {
+  const html =
+    "Let's unpack! Choose the memory file you saved on your old device and I'll pick up right where we left off." +
+    '<button class="memory-card-btn" onclick="floraPickImportFile(this)">Choose my memory file</button>' +
+    '<span class="memory-card-status"></span>';
+  addBubble(html, 'flora', true, Date.now());
+}
+
+function floraPickImportFile(btn) {
+  const status = btn.parentElement.querySelector('.memory-card-status');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.addEventListener('change', () => {
+    if (input.files && input.files[0]) floraImportMemory(input.files[0], status);
+  });
+  input.click();
+}
+
+function floraImportMemory(file, status) {
+  if (file.size > 4 * 1024 * 1024) {
+    status.textContent = "That file is too big to be one of mine. Double check it's the file I gave you.";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onerror = () => { status.textContent = "I couldn't read that file. Try choosing it again."; };
+  reader.onload = () => {
+    let bundle;
+    try {
+      bundle = JSON.parse(reader.result);
+    } catch (e) {
+      status.textContent = "That doesn't look like one of my memory files. Double check you picked the right one.";
+      return;
+    }
+    if (!bundle || bundle.format !== MEMORY_FORMAT) {
+      status.textContent = "That doesn't look like one of my memory files. Double check you picked the right one.";
+      return;
+    }
+    if (typeof bundle.version !== 'number' || bundle.version > MEMORY_VERSION) {
+      status.textContent = "That file came from a newer version of me than this one. It should work after the next update.";
+      return;
+    }
+    if (!Array.isArray(bundle.history) || typeof bundle.profile !== 'object' || bundle.profile === null) {
+      status.textContent = "That file looks damaged, so I've left everything as it was. Try exporting a fresh one from your old device.";
+      return;
+    }
+    if (hasAnythingToExport()) {
+      const ok = confirm('Unpack this bag here?\n\nThis replaces the conversation and garden details currently on this device with the ones from the file. It cannot be undone, and the two are not merged.');
+      if (!ok) {
+        status.textContent = 'No problem, everything here is untouched.';
+        return;
+      }
+    }
+    try {
+      localStorage.setItem('flora_profile', JSON.stringify(bundle.profile));
+      localStorage.setItem('flora_history', JSON.stringify(bundle.history));
+      status.textContent = 'Unpacked! One moment...';
+      setTimeout(() => location.reload(), 600);
+    } catch (e) {
+      status.textContent = "Something went wrong unpacking, so I've left everything as it was. Drop me a line at hello@askflora.co.uk";
+    }
+  };
+  reader.readAsText(file);
 }
 
 async function callFlora(isOpener = false) {
