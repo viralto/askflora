@@ -654,8 +654,8 @@ function updateProfile(userMsg, floraMsg) {
 
   // Sun/shade
   if (!gardenProfile.sunShade) {
-    if (msg.includes('sunny') || msg.includes('full sun') || msg.includes('south')) gardenProfile.sunShade = 'mostly sunny';
-    else if (msg.includes('shady') || msg.includes('shade') || msg.includes('north')) gardenProfile.sunShade = 'mostly shady';
+    if (msg.includes('sunny') || msg.includes('full sun') || msg.includes('south-facing') || msg.includes('south facing') || msg.includes('faces south')) gardenProfile.sunShade = 'mostly sunny';
+    else if (msg.includes('shady') || msg.includes('shade') || msg.includes('north-facing') || msg.includes('north facing') || msg.includes('faces north')) gardenProfile.sunShade = 'mostly shady';
     else if (msg.includes('mix') || msg.includes('partial') || msg.includes('bit of both')) gardenProfile.sunShade = 'mixed sun and shade';
   }
 
@@ -679,13 +679,35 @@ function updateProfile(userMsg, floraMsg) {
   }
 
   // Location
-  if (!gardenProfile.location) {
-    if (msg.includes('in the garden') || msg.includes("i'm outside")) gardenProfile.location = 'in garden (GPS pending)';
-    else if (msg.includes('indoors') || msg.includes('in the house') || msg.includes('inside')) gardenProfile.location = 'indoors (no GPS)';
-    // Check for UK regions
-    const regions = ['london', 'kent', 'surrey', 'essex', 'sussex', 'norfolk', 'suffolk', 'devon', 'cornwall', 'yorkshire', 'lancashire', 'manchester', 'birmingham', 'bristol', 'scotland', 'wales', 'midlands', 'north', 'south east', 'east anglia'];
-    for (const r of regions) {
-      if (msg.includes(r)) { gardenProfile.location = r; break; }
+  // An explicit statement of place ("I live in High Wycombe") is a strong signal,
+  // so it may overwrite an earlier, vaguer capture. Junk is filtered three ways:
+  // a noise list, article-stripping, and the Worker's GB-only geocoder downstream.
+  {
+    const placeMatch = rawText.match(/(?:i live in|we live in|i'm in|i am in|we're in|my garden(?:'s| is) in|garden is in|i'm based in|based in|we(?:'ve| have) (?:just )?moved to|moved to|here in)\s+([a-z][a-z' -]{1,40}?)(?=[.,!?;]|$)/i);
+    if (placeMatch) {
+      let place = placeMatch[1].trim();
+      // Truncate at continuation words so "Milton Keynes it's baking" becomes "Milton Keynes".
+      // 'on', 'upon' and 'the' are deliberately absent: they appear inside real place names.
+      const stops = ['and', 'but', 'it', "it's", 'its', 'right', 'now', 'with', 'because', 'so', 'which', 'where', 'when', 'while', 'today', 'tonight', 'tomorrow', 'this', 'that', 'though', 'in', 'for', 'at', 'by'];
+      const words = place.split(/\s+/);
+      let cut = words.length;
+      for (let i = 1; i < words.length; i++) {
+        if (stops.includes(words[i].toLowerCase())) { cut = i; break; }
+      }
+      place = words.slice(0, Math.min(cut, 4)).join(' ');
+      const article = place.match(/^(?:the|a|an|my|our|some)\s+/i);
+      const noise = ['garden', 'house', 'north', 'south', 'east', 'west', 'uk', 'kitchen', 'greenhouse', 'shed', 'trouble', 'hurry', 'doubt', 'luck', 'pickle', 'rush', 'shock', 'awe', 'tears', 'bits'];
+      const cleaned = article ? place.slice(article[0].length).trim() : place;
+      if (!article && !noise.includes(cleaned.toLowerCase()) && cleaned.length > 1) {
+        gardenProfile.location = cleaned;
+      }
+    } else if (!gardenProfile.location) {
+      // Fallback: rough region keywords, fill-if-empty only.
+      // Bare compass words removed: they collide with aspect ("north-facing wall").
+      const regions = ['london', 'kent', 'surrey', 'essex', 'sussex', 'norfolk', 'suffolk', 'devon', 'cornwall', 'yorkshire', 'lancashire', 'manchester', 'birmingham', 'bristol', 'scotland', 'wales', 'midlands', 'east anglia'];
+      for (const r of regions) {
+        if (msg.includes(r)) { gardenProfile.location = r; break; }
+      }
     }
   }
 
