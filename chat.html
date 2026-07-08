@@ -618,109 +618,24 @@ let gardenProfile = {
 // the Worker assembles the full prompt server-side (with prompt caching).
 
 // After each exchange, try to extract profile info from the conversation
-function updateProfile(userMsg, floraMsg) {
-  // Extract text from content (might be string or array of blocks)
-  let rawText;
-  if (typeof userMsg === 'string') rawText = userMsg;
-  else if (Array.isArray(userMsg)) rawText = userMsg.filter(b => b.type === 'text').map(b => b.text).join(' ');
-  else return;
-  const msg = rawText.toLowerCase();
-
-  // Name detection
-  if (!gardenProfile.name) {
-    const namePatterns = [
-      /(?:i'm|i am|my name is|my name's|it's|its|call me|they call me)\s+([A-Z][a-z]+)/i,
-      /^([A-Z][a-z]{1,15})[\s!.,]*$/  // Single word response starting with capital
-    ];
-    for (const p of namePatterns) {
-      const match = rawText.match(p);
-      if (match) { gardenProfile.name = match[1]; break; }
+// Profile updates now come from Flora herself, reported in her JSON reply
+// envelope as an optional "profile_updates" object. She reads the conversation
+// with full language understanding, so no keyword patterns are needed here.
+// This merge is deliberately strict: whitelisted fields, strings only, length caps.
+function applyProfileUpdates(updates) {
+  if (!updates || typeof updates !== 'object' || Array.isArray(updates)) return;
+  const caps = { name: 100, location: 200, gardenType: 100, sunShade: 100, soilType: 100, goals: 500, existingPlants: 1000 };
+  let changed = false;
+  for (const key of Object.keys(caps)) {
+    const v = updates[key];
+    if (typeof v !== 'string') continue;
+    const cleaned = v.trim().slice(0, caps[key]);
+    if (cleaned && cleaned !== gardenProfile[key]) {
+      gardenProfile[key] = cleaned;
+      changed = true;
     }
   }
-
-  // Garden type
-  if (!gardenProfile.gardenType) {
-    if (msg.includes('back garden')) gardenProfile.gardenType = 'back garden';
-    else if (msg.includes('allotment')) gardenProfile.gardenType = 'allotment';
-    else if (msg.includes('patio') || msg.includes('balcony')) gardenProfile.gardenType = 'patio/balcony';
-    else if (msg.includes('bit of everything') || msg.includes('both')) gardenProfile.gardenType = 'mixed (garden + allotment)';
-    else if (msg.includes('windowsill') || msg.includes('window sill') || msg.includes('window ledge')) gardenProfile.gardenType = 'windowsill';
-    else if (msg.includes('indoor') || msg.includes('inside') || msg.includes('flat') || msg.includes('apartment') || msg.includes('houseplant') || msg.includes('house plant')) gardenProfile.gardenType = 'indoor only';
-    else if (msg.includes('front garden')) gardenProfile.gardenType = 'front garden';
-    else if (msg.includes('courtyard')) gardenProfile.gardenType = 'courtyard';
-    else if (msg.includes('my garden') || msg.includes('the garden') || msg.includes('my lawn') || msg.includes('the lawn') || msg.includes('my yard') || msg.includes('flower bed') || msg.includes('my border')) gardenProfile.gardenType = 'garden';
-    else if (msg.includes('lawn') || msg.includes('fence') || msg.includes('shed') || msg.includes('deck') || msg.includes('raised bed') || msg.includes('compost bin') || msg.includes('greenhouse')) gardenProfile.gardenType = 'garden';
-  }
-
-  // Sun/shade
-  if (!gardenProfile.sunShade) {
-    if (msg.includes('sunny') || msg.includes('full sun') || msg.includes('south-facing') || msg.includes('south facing') || msg.includes('faces south')) gardenProfile.sunShade = 'mostly sunny';
-    else if (msg.includes('shady') || msg.includes('shade') || msg.includes('north-facing') || msg.includes('north facing') || msg.includes('faces north')) gardenProfile.sunShade = 'mostly shady';
-    else if (msg.includes('mix') || msg.includes('partial') || msg.includes('bit of both')) gardenProfile.sunShade = 'mixed sun and shade';
-  }
-
-  // Soil
-  if (!gardenProfile.soilType) {
-    if (msg.includes('clay')) gardenProfile.soilType = 'clay';
-    else if (msg.includes('sandy')) gardenProfile.soilType = 'sandy';
-    else if (msg.includes('chalk')) gardenProfile.soilType = 'chalky';
-    else if (msg.includes('loam')) gardenProfile.soilType = 'loamy';
-  }
-
-  // Goals
-  if (!gardenProfile.goals) {
-    const goals = [];
-    if (msg.includes('veg') || msg.includes('vegetable') || msg.includes('grow my own') || msg.includes('food')) goals.push('growing veg');
-    if (msg.includes('flower') || msg.includes('colour') || msg.includes('color')) goals.push('flowers and colour');
-    if (msg.includes('attract wildlife') || msg.includes('attract bee') || msg.includes('attract bird') || msg.includes('pollinator') || msg.includes('wildlife garden') || msg.includes('wildlife friendly')) goals.push('wildlife');
-    if (msg.includes('low maintenance') || msg.includes('easy')) goals.push('low maintenance');
-    if (msg.includes('sit') || msg.includes('relax') || msg.includes('nice space')) goals.push('nice space to enjoy');
-    if (goals.length) gardenProfile.goals = goals.join(', ');
-  }
-
-  // Location
-  // An explicit statement of place ("I live in High Wycombe") is a strong signal,
-  // so it may overwrite an earlier, vaguer capture. Junk is filtered three ways:
-  // a noise list, article-stripping, and the Worker's GB-only geocoder downstream.
-  {
-    const placeMatch = rawText.match(/(?:i live in|we live in|i'm in|i am in|we're in|my garden(?:'s| is) in|garden is in|i'm based in|based in|we(?:'ve| have) (?:just )?moved to|moved to|here in)\s+([a-z][a-z' -]{1,40}?)(?=[.,!?;]|$)/i);
-    if (placeMatch) {
-      let place = placeMatch[1].trim();
-      // Truncate at continuation words so "Milton Keynes it's baking" becomes "Milton Keynes".
-      // 'on', 'upon' and 'the' are deliberately absent: they appear inside real place names.
-      const stops = ['and', 'but', 'it', "it's", 'its', 'right', 'now', 'with', 'because', 'so', 'which', 'where', 'when', 'while', 'today', 'tonight', 'tomorrow', 'this', 'that', 'though', 'in', 'for', 'at', 'by'];
-      const words = place.split(/\s+/);
-      let cut = words.length;
-      for (let i = 1; i < words.length; i++) {
-        if (stops.includes(words[i].toLowerCase())) { cut = i; break; }
-      }
-      place = words.slice(0, Math.min(cut, 4)).join(' ');
-      const article = place.match(/^(?:the|a|an|my|our|some)\s+/i);
-      const noise = ['garden', 'house', 'north', 'south', 'east', 'west', 'uk', 'kitchen', 'greenhouse', 'shed', 'trouble', 'hurry', 'doubt', 'luck', 'pickle', 'rush', 'shock', 'awe', 'tears', 'bits'];
-      const cleaned = article ? place.slice(article[0].length).trim() : place;
-      if (!article && !noise.includes(cleaned.toLowerCase()) && cleaned.length > 1) {
-        gardenProfile.location = cleaned;
-      }
-    } else if (!gardenProfile.location) {
-      // Fallback: rough region keywords, fill-if-empty only.
-      // Bare compass words removed: they collide with aspect ("north-facing wall").
-      const regions = ['london', 'kent', 'surrey', 'essex', 'sussex', 'norfolk', 'suffolk', 'devon', 'cornwall', 'yorkshire', 'lancashire', 'manchester', 'birmingham', 'bristol', 'scotland', 'wales', 'midlands', 'east anglia'];
-      for (const r of regions) {
-        if (msg.includes(r)) { gardenProfile.location = r; break; }
-      }
-    }
-  }
-
-  // Existing plants
-  if (!gardenProfile.existingPlants) {
-    if (msg.includes('nothing') || msg.includes('starting fresh') || msg.includes('bare') || msg.includes('empty')) {
-      gardenProfile.existingPlants = 'starting fresh';
-    }
-    // If they mention specific plants after being asked
-    const plantWords = ['rose', 'lavender', 'tomato', 'herb', 'apple', 'lawn', 'hedge', 'tree', 'shrub', 'bush', 'climber', 'wisteria', 'clematis', 'hydrangea', 'dahlia', 'bean', 'potato', 'courgette', 'raspberry', 'strawberry', 'rhubarb'];
-    const found = plantWords.filter(p => msg.includes(p));
-    if (found.length) gardenProfile.existingPlants = found.join(', ');
-  }
+  if (changed) saveState();
 }
 
 let conversationHistory = [];
@@ -1229,9 +1144,8 @@ async function callFlora(isOpener = false) {
     const floraTimestamp = Date.now();
     conversationHistory.push({ role: 'assistant', content: floraMsg, timestamp: floraTimestamp });
 
-    // Update garden profile from this exchange
-    const lastUserMsg = conversationHistory.filter(m => m.role === 'user').pop();
-    if (lastUserMsg) updateProfile(lastUserMsg.content, floraMsg);
+    // Apply any profile updates Flora reported in her reply envelope
+    if (parsed && parsed.profile_updates) applyProfileUpdates(parsed.profile_updates);
 
     // Persist
     saveState();
