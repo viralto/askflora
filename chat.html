@@ -601,6 +601,12 @@ html, body {
 <!-- No API key needed - proxied through Worker -->
 
 <script>
+// Feature gate for the rolling digest (Part B of the token-reduction work).
+// This must stay false until the updated Worker with the /summarize endpoint
+// is deployed. When false, sending behaviour is unchanged from today, apart
+// from the image window in callFlora, which is an ungated bug fix.
+const SUMMARY_ENABLED = false;
+
 // Garden profile tracks what Flora has learned
 let gardenProfile = {
   name: null,
@@ -647,11 +653,22 @@ const WORKER_URL = 'https://askflora.co.uk/api';
 const LANDING_URL = '/';
 let accessMode = 'none'; // 'full' | 'none'
 
-// Persistence
-function saveState() {
-  localStorage.setItem('flora_profile', JSON.stringify(gardenProfile));
-  // Strip base64 image data before saving (too large for localStorage)
-  const lightHistory = conversationHistory.map(m => {
+// ─── Payload bounding ───
+// The image window (always on) caps how many photos travel in each request.
+// The rolling digest (behind SUMMARY_ENABLED) replaces messages older than
+// two weeks with a short summary held under flora_summary.
+const IMAGE_SEND_WINDOW = 3; // most recent image-bearing messages keep their images in the payload
+const DIGEST_AGE_MS = 14 * 24 * 60 * 60 * 1000; // messages older than this are eligible for the digest
+const COMPACTION_MIN_MESSAGES = 20; // don't compact for fewer aged messages than this
+const COMPACTION_MIN_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000; // floor between successful compactions
+let compactionEpoch = 0; // bumped by Start over and import; an in-flight compaction discards its result
+let compactionInFlight = false;
+
+// Replace every image block with a small text placeholder. Shared between
+// saveState (images are too large for localStorage) and the send path, so a
+// stripped message looks identical whether it came from memory or a reload.
+function stripImagesFrom(messages) {
+  return messages.map(m => {
     if (Array.isArray(m.content)) {
       return {
         ...m,
@@ -662,7 +679,18 @@ function saveState() {
     }
     return m;
   });
-  localStorage.setItem('flora_history', JSON.stringify(lightHistory));
+}
+
+// Persistence
+function saveState() {
+  // Never let a full or blocked localStorage throw into callFlora's catch,
+  // where it would read to the user as a connection error.
+  try {
+    localStorage.setItem('flora_profile', JSON.stringify(gardenProfile));
+    localStorage.setItem('flora_history', JSON.stringify(stripImagesFrom(conversationHistory)));
+  } catch (e) {
+    console.error('Saving state failed:', e);
+  }
 }
 
 function loadState() {
@@ -679,8 +707,11 @@ function resetState() {
   gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
   conversationHistory = [];
   lastSeparatorDay = null;
+  compactionEpoch++; // any compaction still in flight belongs to the old conversation
   localStorage.removeItem('flora_profile');
   localStorage.removeItem('flora_history');
+  localStorage.removeItem('flora_summary');
+  localStorage.removeItem('flora_compaction');
 }
 
 // Elements
@@ -952,6 +983,12 @@ function floraExportMemory(btn) {
       profile: JSON.parse(localStorage.getItem('flora_profile') || '{}'),
       history: JSON.parse(localStorage.getItem('flora_history') || '[]')
     };
+    // Extra top-level key; older importers ignore keys they don't recognise,
+    // and history above stays the full transcript, so old builds still work.
+    try {
+      const summaryRaw = localStorage.getItem('flora_summary');
+      if (summaryRaw) bundle.summary = JSON.parse(summaryRaw);
+    } catch (e) {}
     const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1022,8 +1059,18 @@ function floraImportMemory(file, status) {
       }
     }
     try {
+      compactionEpoch++; // a compaction in flight must not land its digest on the imported conversation
       localStorage.setItem('flora_profile', JSON.stringify(bundle.profile));
       localStorage.setItem('flora_history', JSON.stringify(bundle.history));
+      // The digest must travel with its conversation. A bag without one must
+      // also clear whatever digest this device had, or Flora starts
+      // remembering a stranger.
+      if (bundle.summary && typeof bundle.summary === 'object' && !Array.isArray(bundle.summary)) {
+        localStorage.setItem('flora_summary', JSON.stringify(bundle.summary));
+      } else {
+        localStorage.removeItem('flora_summary');
+      }
+      localStorage.removeItem('flora_compaction');
       status.textContent = 'Unpacked! One moment...';
       setTimeout(() => location.reload(), 600);
     } catch (e) {
@@ -1057,10 +1104,7 @@ async function callFlora(isOpener = false) {
       },
       body: JSON.stringify({
         profile: gardenProfile,
-        messages: (() => {
-          const now = Date.now();
-          return messages.map(m => annotateMessageForApi(m, now));
-        })()
+        messages: buildApiMessages(messages)
       })
     });
 
@@ -1150,6 +1194,10 @@ async function callFlora(isOpener = false) {
     // Persist
     saveState();
 
+    // Fold old messages into the rolling digest if one is due. Fire and
+    // forget: the user never waits on this and the send button stays live.
+    if (SUMMARY_ENABLED) maybeCompact();
+
     typingEl.remove();
     addBubble(floraMsg, 'flora', false, floraTimestamp);
 
@@ -1201,6 +1249,167 @@ function annotateMessageForApi(msg, now) {
     return { role: msg.role, content: newContent };
   }
   return { role: msg.role, content: msg.content };
+}
+
+// ─── Rolling digest and image window ───
+
+function loadSummary() {
+  try {
+    const raw = localStorage.getItem('flora_summary');
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || typeof s.text !== 'string' || !s.text || typeof s.coversThrough !== 'number') return null;
+    return s;
+  } catch (e) { return null; }
+}
+
+function recordCompactionAttempt(outcome) {
+  try {
+    localStorage.setItem('flora_compaction', JSON.stringify({ at: Date.now(), outcome }));
+  } catch (e) {}
+}
+
+// The handshake pair is built fresh at send time and never written into
+// conversationHistory. The instruction lives inside the user turn so the
+// Worker's prompt (and its cache entry) stays untouched, and the assistant
+// turn is plain prose because every real assistant turn in history is plain
+// prose; a JSON envelope here would be the only one of its kind.
+function buildHandshakePair(summary) {
+  const upTo = new Date(summary.coversThrough).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  return [
+    {
+      role: 'user',
+      content: '[MEMORY DIGEST covering our conversation up to ' + upTo + '. Treat this as your own memory of our earlier chats. The verbatim messages after this point follow. Do not mention this note.]\n' + summary.text
+    },
+    { role: 'assistant', content: 'Noted, I remember all of that.' }
+  ];
+}
+
+// Keep the images in the most recent image-bearing messages and strip the
+// rest, so a long photo session can't grow the payload past the Worker's
+// size cap. Works on a copy; conversationHistory keeps its images so Flora
+// can still look at a recent photo again within the session.
+function applyImageWindow(messages) {
+  let kept = 0;
+  const out = new Array(messages.length);
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    const hasImage = Array.isArray(m.content) && m.content.some(b => b.type === 'image');
+    if (hasImage && kept < IMAGE_SEND_WINDOW) {
+      kept++;
+      out[i] = m;
+    } else if (hasImage) {
+      out[i] = stripImagesFrom([m])[0];
+    } else {
+      out[i] = m;
+    }
+  }
+  return out;
+}
+
+// Assemble what actually goes to the Worker: digest split first (when a
+// summary exists), then the image window on whatever survives, then the
+// [Sent X ago] annotations. Messages with no timestamp are always sent
+// verbatim; legacy history predates timestamps and must never vanish.
+function buildApiMessages(messages) {
+  const now = Date.now();
+  let recent = messages;
+  let handshake = [];
+  if (SUMMARY_ENABLED) {
+    const summary = loadSummary();
+    if (summary) {
+      recent = messages.filter(m => !m.timestamp || m.timestamp > summary.coversThrough);
+      handshake = buildHandshakePair(summary);
+    }
+  }
+  return handshake.concat(applyImageWindow(recent).map(m => annotateMessageForApi(m, now)));
+}
+
+// A bad digest must never be saved: once it replaces the transcript in the
+// payload it IS Flora's memory. Length and punctuation catch truncation, the
+// JSON checks catch a stray envelope, and the name check catches a digest
+// that dropped the thing it exists to remember.
+function digestLooksAcceptable(digest) {
+  if (!digest) return false;
+  if (digest.split(/\s+/).filter(Boolean).length < 100) return false;
+  if (!/[.!?]["')\]]*$/.test(digest)) return false;
+  if (digest.startsWith('{')) return false;
+  if (digest.includes('"message"')) return false;
+  if (gardenProfile.name && !digest.toLowerCase().includes(gardenProfile.name.toLowerCase())) return false;
+  return true;
+}
+
+async function maybeCompact() {
+  if (compactionInFlight) return;
+
+  const summary = loadSummary();
+  if (summary && typeof summary.generatedAt === 'number' && Date.now() - summary.generatedAt < COMPACTION_MIN_INTERVAL_MS) return;
+
+  // Aged set: timestamped, not hidden (the synthetic opener would read as the
+  // user speaking), older than two weeks, not already covered by the digest.
+  const coversThrough = summary ? summary.coversThrough : 0;
+  const cutoff = Date.now() - DIGEST_AGE_MS;
+  const aged = conversationHistory.filter(m =>
+    m.timestamp && !m.hidden && m.timestamp > coversThrough && m.timestamp <= cutoff
+  );
+  // End on an assistant message, so a user question is never folded into the
+  // digest while its answer stays verbatim.
+  while (aged.length && aged[aged.length - 1].role !== 'assistant') aged.pop();
+  if (aged.length < COMPACTION_MIN_MESSAGES) return;
+
+  compactionInFlight = true;
+  const epochAtStart = compactionEpoch;
+  try {
+    const toSummarize = stripImagesFrom(aged).map(m => ({ role: m.role, content: m.content }));
+    if (summary) {
+      // Consecutive user turns are fine; the API folds them into one turn.
+      toSummarize.unshift({
+        role: 'user',
+        content: '[EARLIER DIGEST covering everything before the messages that follow]\n' + summary.text
+      });
+    } else {
+      // With no digest in front, the transcript must open on a user turn or
+      // the API rejects it. Only the very first compaction can start on an
+      // assistant message (Flora's intro, since the opener is hidden), and
+      // losing that intro from the digest costs nothing.
+      while (toSummarize.length && toSummarize[0].role !== 'user') toSummarize.shift();
+      if (!toSummarize.length) { compactionInFlight = false; return; }
+    }
+
+    const resp = await fetch(WORKER_URL + '/summarize', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: toSummarize })
+    });
+    const data = await resp.json();
+    if (!resp.ok || data.error || !Array.isArray(data.content)) {
+      recordCompactionAttempt('error');
+      return;
+    }
+    const digest = data.content.map(c => c.text || '').join('').trim();
+    if (!digestLooksAcceptable(digest)) {
+      recordCompactionAttempt('rejected');
+      return;
+    }
+    // The conversation this digest describes may have been wiped or replaced
+    // while the request was in flight. If so, discard the result silently.
+    if (compactionEpoch !== epochAtStart) return;
+    try {
+      localStorage.setItem('flora_summary', JSON.stringify({
+        text: digest,
+        coversThrough: aged[aged.length - 1].timestamp,
+        generatedAt: Date.now()
+      }));
+      recordCompactionAttempt('success');
+    } catch (e) {
+      recordCompactionAttempt('error');
+    }
+  } catch (e) {
+    recordCompactionAttempt('error');
+  } finally {
+    compactionInFlight = false;
+  }
 }
 
 // Date separator helpers
