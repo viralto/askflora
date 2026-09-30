@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ask Flora · Gone for a cuppa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #2D5A3D;
+    --green-mid: #5B8C6A;
+    --green-pale: #cbd5c0;
+    --green-lightest: #EAF1E4;
+    --cream: #FAF6F0;
+    --text-dark: #2A2926;
+    --text-secondary: #5F5E5A;
+    --text-light: #8A8983;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  body {
+    font-family: 'Nunito', sans-serif;
+    color: var(--text-dark);
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(203, 213, 192, 0.35) 0%, transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(203, 213, 192, 0.3) 0%, transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(91, 140, 106, 0.15) 0%, transparent 55%);
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+  }
+  .card {
+    background: var(--white);
+    border-radius: 18px;
+    max-width: 560px;
+    width: 100%;
+    padding: 28px 24px 24px;
+    box-shadow: 0 1px 8px rgba(45, 90, 61, 0.06), 0 8px 32px rgba(45, 90, 61, 0.05);
+  }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--green-mid);
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--green-deep);
+    margin: 0 0 16px;
+    line-height: 1.25;
+  }
+  p {
+    margin: 0 0 14px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  ol {
+    padding-left: 22px;
+    margin: 0 0 18px;
+  }
+  ol li {
+    margin-bottom: 12px;
+    padding-left: 4px;
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    background: var(--green-lightest);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--green-deep);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid var(--green-pale);
+    margin: 22px 0 18px;
+  }
+  .meanwhile {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+  .meanwhile strong {
+    color: var(--text-dark);
+  }
+
+  /* Larger screens: bump up the presence */
+  @media (min-width: 600px) {
+    body { padding: 40px 20px; }
+    .card {
+      padding: 44px 44px 36px;
+      border-radius: 20px;
+      box-shadow: 0 2px 20px rgba(45, 90, 61, 0.08), 0 20px 60px rgba(45, 90, 61, 0.06);
+    }
+    .kicker { font-size: 13px; letter-spacing: 1.5px; margin-bottom: 18px; }
+    h1 { font-size: 32px; margin-bottom: 20px; line-height: 1.2; }
+    p { font-size: 16px; margin-bottom: 16px; }
+    ol { padding-left: 24px; margin-bottom: 20px; }
+    ol li { margin-bottom: 10px; padding-left: 6px; }
+    hr { margin: 24px 0 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="kicker">503 · Gone for a cuppa</div>
+    <h1>Flora is down for upgrades</h1>
+    <p>For assistance, please contact the CEO of Gardening.</p>
+    <ol>
+      <li>Ask the nearest robin. They know where she keeps her tea things.</li>
+      <li>Quote ticket <code id="ticket">COMPOST-000000</code>. She will know exactly what you mean.</li>
+      <li>If the CEO is out potting up dahlias, any scarecrow can turn the Internet off and on again for you.</li>
+    </ol>
+    <p>Current wait time: somewhere between the kettle boiling and the last frost of 2038. Your allotment is important to us.</p>
+    <hr>
+    <p class="meanwhile"><strong>In the meantime:</strong> nothing is broken and nothing is lost. Flora's just been sent inside for a bit while we tidy up. She'll be back when the potting shed is all nice and tidy.</p>
+  </div>
+<script>
+  // Random absurd ticket. Deliberately not a beta key format.
+  const words = [
+    'COMPOST', 'RHUBARB', 'MULCH', 'TROWEL', 'SHED', 'WHEELBARROW',
+    'DIBBER', 'SLUG', 'MARROW', 'PARSNIP', 'BINDWEED', 'GREENFLY',
+    'HOSEPIPE', 'BROADBEAN', 'DAHLIA', 'NETTLE', 'DANDELION', 'SPROUT',
+    'SEEDLING', 'MULCHER', 'PITCHFORK', 'CLOCHE', 'CABBAGE', 'ALLOTMENT'
+  ];
+  const word = words[Math.floor(Math.random() * words.length)];
+  const number = Math.floor(Math.random() * 900000) + 100000;
+  document.getElementById('ticket').textContent = `${word}-${number}`;
+</script>
+</body>
+</html>
