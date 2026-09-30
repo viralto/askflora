@@ -2,152 +2,1512 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ask Flora · Gone for a cuppa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Ask Flora</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
-  :root {
-    --green-deep: #2D5A3D;
-    --green-mid: #5B8C6A;
-    --green-pale: #cbd5c0;
-    --green-lightest: #EAF1E4;
-    --cream: #FAF6F0;
-    --text-dark: #2A2926;
-    --text-secondary: #5F5E5A;
-    --text-light: #8A8983;
-    --white: #FFFFFF;
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
-  }
-  body {
-    font-family: 'Nunito', sans-serif;
-    color: var(--text-dark);
-    background: var(--cream);
-    background-image:
-      radial-gradient(circle at 15% 20%, rgba(203, 213, 192, 0.35) 0%, transparent 40%),
-      radial-gradient(circle at 85% 75%, rgba(203, 213, 192, 0.3) 0%, transparent 45%),
-      radial-gradient(circle at 50% 100%, rgba(91, 140, 106, 0.15) 0%, transparent 55%);
-    background-attachment: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-    line-height: 1.55;
-    -webkit-text-size-adjust: 100%;
-  }
-  .card {
-    background: var(--white);
-    border-radius: 18px;
-    max-width: 560px;
-    width: 100%;
-    padding: 28px 24px 24px;
-    box-shadow: 0 1px 8px rgba(45, 90, 61, 0.06), 0 8px 32px rgba(45, 90, 61, 0.05);
-  }
-  .kicker {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--green-mid);
-    letter-spacing: 1.3px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 26px;
-    color: var(--green-deep);
-    margin: 0 0 16px;
-    line-height: 1.25;
-  }
-  p {
-    margin: 0 0 14px;
-    font-size: 16px;
-    line-height: 1.6;
-  }
-  ol {
-    padding-left: 22px;
-    margin: 0 0 18px;
-  }
-  ol li {
-    margin-bottom: 12px;
-    padding-left: 4px;
-    line-height: 1.55;
-    font-size: 16px;
-  }
-  code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9em;
-    background: var(--green-lightest);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--green-deep);
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  hr {
-    border: none;
-    border-top: 1px solid var(--green-pale);
-    margin: 22px 0 18px;
-  }
-  .meanwhile {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-  }
-  .meanwhile strong {
-    color: var(--text-dark);
-  }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* Larger screens: bump up the presence */
-  @media (min-width: 600px) {
-    body { padding: 40px 20px; }
-    .card {
-      padding: 44px 44px 36px;
-      border-radius: 20px;
-      box-shadow: 0 2px 20px rgba(45, 90, 61, 0.08), 0 20px 60px rgba(45, 90, 61, 0.06);
-    }
-    .kicker { font-size: 13px; letter-spacing: 1.5px; margin-bottom: 18px; }
-    h1 { font-size: 32px; margin-bottom: 20px; line-height: 1.2; }
-    p { font-size: 16px; margin-bottom: 16px; }
-    ol { padding-left: 24px; margin-bottom: 20px; }
-    ol li { margin-bottom: 10px; padding-left: 6px; }
-    hr { margin: 24px 0 20px; }
+:root {
+  --green-deep: #2D5A3D;
+  --green-mid: #5B8C6A;
+  --green-sage: #8FB09A;
+  --green-pale: #C5D8CC;
+  --green-lightest: #E8F0EB;
+  --cream: #FAF6F0;
+  --cream-dark: #F0E8DB;
+  --cream-mid: #E8DCCC;
+  --brown-warm: #8B7355;
+  --brown-dark: #5C4A32;
+  --text-dark: #2C3E2D;
+  --text-mid: #4A6350;
+  --text-light: #6B8570;
+  --white: #FFFFFF;
+  --shadow-soft: 0 2px 12px rgba(45,90,61,0.08);
+  --shadow-mid: 0 4px 20px rgba(45,90,61,0.12);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Nunito', sans-serif;
+  background: var(--cream);
+  color: var(--text-dark);
+  overflow: hidden;
+}
+
+/* ── Layout ── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--cream);
+  position: relative;
+}
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(180deg, var(--cream-dark) 0%, var(--cream) 100%);
+  padding: 16px 20px 12px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cream-mid);
+  position: relative;
+}
+
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green-deep);
+  letter-spacing: 0.5px;
+}
+.header h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.reset-btn {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  background: none;
+  border: 1.5px solid var(--green-pale);
+  color: var(--green-mid);
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.reset-btn:hover { background: var(--green-lightest); border-color: var(--green-mid); }
+
+/* ── Welcome Screen ── */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 30px;
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+
+.welcome-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--green-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-mid);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.welcome h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--green-deep);
+  margin-bottom: 12px;
+}
+
+.welcome p {
+  font-size: 17px;
+  color: var(--text-mid);
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: 32px;
+}
+
+.start-btn {
+  background: var(--green-deep);
+  color: var(--white);
+  border: 2px solid var(--green-deep);
+  padding: 14px 0;
+  border-radius: 30px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-mid);
+  letter-spacing: 0.5px;
+  width: 240px;
+}
+
+.start-btn:hover { background: #1E4A2E; border-color: #1E4A2E; transform: translateY(-1px); }
+.start-btn:active { transform: translateY(0); }
+
+/* ── Chat Area ── */
+.chat-container {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.chat-container.active {
+  display: flex;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 12px;
+  animation: msgIn 0.3s ease;
+}
+
+.message.flora {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.flora-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.flora-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: 82%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.message.flora .bubble {
+  background: #cbd5c0;
+  color: var(--text-dark);
+  border-bottom-left-radius: 6px;
+}
+
+.message.user .bubble {
+  background: var(--cream-dark);
+  color: var(--text-dark);
+  border-bottom-right-radius: 6px;
+}
+
+/* Memory export/import cards */
+.memory-card-btn {
+  display: block;
+  margin-top: 10px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  background: var(--green-dark, #4a6741);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.memory-card-btn:active { opacity: 0.85; }
+.memory-card-status {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Date separator */
+.date-separator {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  margin: 16px 0 8px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  opacity: 0.7;
+}
+
+/* Typing indicator */
+.typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.typing .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green-sage);
+  border-radius: 50%;
+  animation: bounce 1.2s infinite;
+}
+
+.typing .dot:nth-child(2) { animation-delay: 0.15s; }
+.typing .dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── Input Bar ── */
+.input-bar {
+  padding: 10px 12px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  background: var(--white);
+  border-top: 1px solid var(--cream-mid);
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.input-bar textarea {
+  flex: 1;
+  border: 2px solid var(--green-pale);
+  border-radius: 22px;
+  padding: 12px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  color: var(--text-dark);
+  background: var(--cream);
+  resize: none;
+  outline: none;
+  max-height: 120px;
+  line-height: 1.4;
+  transition: border-color 0.2s;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -webkit-appearance: none;
+}
+
+.input-bar textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.input-bar textarea:focus {
+  border-color: var(--green-mid);
+}
+
+.input-bar textarea::placeholder {
+  color: var(--text-light);
+}
+
+.cf-turnstile {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.photo-btn, .send-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.photo-btn {
+  background: var(--cream-dark);
+  color: var(--brown-warm);
+  font-size: 20px;
+}
+
+.photo-btn:hover { background: var(--cream-mid); }
+
+.photo-preview {
+  padding: 8px 12px;
+  background: var(--white);
+  border-top: 1px solid var(--cream-mid);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.photo-preview.hidden { display: none; }
+
+.photo-preview img {
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.preview-remove {
+  background: var(--cream-dark);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-mid);
+  margin-left: auto;
+}
+
+.photo-menu {
+  background: var(--white);
+  border-top: 1px solid var(--cream-mid);
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.photo-menu.hidden { display: none; }
+
+.photo-menu-option {
+  flex: 1;
+  background: var(--cream);
+  border: 1px solid var(--cream-mid);
+  border-radius: 14px;
+  padding: 14px 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--green-deep);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.photo-menu-option:hover,
+.photo-menu-option:active {
+  background: var(--cream-mid);
+}
+
+.photo-menu-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Image in chat */
+.bubble img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.send-btn {
+  background: var(--green-deep);
+  color: var(--white);
+  font-size: 20px;
+}
+
+.send-btn:hover { background: #1E4A2E; }
+.send-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* ── API Key Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal {
+  background: var(--cream);
+  border-radius: 20px;
+  padding: 30px 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.modal h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--green-deep);
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.modal p {
+  font-size: 15px;
+  color: var(--text-mid);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.modal input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--green-pale);
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  background: var(--white);
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.modal input:focus { border-color: var(--green-mid); }
+
+.modal button {
+  background: var(--green-deep);
+  color: var(--white);
+  border: none;
+  padding: 14px 36px;
+  border-radius: 25px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal .error {
+  color: #C0392B;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* ── Leaf decorations ── */
+.leaf-deco {
+  position: absolute;
+  opacity: 0.06;
+  font-size: 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.leaf-deco.tl { top: 80px; left: -10px; transform: rotate(-30deg); }
+.leaf-deco.br { bottom: 100px; right: -10px; transform: rotate(20deg); }
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* ── Desktop ── */
+@media (min-width: 500px) {
+  .app {
+    height: 95dvh;
+    margin-top: 2.5dvh;
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(45,90,61,0.15);
+    overflow: hidden;
   }
+}
 </style>
 </head>
 <body>
-  <div class="card">
-    <div class="kicker">503 · Gone for a cuppa</div>
-    <h1>Flora is down for upgrades</h1>
-    <p>For assistance, please contact the CEO of Gardening.</p>
-    <ol>
-      <li>Ask the nearest robin. They know where she keeps her tea things.</li>
-      <li>Quote ticket <code id="ticket">COMPOST-000000</code>. She will know exactly what you mean.</li>
-      <li>If the CEO is out potting up dahlias, any scarecrow can turn the Internet off and on again for you.</li>
-    </ol>
-    <p>Current wait time: somewhere between the kettle boiling and the last frost of 2038. Your allotment is important to us.</p>
-    <hr>
-    <p class="meanwhile"><strong>In the meantime:</strong> nothing is broken and nothing is lost. Flora's just been sent inside for a bit while we tidy up. She'll be back when the potting shed is all nice and tidy.</p>
+
+<div class="app">
+  <div class="leaf-deco tl">🌿</div>
+  <div class="leaf-deco br">🍃</div>
+
+  <div class="header">
+    <button class="reset-btn" id="resetBtn" title="Clear this conversation and start over">🌱 Start over</button>
+    <h1><a href="index.html">Ask Flora</a></h1>
   </div>
+
+  <!-- Loading overlay during access check -->
+  <div id="accessLoader" style="position: fixed; inset: 0; background: var(--cream); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+    <img src="flora.png" alt="" style="width: 60px; height: 60px; border-radius: 50%; opacity: 0.7;">
+  </div>
+
+  <!-- Welcome Screen -->
+  <div class="welcome" id="welcome">
+    <div class="welcome-avatar"><img src="flora.png" alt="Flora"></div>
+    <h2>Hi, I'm Flora!</h2>
+    <p>Your gardening friend. I'll get to know your garden and help you grow things you'll love.</p>
+    <button class="start-btn" id="startBtn">Start chatting</button>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-container" id="chatContainer">
+    <div class="messages" id="messages"></div>
+    <div class="photo-preview hidden" id="photoPreview">
+      <img id="previewImg" src="">
+      <button class="preview-remove" id="previewRemove">✕</button>
+    </div>
+    <div class="photo-menu hidden" id="photoMenu">
+      <button class="photo-menu-option" id="menuCamera">
+        <span class="photo-menu-icon">📷</span>
+        <span>Take a photo</span>
+      </button>
+      <button class="photo-menu-option" id="menuLibrary">
+        <span class="photo-menu-icon">🖼️</span>
+        <span>Choose from library</span>
+      </button>
+    </div>
+    <div class="input-bar">
+      <input type="file" id="photoInput" accept="image/*" style="display:none">
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
+      <button class="photo-btn" id="photoBtn" title="Send a photo">📷</button>
+      <textarea id="userInput" rows="1" placeholder="Type your message..."></textarea>
+      <button class="send-btn" id="sendBtn" title="Send">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- No API key needed - proxied through Worker -->
+
 <script>
-  // Random absurd ticket. Deliberately not a beta key format.
-  const words = [
-    'COMPOST', 'RHUBARB', 'MULCH', 'TROWEL', 'SHED', 'WHEELBARROW',
-    'DIBBER', 'SLUG', 'MARROW', 'PARSNIP', 'BINDWEED', 'GREENFLY',
-    'HOSEPIPE', 'BROADBEAN', 'DAHLIA', 'NETTLE', 'DANDELION', 'SPROUT',
-    'SEEDLING', 'MULCHER', 'PITCHFORK', 'CLOCHE', 'CABBAGE', 'ALLOTMENT'
+// Feature gate for the rolling digest (Part B of the token-reduction work).
+// This must stay false until the updated Worker with the /summarize endpoint
+// is deployed. When false, sending behaviour is unchanged from today, apart
+// from the image window in callFlora, which is an ungated bug fix.
+const SUMMARY_ENABLED = false;
+
+// Garden profile tracks what Flora has learned
+let gardenProfile = {
+  name: null,
+  location: null,
+  gardenType: null,
+  sunShade: null,
+  soilType: null,
+  goals: null,
+  existingPlants: null,
+  personalNotes: []
+};
+
+// Flora's system prompt now lives in the Cloudflare Worker, not here.
+// The client sends only the conversation messages and the garden profile;
+// the Worker assembles the full prompt server-side (with prompt caching).
+
+// After each exchange, try to extract profile info from the conversation
+// Profile updates now come from Flora herself, reported in her JSON reply
+// envelope as an optional "profile_updates" object. She reads the conversation
+// with full language understanding, so no keyword patterns are needed here.
+// This merge is deliberately strict: whitelisted fields, strings only, length caps.
+function applyProfileUpdates(updates) {
+  if (!updates || typeof updates !== 'object' || Array.isArray(updates)) return;
+  const caps = { name: 100, location: 200, gardenType: 100, sunShade: 100, soilType: 100, goals: 500, existingPlants: 1000 };
+  let changed = false;
+  for (const key of Object.keys(caps)) {
+    const v = updates[key];
+    if (typeof v !== 'string') continue;
+    const cleaned = v.trim().slice(0, caps[key]);
+    if (cleaned && cleaned !== gardenProfile[key]) {
+      gardenProfile[key] = cleaned;
+      changed = true;
+    }
+  }
+  if (changed) saveState();
+}
+
+let conversationHistory = [];
+let isGenerating = false;
+let lastSeparatorDay = null;
+
+// ─── Access control ───
+const WORKER_URL = 'https://askflora.co.uk/api';
+const LANDING_URL = '/';
+let accessMode = 'none'; // 'full' | 'none'
+
+// ─── Payload bounding ───
+// The image window (always on) caps how many photos travel in each request.
+// The rolling digest (behind SUMMARY_ENABLED) replaces messages older than
+// two weeks with a short summary held under flora_summary.
+const IMAGE_SEND_WINDOW = 3; // most recent image-bearing messages keep their images in the payload
+const DIGEST_AGE_MS = 14 * 24 * 60 * 60 * 1000; // messages older than this are eligible for the digest
+const COMPACTION_MIN_MESSAGES = 20; // don't compact for fewer aged messages than this
+const COMPACTION_MIN_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000; // floor between successful compactions
+let compactionEpoch = 0; // bumped by Start over and import; an in-flight compaction discards its result
+let compactionInFlight = false;
+
+// Replace every image block with a small text placeholder. Shared between
+// saveState (images are too large for localStorage) and the send path, so a
+// stripped message looks identical whether it came from memory or a reload.
+function stripImagesFrom(messages) {
+  return messages.map(m => {
+    if (Array.isArray(m.content)) {
+      return {
+        ...m,
+        content: m.content.map(block =>
+          block.type === 'image' ? { type: 'text', text: '[Photo shared]' } : block
+        )
+      };
+    }
+    return m;
+  });
+}
+
+// Persistence
+function saveState() {
+  // Never let a full or blocked localStorage throw into callFlora's catch,
+  // where it would read to the user as a connection error.
+  try {
+    localStorage.setItem('flora_profile', JSON.stringify(gardenProfile));
+    localStorage.setItem('flora_history', JSON.stringify(stripImagesFrom(conversationHistory)));
+  } catch (e) {
+    console.error('Saving state failed:', e);
+  }
+}
+
+function loadState() {
+  try {
+    const p = localStorage.getItem('flora_profile');
+    const h = localStorage.getItem('flora_history');
+    if (p) gardenProfile = JSON.parse(p);
+    if (h) conversationHistory = JSON.parse(h);
+    return conversationHistory.length > 0;
+  } catch (e) { return false; }
+}
+
+function resetState() {
+  gardenProfile = { name: null, location: null, gardenType: null, sunShade: null, soilType: null, goals: null, existingPlants: null, personalNotes: [] };
+  conversationHistory = [];
+  lastSeparatorDay = null;
+  compactionEpoch++; // any compaction still in flight belongs to the old conversation
+  localStorage.removeItem('flora_profile');
+  localStorage.removeItem('flora_history');
+  localStorage.removeItem('flora_summary');
+  localStorage.removeItem('flora_compaction');
+}
+
+// Elements
+const welcome = document.getElementById('welcome');
+const startBtn = document.getElementById('startBtn');
+const chatContainer = document.getElementById('chatContainer');
+const messagesEl = document.getElementById('messages');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const photoBtn = document.getElementById('photoBtn');
+const photoInput = document.getElementById('photoInput');
+const cameraInput = document.getElementById('cameraInput');
+const photoMenu = document.getElementById('photoMenu');
+const menuCamera = document.getElementById('menuCamera');
+const menuLibrary = document.getElementById('menuLibrary');
+const photoPreview = document.getElementById('photoPreview');
+const previewImg = document.getElementById('previewImg');
+const previewRemove = document.getElementById('previewRemove');
+
+let pendingImage = null; // { base64, mediaType }
+
+// Start chat
+startBtn.addEventListener('click', () => {
+  welcome.style.display = 'none';
+  chatContainer.classList.add('active');
+  sendFloraOpener();
+});
+
+// Reset / new conversation
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Start completely fresh?\n\nThis wipes your whole conversation and everything Flora has learned about your garden. It cannot be undone, and it does not start a new thread alongside the old one. There is only ever one conversation, and this clears it.')) return;
+  resetState();
+  messagesEl.innerHTML = '';
+  chatContainer.classList.remove('active');
+  welcome.style.display = '';
+});
+
+// Restore previous session
+try {
+  if (loadState()) {
+    welcome.style.display = 'none';
+    chatContainer.classList.add('active');
+    conversationHistory.forEach(msg => {
+      if (msg.hidden) return;
+      if (typeof msg.content === 'string' && msg.content.startsWith('Hi! I just opened the app')) return;
+      let displayText;
+      if (Array.isArray(msg.content)) {
+        displayText = msg.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
+      } else {
+        displayText = msg.content;
+      }
+      if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user', false, msg.timestamp);
+    });
+    scrollToBottom();
+  }
+} catch (e) {
+  console.error('Restore failed:', e);
+  resetState();
+}
+
+// Auto-resize textarea
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+});
+
+// Photo handling
+// Detect touch devices (phones/tablets) to decide whether to show the
+// take-or-upload menu. On desktop we skip the menu and just open the file picker.
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+function openPhotoMenuOrPicker() {
+  if (isTouchDevice) {
+    photoMenu.classList.remove('hidden');
+  } else {
+    photoInput.click();
+  }
+}
+function closePhotoMenu() {
+  photoMenu.classList.add('hidden');
+}
+
+photoBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  openPhotoMenuOrPicker();
+});
+
+menuCamera.addEventListener('click', () => {
+  closePhotoMenu();
+  cameraInput.click();
+});
+
+menuLibrary.addEventListener('click', () => {
+  closePhotoMenu();
+  photoInput.click();
+});
+
+// Dismiss the menu on outside tap
+document.addEventListener('click', (e) => {
+  if (!photoMenu.classList.contains('hidden') && !photoMenu.contains(e.target)) {
+    closePhotoMenu();
+  }
+});
+
+// Both file inputs (photoInput for library, cameraInput for camera) share
+// the same handler: downscale, stash as pendingImage, show the preview.
+function handlePickedPhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const maxDim = 1024;
+    let w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else { w = Math.round(w * maxDim / h); h = maxDim; }
+    }
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    const base64 = dataUrl.split(',')[1];
+    pendingImage = { base64, mediaType: 'image/jpeg' };
+    previewImg.src = dataUrl;
+    photoPreview.classList.remove('hidden');
+    userInput.placeholder = 'Add a message about this photo...';
+    userInput.focus();
+  };
+  img.src = URL.createObjectURL(file);
+  e.target.value = '';
+}
+
+photoInput.addEventListener('change', handlePickedPhoto);
+cameraInput.addEventListener('change', handlePickedPhoto);
+
+previewRemove.addEventListener('click', () => {
+  pendingImage = null;
+  photoPreview.classList.add('hidden');
+  userInput.placeholder = 'Type your message...';
+});
+
+// Send message
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+function sendMessage(text) {
+  const msg = (typeof text === 'string' && text) ? text : userInput.value.trim();
+  if ((!msg && !pendingImage) || isGenerating) return;
+
+  // Memory transfer trigger phrases. Exact-match after normalisation, intercepted
+  // before the message reaches history or the API. See flora-history-export-spec.
+  if (!pendingImage && handleMemoryPhrase(msg)) {
+    userInput.value = '';
+    userInput.style.height = 'auto';
+    return;
+  }
+
+  const messageTimestamp = Date.now();
+  
+  // Build display bubble
+  if (pendingImage) {
+    const imgHtml = `<img src="data:${pendingImage.mediaType};base64,${pendingImage.base64}">`;
+    addBubble(imgHtml + (msg || ''), 'user', true, messageTimestamp);
+  } else {
+    addBubble(msg, 'user', false, messageTimestamp);
+  }
+
+  // Build API content
+  let content;
+  if (pendingImage) {
+    content = [];
+    content.push({
+      type: 'image',
+      source: { type: 'base64', media_type: pendingImage.mediaType, data: pendingImage.base64 }
+    });
+    content.push({ type: 'text', text: msg || 'What can you tell me about this?' });
+  } else {
+    content = msg;
+  }
+
+  userInput.value = '';
+  userInput.style.height = 'auto';
+  userInput.placeholder = 'Type your message...';
+  pendingImage = null;
+  photoPreview.classList.add('hidden');
+
+  conversationHistory.push({ role: 'user', content, timestamp: messageTimestamp });
+
+  // PCD easter egg: "are you on email" gets a specific canned response.
+  // Strict match - any other variant goes to Flora normally.
+  if (typeof content === 'string' && /^\s*are you on email\??\s*$/i.test(content)) {
+    const cannedReply = "You simply have to be these days! You can reach me at hello@askflora.co.uk";
+    const cannedTimestamp = Date.now();
+    conversationHistory.push({ role: 'assistant', content: cannedReply, timestamp: cannedTimestamp });
+    saveState();
+    addBubble(cannedReply, 'flora', false, cannedTimestamp);
+    return;
+  }
+
+  callFlora();
+}
+
+function sendFloraOpener() {
+  conversationHistory = [];
+  callFlora(true);
+}
+
+// ─── Memory transfer (export/import) ───
+// Trigger phrases are matched exactly after normalisation: lowercased, trimmed,
+// punctuation stripped, whitespace collapsed. "Flora, pack a bag!" matches;
+// "flora pack my bag" does not. Deliberate: exactness is what makes accidental
+// triggering near impossible, while punctuation tolerance removes the typing
+// hazard when the phrase is passed on by word of mouth.
+const MEMORY_FORMAT = 'flora-memory';
+const MEMORY_VERSION = 1;
+
+function normalisePhrase(s) {
+  return s.toLowerCase().replace(/[.,!?;:'"]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function handleMemoryPhrase(msg) {
+  const n = normalisePhrase(msg);
+  if (n === 'flora pack a bag') {
+    addBubble(msg, 'user', false, Date.now());
+    showExportCard();
+    return true;
+  }
+  if (n === 'flora unpack my bag') {
+    addBubble(msg, 'user', false, Date.now());
+    showImportCard();
+    return true;
+  }
+  return false;
+}
+
+function hasAnythingToExport() {
+  if (conversationHistory.length > 0) return true;
+  return Object.values(gardenProfile).some(v => Array.isArray(v) ? v.length > 0 : v !== null);
+}
+
+function showExportCard() {
+  if (!hasAnythingToExport()) {
+    addBubble("There's nothing to pack yet! Once we've chatted a bit, this is how you'd take my memory of you to a new device.", 'flora', false, Date.now());
+    return;
+  }
+  const html =
+    'Packing your bag! This gives you a file containing everything I know about you and your garden, including our whole conversation, in readable form. Keep it somewhere safe, and treat it like a diary rather than a ticket stub.' +
+    '<br><br>The simplest way to get it to your new device is to email it to yourself, then open that email on the new device and save the file. AirDrop or a cloud drive work too if you use those.' +
+    '<br><br>On your new device, open me up and type <strong>flora, unpack my bag</strong> and choose this file.' +
+    '<button class="memory-card-btn" onclick="floraExportMemory(this)">Download my memory file</button>' +
+    '<span class="memory-card-status"></span>';
+  addBubble(html, 'flora', true, Date.now());
+}
+
+function floraExportMemory(btn) {
+  const status = btn.parentElement.querySelector('.memory-card-status');
+  try {
+    saveState();
+    const bundle = {
+      format: MEMORY_FORMAT,
+      version: MEMORY_VERSION,
+      exported_at: new Date().toISOString(),
+      profile: JSON.parse(localStorage.getItem('flora_profile') || '{}'),
+      history: JSON.parse(localStorage.getItem('flora_history') || '[]')
+    };
+    // Extra top-level key; older importers ignore keys they don't recognise,
+    // and history above stays the full transcript, so old builds still work.
+    try {
+      const summaryRaw = localStorage.getItem('flora_summary');
+      if (summaryRaw) bundle.summary = JSON.parse(summaryRaw);
+    } catch (e) {}
+    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const d = new Date();
+    const pad = x => String(x).padStart(2, '0');
+    a.download = `flora-memory-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    status.textContent = 'Saved! Look in your downloads.';
+  } catch (e) {
+    status.textContent = "Something went wrong packing the file. Try again, and if it keeps happening, drop me a line at hello@askflora.co.uk";
+  }
+}
+
+function showImportCard() {
+  const html =
+    "Let's unpack! Choose the memory file you saved on your old device and I'll pick up right where we left off." +
+    '<button class="memory-card-btn" onclick="floraPickImportFile(this)">Choose my memory file</button>' +
+    '<span class="memory-card-status"></span>';
+  addBubble(html, 'flora', true, Date.now());
+}
+
+function floraPickImportFile(btn) {
+  const status = btn.parentElement.querySelector('.memory-card-status');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.addEventListener('change', () => {
+    if (input.files && input.files[0]) floraImportMemory(input.files[0], status);
+  });
+  input.click();
+}
+
+function floraImportMemory(file, status) {
+  if (file.size > 4 * 1024 * 1024) {
+    status.textContent = "That file is too big to be one of mine. Double check it's the file I gave you.";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onerror = () => { status.textContent = "I couldn't read that file. Try choosing it again."; };
+  reader.onload = () => {
+    let bundle;
+    try {
+      bundle = JSON.parse(reader.result);
+    } catch (e) {
+      status.textContent = "That doesn't look like one of my memory files. Double check you picked the right one.";
+      return;
+    }
+    if (!bundle || bundle.format !== MEMORY_FORMAT) {
+      status.textContent = "That doesn't look like one of my memory files. Double check you picked the right one.";
+      return;
+    }
+    if (typeof bundle.version !== 'number' || bundle.version > MEMORY_VERSION) {
+      status.textContent = "That file came from a newer version of me than this one. It should work after the next update.";
+      return;
+    }
+    if (!Array.isArray(bundle.history) || typeof bundle.profile !== 'object' || bundle.profile === null) {
+      status.textContent = "That file looks damaged, so I've left everything as it was. Try exporting a fresh one from your old device.";
+      return;
+    }
+    if (hasAnythingToExport()) {
+      const ok = confirm('Unpack this bag here?\n\nThis replaces the conversation and garden details currently on this device with the ones from the file. It cannot be undone, and the two are not merged.');
+      if (!ok) {
+        status.textContent = 'No problem, everything here is untouched.';
+        return;
+      }
+    }
+    try {
+      compactionEpoch++; // a compaction in flight must not land its digest on the imported conversation
+      localStorage.setItem('flora_profile', JSON.stringify(bundle.profile));
+      localStorage.setItem('flora_history', JSON.stringify(bundle.history));
+      // The digest must travel with its conversation. A bag without one must
+      // also clear whatever digest this device had, or Flora starts
+      // remembering a stranger.
+      if (bundle.summary && typeof bundle.summary === 'object' && !Array.isArray(bundle.summary)) {
+        localStorage.setItem('flora_summary', JSON.stringify(bundle.summary));
+      } else {
+        localStorage.removeItem('flora_summary');
+      }
+      localStorage.removeItem('flora_compaction');
+      status.textContent = 'Unpacked! One moment...';
+      setTimeout(() => location.reload(), 600);
+    } catch (e) {
+      status.textContent = "Something went wrong unpacking, so I've left everything as it was. Drop me a line at hello@askflora.co.uk";
+    }
+  };
+  reader.readAsText(file);
+}
+
+async function callFlora(isOpener = false) {
+  isGenerating = true;
+  sendBtn.disabled = true;
+
+  // Show typing
+  const typingEl = document.createElement('div');
+  typingEl.className = 'typing';
+  typingEl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  messagesEl.appendChild(typingEl);
+  scrollToBottom();
+
+  const messages = isOpener
+    ? [{ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.' }]
+    : conversationHistory;
+
+  try {
+    const resp = await fetch('https://askflora.co.uk/api/chat', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        profile: gardenProfile,
+        messages: buildApiMessages(messages)
+      })
+    });
+
+    const data = await resp.json();
+
+    // Access expired or invalid - redirect to landing
+    if (resp.status === 401) {
+      window.location.href = LANDING_URL;
+      return;
+    }
+
+    if (data.error) {
+      typingEl.remove();
+      addBubble('Sorry, I seem to be having a moment! (' + (data.error.message || data.error.type || 'unknown error') + ')', 'flora');
+      console.error('API error:', data.error);
+      isGenerating = false;
+      sendBtn.disabled = false;
+      return;
+    }
+
+    const reply = data.content.map(c => c.text || '').join('');
+
+    // If opener, also push the synthetic user message to history
+    if (isOpener) {
+      conversationHistory.push({ role: 'user', content: 'Hi! I just opened the app. Introduce yourself as Flora and ask what I need help with. You are a gardening friend, not an app.', hidden: true, timestamp: Date.now() });
+    }
+
+    // Parse JSON response - handle model sometimes outputting text before JSON
+    let floraMsg = reply;
+    
+    function tryParseFlora(str) {
+      try {
+        const p = JSON.parse(str);
+        if (p.message) return p;
+      } catch (e) {}
+      return null;
+    }
+    
+    // Try 1: direct parse
+    let parsed = tryParseFlora(reply.replace(/```json|```/g, '').trim());
+    
+    // Try 2: find last { that starts a JSON block with "message"
+    if (!parsed) {
+      let lastIdx = reply.lastIndexOf('{"message"');
+      if (lastIdx === -1) lastIdx = reply.lastIndexOf('{ "message"');
+      if (lastIdx >= 0) {
+        parsed = tryParseFlora(reply.slice(lastIdx));
+      }
+    }
+    
+    // Try 3: regex for any JSON object with message key
+    if (!parsed) {
+      const matches = reply.match(/\{[^{}]*"message"\s*:\s*"[^"]*"[^{}]*\}/g);
+      if (matches) parsed = tryParseFlora(matches[matches.length - 1]);
+    }
+    
+    if (parsed) {
+      floraMsg = parsed.message;
+    } else {
+      // Parsing failed. The usual cause is the reply hitting the token ceiling,
+      // which cuts the JSON off mid-string so it can no longer be parsed. Recover
+      // whatever message text we have and end it at the last complete sentence, so
+      // a rare cut-off shows as a clean (if slightly shorter) reply, never a
+      // mid-word stub and never raw JSON.
+      let recovered = reply;
+      const msgKey = reply.search(/"message"\s*:\s*"/);
+      if (msgKey >= 0) {
+        const valStart = reply.indexOf('"', reply.indexOf(':', msgKey)) + 1;
+        recovered = reply.slice(valStart)
+          .replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+      } else {
+        recovered = reply.replace(/```json|```/g, '').trim();
+      }
+      // Cut back to the last sentence that actually finishes. The lookahead for a
+      // space or end-of-text means a decimal like "2.5" is not read as a full stop.
+      const clean = recovered.match(/^[\s\S]*[.!?]["')\]]?(?=\s|$)/);
+      if (clean && clean[0].trim().length > 20) recovered = clean[0];
+      floraMsg = recovered.trim() || "Sorry, I lost my thread there for a second. Could you ask me that again?";
+    }
+
+    const floraTimestamp = Date.now();
+    conversationHistory.push({ role: 'assistant', content: floraMsg, timestamp: floraTimestamp });
+
+    // Apply any profile updates Flora reported in her reply envelope
+    if (parsed && parsed.profile_updates) applyProfileUpdates(parsed.profile_updates);
+
+    // Persist
+    saveState();
+
+    // Fold old messages into the rolling digest if one is due. Fire and
+    // forget: the user never waits on this and the send button stays live.
+    if (SUMMARY_ENABLED) maybeCompact();
+
+    typingEl.remove();
+    addBubble(floraMsg, 'flora', false, floraTimestamp);
+
+  } catch (err) {
+    typingEl.remove();
+    addBubble('Hmm, I can\'t seem to connect. (' + err.message + ')', 'flora');
+    console.error(err);
+  }
+
+  isGenerating = false;
+  sendBtn.disabled = false;
+}
+
+// The label depends only on the message's own timestamp, never on the
+// current time, so a message is byte-identical on every send and the
+// Worker can cache the history. Flora works out "three weeks ago" by
+// comparing it with today's date, which the Worker sends separately.
+function formatSentTime(timestamp) {
+  if (!timestamp) return null;
+  return new Date(timestamp).toLocaleString('en-GB', {
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London'
+  });
+}
+
+function annotateMessageForApi(msg) {
+  const sentTime = formatSentTime(msg.timestamp);
+  if (!sentTime) return { role: msg.role, content: msg.content };
+
+  const prefix = `[Sent ${sentTime}] `;
+  if (typeof msg.content === 'string') {
+    return { role: msg.role, content: prefix + msg.content };
+  }
+  if (Array.isArray(msg.content)) {
+    const newContent = [...msg.content];
+    const firstTextIdx = newContent.findIndex(b => b.type === 'text');
+    if (firstTextIdx >= 0) {
+      newContent[firstTextIdx] = {
+        ...newContent[firstTextIdx],
+        text: prefix + newContent[firstTextIdx].text
+      };
+    } else {
+      newContent.unshift({ type: 'text', text: prefix.trim() });
+    }
+    return { role: msg.role, content: newContent };
+  }
+  return { role: msg.role, content: msg.content };
+}
+
+// ─── Rolling digest and image window ───
+
+function loadSummary() {
+  try {
+    const raw = localStorage.getItem('flora_summary');
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || typeof s.text !== 'string' || !s.text || typeof s.coversThrough !== 'number') return null;
+    return s;
+  } catch (e) { return null; }
+}
+
+function recordCompactionAttempt(outcome) {
+  try {
+    localStorage.setItem('flora_compaction', JSON.stringify({ at: Date.now(), outcome }));
+  } catch (e) {}
+}
+
+// The handshake pair is built fresh at send time and never written into
+// conversationHistory. The instruction lives inside the user turn so the
+// Worker's prompt (and its cache entry) stays untouched, and the assistant
+// turn is plain prose because every real assistant turn in history is plain
+// prose; a JSON envelope here would be the only one of its kind.
+function buildHandshakePair(summary) {
+  const upTo = new Date(summary.coversThrough).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  return [
+    {
+      role: 'user',
+      content: '[MEMORY DIGEST covering our conversation up to ' + upTo + '. Treat this as your own memory of our earlier chats. The verbatim messages after this point follow. Do not mention this note.]\n' + summary.text
+    },
+    { role: 'assistant', content: 'Noted, I remember all of that.' }
   ];
-  const word = words[Math.floor(Math.random() * words.length)];
-  const number = Math.floor(Math.random() * 900000) + 100000;
-  document.getElementById('ticket').textContent = `${word}-${number}`;
+}
+
+// Keep the images in the most recent image-bearing messages and strip the
+// rest, so a long photo session can't grow the payload past the Worker's
+// size cap. Works on a copy; conversationHistory keeps its images so Flora
+// can still look at a recent photo again within the session.
+function applyImageWindow(messages) {
+  let kept = 0;
+  const out = new Array(messages.length);
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    const hasImage = Array.isArray(m.content) && m.content.some(b => b.type === 'image');
+    if (hasImage && kept < IMAGE_SEND_WINDOW) {
+      kept++;
+      out[i] = m;
+    } else if (hasImage) {
+      out[i] = stripImagesFrom([m])[0];
+    } else {
+      out[i] = m;
+    }
+  }
+  return out;
+}
+
+// Assemble what actually goes to the Worker: digest split first (when a
+// summary exists), then the image window on whatever survives, then the
+// [Sent ...] annotations. Messages with no timestamp are always sent
+// verbatim; legacy history predates timestamps and must never vanish.
+function buildApiMessages(messages) {
+  let recent = messages;
+  let handshake = [];
+  if (SUMMARY_ENABLED) {
+    const summary = loadSummary();
+    if (summary) {
+      recent = messages.filter(m => !m.timestamp || m.timestamp > summary.coversThrough);
+      handshake = buildHandshakePair(summary);
+    }
+  }
+  return handshake.concat(applyImageWindow(recent).map(annotateMessageForApi));
+}
+
+// A bad digest must never be saved: once it replaces the transcript in the
+// payload it IS Flora's memory. Length and punctuation catch truncation, the
+// JSON checks catch a stray envelope, and the name check catches a digest
+// that dropped the thing it exists to remember.
+function digestLooksAcceptable(digest) {
+  if (!digest) return false;
+  if (digest.split(/\s+/).filter(Boolean).length < 100) return false;
+  if (!/[.!?]["')\]]*$/.test(digest)) return false;
+  if (digest.startsWith('{')) return false;
+  if (digest.includes('"message"')) return false;
+  if (gardenProfile.name && !digest.toLowerCase().includes(gardenProfile.name.toLowerCase())) return false;
+  return true;
+}
+
+async function maybeCompact() {
+  if (compactionInFlight) return;
+
+  const summary = loadSummary();
+  if (summary && typeof summary.generatedAt === 'number' && Date.now() - summary.generatedAt < COMPACTION_MIN_INTERVAL_MS) return;
+
+  // Aged set: timestamped, not hidden (the synthetic opener would read as the
+  // user speaking), older than two weeks, not already covered by the digest.
+  const coversThrough = summary ? summary.coversThrough : 0;
+  const cutoff = Date.now() - DIGEST_AGE_MS;
+  const aged = conversationHistory.filter(m =>
+    m.timestamp && !m.hidden && m.timestamp > coversThrough && m.timestamp <= cutoff
+  );
+  // End on an assistant message, so a user question is never folded into the
+  // digest while its answer stays verbatim.
+  while (aged.length && aged[aged.length - 1].role !== 'assistant') aged.pop();
+  if (aged.length < COMPACTION_MIN_MESSAGES) return;
+
+  compactionInFlight = true;
+  const epochAtStart = compactionEpoch;
+  try {
+    const toSummarize = stripImagesFrom(aged).map(m => ({ role: m.role, content: m.content }));
+    if (summary) {
+      // Consecutive user turns are fine; the API folds them into one turn.
+      toSummarize.unshift({
+        role: 'user',
+        content: '[EARLIER DIGEST covering everything before the messages that follow]\n' + summary.text
+      });
+    } else {
+      // With no digest in front, the transcript must open on a user turn or
+      // the API rejects it. Only the very first compaction can start on an
+      // assistant message (Flora's intro, since the opener is hidden), and
+      // losing that intro from the digest costs nothing.
+      while (toSummarize.length && toSummarize[0].role !== 'user') toSummarize.shift();
+      if (!toSummarize.length) { compactionInFlight = false; return; }
+    }
+
+    const resp = await fetch(WORKER_URL + '/summarize', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: toSummarize })
+    });
+    const data = await resp.json();
+    if (!resp.ok || data.error || !Array.isArray(data.content)) {
+      recordCompactionAttempt('error');
+      return;
+    }
+    const digest = data.content.map(c => c.text || '').join('').trim();
+    if (!digestLooksAcceptable(digest)) {
+      recordCompactionAttempt('rejected');
+      return;
+    }
+    // The conversation this digest describes may have been wiped or replaced
+    // while the request was in flight. If so, discard the result silently.
+    if (compactionEpoch !== epochAtStart) return;
+    try {
+      localStorage.setItem('flora_summary', JSON.stringify({
+        text: digest,
+        coversThrough: aged[aged.length - 1].timestamp,
+        generatedAt: Date.now()
+      }));
+      recordCompactionAttempt('success');
+    } catch (e) {
+      recordCompactionAttempt('error');
+    }
+  } catch (e) {
+    recordCompactionAttempt('error');
+  } finally {
+    compactionInFlight = false;
+  }
+}
+
+// Date separator helpers
+function formatDateSeparator(timestamp) {
+  if (!timestamp) return '';
+  const msgDate = new Date(timestamp);
+  const now = new Date();
+  
+  // Strip time so we can compare dates
+  const msgDay = new Date(msgDate.getFullYear(), msgDate.getMonth(), msgDate.getDate());
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dayDiff = Math.round((today - msgDay) / 86400000);
+  
+  if (dayDiff === 0) return 'Today';
+  if (dayDiff === 1) return 'Yesterday';
+  if (dayDiff < 7) {
+    return msgDate.toLocaleDateString('en-GB', { weekday: 'long' });
+  }
+  // Older: "13 April" or "13 April 2024" if not this year
+  const sameYear = msgDate.getFullYear() === now.getFullYear();
+  return msgDate.toLocaleDateString('en-GB', { 
+    day: 'numeric', 
+    month: 'long',
+    ...(sameYear ? {} : { year: 'numeric' })
+  });
+}
+
+function maybeInsertDateSeparator(timestamp) {
+  if (!timestamp) return;
+  const msgDate = new Date(timestamp);
+  const dayKey = msgDate.toDateString();
+  if (dayKey === lastSeparatorDay) return;
+  lastSeparatorDay = dayKey;
+  
+  const sep = document.createElement('div');
+  sep.className = 'date-separator';
+  sep.textContent = formatDateSeparator(timestamp);
+  messagesEl.appendChild(sep);
+}
+
+function addBubble(text, who, isHtml = false, timestamp = null) {
+  if (timestamp) maybeInsertDateSeparator(timestamp);
+  
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `message ${who}`;
+
+  if (who === 'flora') {
+    const avatar = document.createElement('div');
+    avatar.className = 'flora-avatar';
+    avatar.innerHTML = '<img src="flora.png" alt="Flora">';
+    msgDiv.appendChild(avatar);
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (isHtml) {
+    bubble.innerHTML = text;
+  } else {
+    bubble.textContent = text;
+  }
+
+  msgDiv.appendChild(bubble);
+  messagesEl.appendChild(msgDiv);
+  scrollToBottom();
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  });
+}
+
+// ─── Access check on load ───
+async function checkAccess() {
+  try {
+    const resp = await fetch(`${WORKER_URL}/check-access`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    const data = await resp.json();
+    // Only 'full' grants access. Anything else (none, taster, taster_exhausted
+    // from legacy cookies) means the user needs to go back to the landing page.
+    if (data.ok && data.mode === 'full') return { mode: 'full' };
+    return { mode: 'none' };
+  } catch (e) {
+    return { mode: 'none' };
+  }
+}
+
+// ─── Init ───
+(async function init() {
+  const access = await checkAccess();
+  accessMode = access.mode;
+
+  if (access.mode !== 'full') {
+    window.location.href = LANDING_URL;
+    return;
+  }
+
+  // Reveal the page now that we know what state to show
+  const loader = document.getElementById('accessLoader');
+  if (loader) loader.style.display = 'none';
+})();
 </script>
 </body>
 </html>
