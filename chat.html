@@ -653,6 +653,12 @@ const WORKER_URL = 'https://askflora.co.uk/api';
 const LANDING_URL = '/';
 let accessMode = 'none'; // 'full' | 'none'
 
+// Sent with every chat request. When the Worker's MIN_CLIENT_VERSION is
+// higher, it answers 426 and this page offers a refresh (see showUpgradePrompt).
+// Bump this whenever a release needs old open tabs to reload.
+const CLIENT_VERSION = 2;
+const PENDING_TEXT_KEY = 'flora_pending_text';
+
 // ─── Payload bounding ───
 // The image window (always on) caps how many photos travel in each request.
 // The rolling digest (behind SUMMARY_ENABLED) replaces messages older than
@@ -766,6 +772,7 @@ try {
       if (displayText) addBubble(displayText, msg.role === 'assistant' ? 'flora' : 'user', false, msg.timestamp);
     });
     scrollToBottom();
+    restorePendingText();
   }
 } catch (e) {
   console.error('Restore failed:', e);
@@ -1103,6 +1110,7 @@ async function callFlora(isOpener = false) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        clientVersion: CLIENT_VERSION,
         profile: gardenProfile,
         messages: buildApiMessages(messages)
       })
@@ -1113,6 +1121,16 @@ async function callFlora(isOpener = false) {
     // Access expired or invalid - redirect to landing
     if (resp.status === 401) {
       window.location.href = LANDING_URL;
+      return;
+    }
+
+    // This page is older than the Worker accepts: offer a refresh, keeping
+    // what the user just typed.
+    if (resp.status === 426) {
+      typingEl.remove();
+      showUpgradePrompt(isOpener);
+      isGenerating = false;
+      sendBtn.disabled = false;
       return;
     }
 
@@ -1209,6 +1227,37 @@ async function callFlora(isOpener = false) {
 
   isGenerating = false;
   sendBtn.disabled = false;
+}
+
+// Called when the Worker says this page is out of date. The message the user
+// just sent never got a reply, so take it back out of the history and park
+// its text in sessionStorage; after the refresh it reappears in the input box
+// ready to send again. A photo can't be parked, so that needs re-attaching.
+function showUpgradePrompt(isOpener) {
+  const last = conversationHistory[conversationHistory.length - 1];
+  if (!isOpener && last && last.role === 'user') {
+    conversationHistory.pop();
+    const text = Array.isArray(last.content)
+      ? last.content.filter(b => b.type === 'text').map(b => b.text).join(' ')
+      : last.content;
+    try { sessionStorage.setItem(PENDING_TEXT_KEY, text || ''); } catch (e) {}
+    saveState();
+  }
+  const html =
+    "I've just had a little upgrade! Give me a quick refresh and your message will be waiting for you to send again." +
+    '<button class="memory-card-btn" onclick="window.location.reload()">Refresh</button>';
+  addBubble(html, 'flora', true);
+}
+
+function restorePendingText() {
+  try {
+    const text = sessionStorage.getItem(PENDING_TEXT_KEY);
+    if (text === null) return;
+    sessionStorage.removeItem(PENDING_TEXT_KEY);
+    userInput.value = text;
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+  } catch (e) {}
 }
 
 // The label depends only on the message's own timestamp, never on the
